@@ -1,8 +1,5 @@
-#ifndef AutoDriver_h
-#define AutoDriver_h
-
-#include "Arduino.h"
-#include <SPI.h>
+#pragma once
+#include <mraa.h>
 #include "SparkFundSPINConstants.h"
 
 class AutoDriver
@@ -14,7 +11,7 @@ class AutoDriver
     AutoDriver(int position, int CSPin, int resetPin, int busyPin);
     AutoDriver(int position, int CSPin, int resetPin);
 
-    void SPIPortConnect(SPIClass *SPIPort);
+    void SPIPortConnect(std::unique_ptr<mraa::Spi> SPIPort);
     
     // These are super-common things to do: checking if the device is busy,
     //  and checking the status of the device. We make a couple of functions
@@ -120,8 +117,8 @@ class AutoDriver
     int _resetPin;
     int _busyPin;
     int _position;
-    static int _numBoards;
-    SPIClass *_SPI;
+    static int _numBoards; // count of the number of boards instantiated --> remove (do we need this here)
+    std::unique_ptr<mraa::Spi> _SPI;
 };
 
 // User constants for public functions.

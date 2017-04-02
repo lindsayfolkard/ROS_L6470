@@ -1,4 +1,3 @@
-#include <SPI.h>
 #include "SparkFunAutoDriver.h"
 
 int AutoDriver::_numBoards;
@@ -11,7 +10,7 @@ AutoDriver::AutoDriver(int position, int CSPin, int resetPin, int busyPin)
   _resetPin = resetPin;
   _busyPin = busyPin;
   _numBoards++;
-  _SPI = &SPI;
+  //_SPI = &SPI;
 }
 
 AutoDriver::AutoDriver(int position, int CSPin, int resetPin)
@@ -21,12 +20,12 @@ AutoDriver::AutoDriver(int position, int CSPin, int resetPin)
   _resetPin = resetPin;
   _busyPin = -1;
   _numBoards++;
-  _SPI = &SPI;
+  //_SPI = &SPI;
 }
 
-void AutoDriver::SPIPortConnect(SPIClass *SPIPort)
+void AutoDriver::SPIPortConnect(std::unique_ptr<mraa::Spi> SPIPort)
 {
-  _SPI = SPIPort;
+  _SPI = std::move(SPIPort);
 }
 
 int AutoDriver::busyCheck(void)

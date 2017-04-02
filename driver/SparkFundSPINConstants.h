@@ -1,5 +1,4 @@
-#ifndef _dspin_constants_h_
-#define _dspin_constants_h_
+#pragma once
 
 // Constant definitions provided by ST
 
