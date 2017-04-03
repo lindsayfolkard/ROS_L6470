@@ -1,5 +1,6 @@
-#include "SparkFunAutoDriver.h"
-#include <SPI.h>
+#include "driver.h"
+#include <assert.h>
+#include <math.h>
 
 // AutoDriverSupport.cpp - Contains utility functions for converting real-world 
 //  units (eg, steps/s) to values usable by the dsPIN controller. These are all
@@ -120,15 +121,15 @@ float AutoDriver::spdParse(unsigned long stepsPerSec)
 // Much of the functionality between "get parameter" and "set parameter" is
 //  very similar, so we deal with that by putting all of it in one function
 //  here to save memory space and simplify the program.
-long AutoDriver::paramHandler(byte param, unsigned long value)
+long AutoDriver::paramHandler(uint8_t param, unsigned long value)
 {
   long retVal = 0;   // This is a temp for the value to return.
   
   // This switch structure handles the appropriate action for each register.
   //  This is necessary since not all registers are of the same length, either
-  //  bit-wise or byte-wise, so we want to make sure we mask out any spurious
+  //  bit-wise or uint8_t-wise, so we want to make sure we mask out any spurious
   //  bits and do the right number of transfers. That is handled by the xferParam()
-  //  function, in most cases, but for 1-byte or smaller transfers, we call
+  //  function, in most cases, but for 1-uint8_t or smaller transfers, we call
   //  SPIXfer() directly.
   switch (param)
   {
@@ -280,7 +281,7 @@ long AutoDriver::paramHandler(byte param, unsigned long value)
       retVal = xferParam(0, 16);;
       break;
     default:
-      SPIXfer((byte)value);
+      SPIXfer((uint8_t)value);
       break;
   }
   return retVal;
@@ -289,19 +290,19 @@ long AutoDriver::paramHandler(byte param, unsigned long value)
 // Generalization of the subsections of the register read/write functionality.
 //  We want the end user to just write the value without worrying about length,
 //  so we pass a bit length parameter from the calling function.
-long AutoDriver::xferParam(unsigned long value, byte bitLen)
+long AutoDriver::xferParam(unsigned long value, uint8_t bitLen)
 {
-  byte byteLen = bitLen/8;      // How many BYTES do we have?
-  if (bitLen%8 > 0) byteLen++;  // Make sure not to lose any partial byte values.
+  uint8_t byteLen = bitLen/8;      // How many BYTES do we have?
+  if (bitLen%8 > 0) byteLen++;  // Make sure not to lose any partial uint8_t values.
   
-  byte temp;
+  uint8_t temp;
 
   unsigned long retVal = 0; 
 
   for (int i = 0; i < byteLen; i++)
   {
     retVal = retVal << 8;
-    temp = SPIXfer((byte)(value>>((byteLen-i-1)*8)));
+    temp = SPIXfer((uint8_t)(value>>((byteLen-i-1)*8)));
     retVal |= temp;
   }
 
@@ -309,20 +310,19 @@ long AutoDriver::xferParam(unsigned long value, byte bitLen)
   return retVal & mask;
 }
 
-byte AutoDriver::SPIXfer(byte data)
+uint8_t AutoDriver::SPIXfer(uint8_t data)
 {
-  byte dataPacket[_numBoards];
-  int i;
-  for (i=0; i < _numBoards; i++)
-  {
-    dataPacket[i] = 0;
-  }
-  dataPacket[_position] = data;
-  digitalWrite(_CSPin, LOW);
-  _SPI->beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE3));
-  _SPI->transfer(dataPacket, _numBoards);
-  _SPI->endTransaction();
-  digitalWrite(_CSPin, HIGH);
-  return dataPacket[_position];
+    //  uint8_t dataPacket[_numBoards];
+    //  int i;
+    //  for (i=0; i < _numBoards; i++)
+    //  {
+    //    dataPacket[i] = 0;
+    //  }
+    //  dataPacket[_position] = data;
+  //_SPI->transfer(dataPacket, _numBoards);
+  //_SPI->endTransaction();
+  //digitalWrite(_CSPin, HIGH);
+  //return dataPacket[_position];
+    return _SPI->writeByte(data);
 }
 

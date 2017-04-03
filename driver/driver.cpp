@@ -1,4 +1,4 @@
-#include "SparkFunAutoDriver.h"
+#include "driver.h"
 
 int AutoDriver::_numBoards;
 
@@ -35,9 +35,10 @@ int AutoDriver::busyCheck(void)
     if (getParam(STATUS) & 0x0002) return 0;
     else                           return 1;
   }
-  else 
-  {
-    if (digitalRead(_busyPin) == HIGH) return 0;
-    else                               return 1;
-  }
+  return 0; // TODO - correct this action
+//  else
+//  {
+//    if (digitalRead(_busyPin) == HIGH) return 0;
+//    else                               return 1;
+//  }
 }

@@ -1,12 +1,12 @@
-#include "SparkFunAutoDriver.h"
+#include "driver.h"
 
 // Setup the SYNC/BUSY pin to be either SYNC or BUSY, and to a desired
 //  ticks per step level.
-void AutoDriver::configSyncPin(byte pinFunc, byte syncSteps)
+void AutoDriver::configSyncPin(uint8_t pinFunc, uint8_t syncSteps)
 {
   // Only some of the bits in this register are of interest to us; we need to
   //  clear those bits. It happens that they are the upper four.
-  byte syncPinConfig = (byte)getParam(STEP_MODE);
+  uint8_t syncPinConfig = (uint8_t)getParam(STEP_MODE);
   syncPinConfig &= 0x0F;
   
   // Now, let's OR in the arguments. We're going to mask the incoming
@@ -14,19 +14,19 @@ void AutoDriver::configSyncPin(byte pinFunc, byte syncSteps)
   //  for more info about which bits we're touching.
   syncPinConfig |= ((pinFunc & 0x80) | (syncSteps & 0x70));
   
-  // Now we should be able to send that byte right back to the dSPIN- it
+  // Now we should be able to send that uint8_t right back to the dSPIN- it
   //  won't corrupt the other bits, and the changes are made.
   setParam(STEP_MODE, (unsigned long)syncPinConfig);
 }
 
 // The dSPIN chip supports microstepping for a smoother ride. This function
 //  provides an easy front end for changing the microstepping mode.
-void AutoDriver::configStepMode(byte stepMode)
+void AutoDriver::configStepMode(uint8_t stepMode)
 {
 
   // Only some of these bits are useful (the lower three). We'll extract the
   //  current contents, clear those three bits, then set them accordingly.
-  byte stepModeConfig = (byte)getParam(STEP_MODE);
+  uint8_t stepModeConfig = (uint8_t)getParam(STEP_MODE);
   stepModeConfig &= 0xF8;
   
   // Now we can OR in the new bit settings. Mask the argument so we don't
@@ -37,8 +37,8 @@ void AutoDriver::configStepMode(byte stepMode)
   setParam(STEP_MODE, (unsigned long)stepModeConfig);
 }
 
-byte AutoDriver::getStepMode() {
-  return (byte)(getParam(STEP_MODE) & 0x07);
+uint8_t AutoDriver::getStepMode() {
+  return (uint8_t)(getParam(STEP_MODE) & 0x07);
 }
 
 // This is the maximum speed the dSPIN will attempt to produce.
@@ -118,14 +118,14 @@ float AutoDriver::getDec()
   return accParse(getParam(DECEL));
 }
 
-void AutoDriver::setOCThreshold(byte threshold)
+void AutoDriver::setOCThreshold(uint8_t threshold)
 {
   setParam(OCD_TH, 0x0F & threshold);
 }
 
-byte AutoDriver::getOCThreshold()
+uint8_t AutoDriver::getOCThreshold()
 {
-  return (byte) (getParam(OCD_TH) & 0xF);
+  return (uint8_t) (getParam(OCD_TH) & 0xF);
 }
 
 // The next few functions are all breakouts for individual options within the
@@ -252,50 +252,50 @@ int AutoDriver::getOscMode()
 //  tweaking KVAL has proven effective in the past. There's a separate register
 //  for each case: running, static, accelerating, and decelerating.
 
-void AutoDriver::setAccKVAL(byte kvalInput)
+void AutoDriver::setAccKVAL(uint8_t kvalInput)
 {
   setParam(KVAL_ACC, kvalInput);
 }
 
-byte AutoDriver::getAccKVAL()
+uint8_t AutoDriver::getAccKVAL()
 {
-  return (byte) getParam(KVAL_ACC);
+  return (uint8_t) getParam(KVAL_ACC);
 }
 
-void AutoDriver::setDecKVAL(byte kvalInput)
+void AutoDriver::setDecKVAL(uint8_t kvalInput)
 {
   setParam(KVAL_DEC, kvalInput);
 }
 
-byte AutoDriver::getDecKVAL()
+uint8_t AutoDriver::getDecKVAL()
 {
-  return (byte) getParam(KVAL_DEC);
+  return (uint8_t) getParam(KVAL_DEC);
 }
 
-void AutoDriver::setRunKVAL(byte kvalInput)
+void AutoDriver::setRunKVAL(uint8_t kvalInput)
 {
   setParam(KVAL_RUN, kvalInput);
 }
 
-byte AutoDriver::getRunKVAL()
+uint8_t AutoDriver::getRunKVAL()
 {
-  return (byte) getParam(KVAL_RUN);
+  return (uint8_t) getParam(KVAL_RUN);
 }
 
-void AutoDriver::setHoldKVAL(byte kvalInput)
+void AutoDriver::setHoldKVAL(uint8_t kvalInput)
 {
   setParam(KVAL_HOLD, kvalInput);
 }
 
-byte AutoDriver::getHoldKVAL()
+uint8_t AutoDriver::getHoldKVAL()
 {
-  return (byte) getParam(KVAL_HOLD);
+  return (uint8_t) getParam(KVAL_HOLD);
 }
 
 // Enable or disable the low-speed optimization option. With LSPD_OPT enabled,
 //  motion starts from 0 instead of MIN_SPEED and low-speed optimization keeps
 //  the driving sine wave prettier than normal until MIN_SPEED is reached.
-void AutoDriver::setLoSpdOpt(boolean enable)
+void AutoDriver::setLoSpdOpt(bool enable)
 {
   unsigned long temp = getParam(MIN_SPEED);
   if (enable) temp |= 0x00001000; // Set the LSPD_OPT bit
@@ -303,8 +303,8 @@ void AutoDriver::setLoSpdOpt(boolean enable)
   setParam(MIN_SPEED, temp);
 }
 
-boolean AutoDriver::getLoSpdOpt()
+bool AutoDriver::getLoSpdOpt()
 {
-  return (boolean) ((getParam(MIN_SPEED) & 0x00001000) != 0);
+  return (bool) ((getParam(MIN_SPEED) & 0x00001000) != 0);
 }
 
