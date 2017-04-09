@@ -4,34 +4,44 @@
 
 // constant definitions for overcurrent thresholds. Write these values to 
 //  register OCD_TH to set the level at which an overcurrent even occurs.
-#define OCD_TH_375mA  0x00
-#define OCD_TH_750mA  0x01
-#define OCD_TH_1125mA 0x02
-#define OCD_TH_1500mA 0x03
-#define OCD_TH_1875mA 0x04
-#define OCD_TH_2250mA 0x05
-#define OCD_TH_2625mA 0x06
-#define OCD_TH_3000mA 0x07
-#define OCD_TH_3375mA 0x08
-#define OCD_TH_3750mA 0x09
-#define OCD_TH_4125mA 0x0A
-#define OCD_TH_4500mA 0x0B
-#define OCD_TH_4875mA 0x0C
-#define OCD_TH_5250mA 0x0D
-#define OCD_TH_5625mA 0x0E
-#define OCD_TH_6000mA 0x0F
+enum OverCurrentThreshold
+{
+    OCD_TH_375m =  0x00,
+    OCD_TH_750m =  0x01,
+    OCD_TH_1125m = 0x02,
+    OCD_TH_1500m = 0x03,
+    OCD_TH_1875m = 0x04,
+    OCD_TH_2250m = 0x05,
+    OCD_TH_2625m = 0x06,
+    OCD_TH_3000m = 0x07,
+    OCD_TH_3375m = 0x08,
+    OCD_TH_3750m = 0x09,
+    OCD_TH_4125m = 0x0A,
+    OCD_TH_4500m = 0x0B,
+    OCD_TH_4875m = 0x0C,
+    OCD_TH_5250m = 0x0D,
+    OCD_TH_5625m = 0x0E,
+    OCD_TH_6000m = 0x0F
+};
+std::string toString(OverCurrentThreshold OverCurrentThreshold);
 
 // STEP_MODE option values.
 // First comes the "microsteps per step" options...
 #define STEP_MODE_STEP_SEL 0x07  // Mask for these bits only.
-#define STEP_SEL_1     0x00
-#define STEP_SEL_1_2   0x01
-#define STEP_SEL_1_4   0x02
-#define STEP_SEL_1_8   0x03
-#define STEP_SEL_1_16  0x04
-#define STEP_SEL_1_32  0x05
-#define STEP_SEL_1_64  0x06
-#define STEP_SEL_1_128 0x07
+
+enum StepMode
+{
+    STEP_SEL_1      = 0x00,
+    STEP_SEL_1_2    = 0x01,
+    STEP_SEL_1_4    = 0x02,
+    STEP_SEL_1_8    = 0x03,
+    STEP_SEL_1_16   = 0x04,
+    STEP_SEL_1_32   = 0x05,
+    STEP_SEL_1_64   = 0x06,
+    STEP_SEL_1_128  = 0x07
+
+};
+std::string toString(StepMode stepMode);
 
 // ...next, define the SYNC_EN bit. When set, the BUSYN pin will instead
 //  output a clock related to the full-step frequency as defined by the
@@ -42,21 +52,27 @@
 // ...last, define the SYNC_SEL modes. The clock output is defined by
 //  the full-step frequency and the value in these bits- see the datasheet
 //  for a matrix describing that relationship (page 46).
-#define STEP_MODE_SYNC_SEL 0x70
-#define SYNC_SEL_1_2 0x00
-#define SYNC_SEL_1   0x10
-#define SYNC_SEL_2   0x20
-#define SYNC_SEL_4   0x30
-#define SYNC_SEL_8   0x40
-#define SYNC_SEL_16  0x50
-#define SYNC_SEL_32  0x60
-#define SYNC_SEL_64  0x70
+#define STEP_MODE_SYNC_SEL_\ 0x70
+
+enum SyncSelect
+{
+    SYNC_SEL_1_2 = 0x00,
+    SYNC_SEL_1   = 0x10,
+    SYNC_SEL_2   = 0x20,
+    SYNC_SEL_4   = 0x30,
+    SYNC_SEL_8   = 0x40,
+    SYNC_SEL_16  = 0x50,
+    SYNC_SEL_32  = 0x60,
+    SYNC_SEL_64  = 0x70
+};
+std::string toString(SyncSelect syncSelect);
 
 // Bit names for the ALARM_EN register.
 //  Each of these bits defines one potential alarm condition.
 //  When one of these conditions occurs and the respective bit in ALARM_EN is set,
 //  the FLAG pin will go low. The register must be queried to determine which event
 //  caused the alarm.
+
 #define ALARM_EN_OVERCURRENT       0x01
 #define ALARM_EN_THERMAL_SHUTDOWN	 0x02
 #define ALARM_EN_THERMAL_WARNING   0x04
@@ -66,70 +82,116 @@
 #define ALARM_EN_SW_TURN_ON        0x40
 #define ALARM_EN_WRONG_NPERF_CMD   0x80
 
+struct AlarmState
+{
+    AlarmState();
+
+    bool overCurrentEnabled;
+    bool thermalShutdownEnabled;
+    bool thermalWarningEnabled;
+    bool underVoltageEnabled;
+    bool stallDetectionAEnabled;
+    bool stallDetectionBEnabled;
+    bool switchTurnOnEnabled;
+    bool badCommandEnabled;
+};
+std::string toString(AlarmState alarmState);
+
 // CONFIG register renames.
 
 // Oscillator options.
 // The dSPIN needs to know what the clock frequency is because it uses that for some
 //  calculations during operation.
 #define CONFIG_OSC_SEL                 0x000F // Mask for this bit field.
-#define CONFIG_INT_16MHZ               0x0000 // Internal 16MHz, no output
-#define CONFIG_INT_16MHZ_OSCOUT_2MHZ   0x0008 // Default; internal 16MHz, 2MHz output
-#define CONFIG_INT_16MHZ_OSCOUT_4MHZ   0x0009 // Internal 16MHz, 4MHz output
-#define CONFIG_INT_16MHZ_OSCOUT_8MHZ   0x000A // Internal 16MHz, 8MHz output
-#define CONFIG_INT_16MHZ_OSCOUT_16MHZ  0x000B // Internal 16MHz, 16MHz output
-#define CONFIG_EXT_8MHZ_XTAL_DRIVE     0x0004 // External 8MHz crystal
-#define CONFIG_EXT_16MHZ_XTAL_DRIVE    0x0005 // External 16MHz crystal
-#define CONFIG_EXT_24MHZ_XTAL_DRIVE    0x0006 // External 24MHz crystal
-#define CONFIG_EXT_32MHZ_XTAL_DRIVE    0x0007 // External 32MHz crystal
-#define CONFIG_EXT_8MHZ_OSCOUT_INVERT  0x000C // External 8MHz crystal, output inverted
-#define CONFIG_EXT_16MHZ_OSCOUT_INVERT 0x000D // External 16MHz crystal, output inverted
-#define CONFIG_EXT_24MHZ_OSCOUT_INVERT 0x000E // External 24MHz crystal, output inverted
-#define CONFIG_EXT_32MHZ_OSCOUT_INVERT 0x000F // External 32MHz crystal, output inverted
+
+enum OscillatorSelect
+{
+    CONFIG_INT_16MHZ                = 0x0000 , // Internal 16MHz, no output
+    CONFIG_INT_16MHZ_OSCOUT_2MHZ    = 0x0008 , // Default; internal 16MHz, 2MHz output
+    CONFIG_INT_16MHZ_OSCOUT_4MHZ    = 0x0009 , // Internal 16MHz, 4MHz output
+    CONFIG_INT_16MHZ_OSCOUT_8MHZ    = 0x000A , // Internal 16MHz, 8MHz output
+    CONFIG_INT_16MHZ_OSCOUT_16MHZ   = 0x000B , // Internal 16MHz, 16MHz output
+    CONFIG_EXT_8MHZ_XTAL_DRIVE      = 0x0004 , // External 8MHz crystal
+    CONFIG_EXT_16MHZ_XTAL_DRIVE     = 0x0005 , // External 16MHz crystal
+    CONFIG_EXT_24MHZ_XTAL_DRIVE     = 0x0006 , // External 24MHz crystal
+    CONFIG_EXT_32MHZ_XTAL_DRIVE     = 0x0007 , // External 32MHz crystal
+    CONFIG_EXT_8MHZ_OSCOUT_INVERT   = 0x000C , // External 8MHz crystal, output inverted
+    CONFIG_EXT_16MHZ_OSCOUT_INVERT  = 0x000D , // External 16MHz crystal, output inverted
+    CONFIG_EXT_24MHZ_OSCOUT_INVERT  = 0x000E , // External 24MHz crystal, output inverted
+    CONFIG_EXT_32MHZ_OSCOUT_INVERT  = 0x000F   // External 32MHz crystal, output inverted
+};
+std::string toString(OscillatorSelect oscillatorSelect);
 
 // Configure the functionality of the external switch input
 #define CONFIG_SW_MODE                 0x0010 // Mask for this bit.
-#define CONFIG_SW_HARD_STOP            0x0000 // Default; hard stop motor on switch.
-#define CONFIG_SW_USER                 0x0010 // Tie to the GoUntil and ReleaseSW
-                                                    //  commands to provide jog function.
-                                                    //  See page 25 of datasheet.
+enum SwitchConfiguration
+{
+    CONFIG_SW_HARD_STOP = 0x0000, // Default; hard stop motor on switch.
+    CONFIG_SW_USER =0x0010        // Tie to the GoUntil and ReleaseSW
+
+    //  commands to provide jog function.
+    //  See page 25 of datasheet.
+};
+std::string toString(SwitchConfiguration switchConfiguration);
 
 // Configure the motor voltage compensation mode (see page 34 of datasheet)
 #define CONFIG_EN_VSCOMP               0x0020  // Mask for this bit.
-#define CONFIG_VS_COMP_DISABLE         0x0000  // Disable motor voltage compensation.
-#define CONFIG_VS_COMP_ENABLE          0x0020  // Enable motor voltage compensation.
+enum VoltageCompensation
+{
+    CONFIG_VS_COMP_DISABLE = 0x0000,  // Disable motor voltage compensation.
+    CONFIG_VS_COMP_ENABLE  = 0x0020   // Enable motor voltage compensation.
+};
+std::string toString(VoltageCompensation voltageCompensation);
 
 // Configure overcurrent detection event handling
 #define CONFIG_OC_SD                   0x0080  // Mask for this bit.
-#define CONFIG_OC_SD_DISABLE           0x0000  // Bridges do NOT shutdown on OC detect
-#define CONFIG_OC_SD_ENABLE            0x0080  // Bridges shutdown on OC detect
+enum OverCurrentDetection
+{
+    CONFIG_OC_SD_DISABLE = 0x0000,   // Bridges do NOT shutdown on OC detect
+    CONFIG_OC_SD_ENABLE  = 0x0080    // Bridges shutdown on OC detect
+};
+std::string toString(OverCurrentDetection overCurrentDetection);
 
 // Configure the slew rate of the power bridge output
 #define CONFIG_POW_SR                  0x0300  // Mask for this bit field.
-#define CONFIG_SR_180V_us              0x0000  // 180V/us
-#define CONFIG_SR_290V_us              0x0200  // 290V/us
-#define CONFIG_SR_530V_us              0x0300  // 530V/us
+enum SlewRate
+{
+    CONFIG_SR_180V_us = 0x0000, // 180V/us
+    CONFIG_SR_290V_us = 0x0200, // 290V/us
+    CONFIG_SR_530V_us = 0x0300  // 530V/us
+};
+std::string toString(SlewRate slewRate);
 
 // Integer divisors for PWM sinewave generation
 //  See page 32 of the datasheet for more information on this.
 #define CONFIG_F_PWM_DEC               0x1C00      // mask for this bit field
-#define CONFIG_PWM_MUL_0_625           (0x00)<<10
-#define CONFIG_PWM_MUL_0_75            (0x01)<<10
-#define CONFIG_PWM_MUL_0_875           (0x02)<<10
-#define CONFIG_PWM_MUL_1               (0x03)<<10
-#define CONFIG_PWM_MUL_1_25            (0x04)<<10
-#define CONFIG_PWM_MUL_1_5             (0x05)<<10
-#define CONFIG_PWM_MUL_1_75            (0x06)<<10
-#define CONFIG_PWM_MUL_2               (0x07)<<10
+enum PwmFrequencyMultiplier
+{
+    CONFIG_PWM_MUL_0_625            = (0x00)<<10,
+    CONFIG_PWM_MUL_0_75             = (0x01)<<10,
+    CONFIG_PWM_MUL_0_875            = (0x02)<<10,
+    CONFIG_PWM_MUL_1                = (0x03)<<10,
+    CONFIG_PWM_MUL_1_25             = (0x04)<<10,
+    CONFIG_PWM_MUL_1_5              = (0x05)<<10,
+    CONFIG_PWM_MUL_1_75             = (0x06)<<10,
+    CONFIG_PWM_MUL_2                = (0x07)<<10
+};
+std::string toString(PwmWaveMultiplier pwmWaveMultiplier);
 
 // Multiplier for the PWM sinewave frequency
 #define CONFIG_F_PWM_INT               0xE000     // mask for this bit field.
-#define CONFIG_PWM_DIV_1               (0x00)<<13
-#define CONFIG_PWM_DIV_2               (0x01)<<13
-#define CONFIG_PWM_DIV_3               (0x02)<<13
-#define CONFIG_PWM_DIV_4               (0x03)<<13
-#define CONFIG_PWM_DIV_5               (0x04)<<13
-#define CONFIG_PWM_DIV_6               (0x05)<<13
-#define CONFIG_PWM_DIV_7               (0x06)<<13
+
+enum PwmFrequencyDivider
+{
+    CONFIG_PWM_DIV_1                = (0x00)<<13,
+    CONFIG_PWM_DIV_2                = (0x01)<<13,
+    CONFIG_PWM_DIV_3                = (0x02)<<13,
+    CONFIG_PWM_DIV_4                = (0x03)<<13,
+    CONFIG_PWM_DIV_5                = (0x04)<<13,
+    CONFIG_PWM_DIV_6                = (0x05)<<13,
+    CONFIG_PWM_DIV_7                = (0x06)<<13
+};
+std::string toString (PwmFrequency pwmFrequency);
 
 // Status register bit renames- read-only bits conferring information about the
 //  device to the user.
@@ -137,9 +199,9 @@
 #define STATUS_BUSY                    0x0002 // mirrors BUSY pin
 #define STATUS_SW_F                    0x0004 // low when switch open, high when closed
 #define STATUS_SW_EVN                  0x0008 // active high, set on switch falling edge,
-                                                    //  cleared by reading STATUS
+//  cleared by reading STATUS
 #define STATUS_DIR                     0x0010 // Indicates current motor direction.
-                                                    //  High is FWD, Low is REV.
+//  High is FWD, Low is REV.
 #define STATUS_NOTPERF_CMD             0x0080 // Last command not performed.
 #define STATUS_WRONG_CMD               0x0100 // Last command not valid.
 #define STATUS_UVLO                    0x0200 // Undervoltage lockout is active
@@ -150,58 +212,160 @@
 #define STATUS_STEP_LOSS_B             0x4000 // Stall detected on B bridge
 #define STATUS_SCK_MOD                 0x8000 // Step clock mode is active
 
+enum MotorSpinDirection
+{
+    Clockwise,
+    AntiClockwise
+};
+std::string toString (MotorSpinDirection motorSpinDirection);
+
 // Status register motor status field
 #define STATUS_MOT_STATUS                0x0060      // field mask
-#define STATUS_MOT_STATUS_STOPPED       (0x0000)<<13 // Motor stopped
-#define STATUS_MOT_STATUS_ACCELERATION  (0x0001)<<13 // Motor accelerating
-#define STATUS_MOT_STATUS_DECELERATION  (0x0002)<<13 // Motor decelerating
-#define STATUS_MOT_STATUS_CONST_SPD     (0x0003)<<13 // Motor at constant speed
+
+enum MotorStatus
+{
+    STATUS_MOT_STATUS_STOPPED        = (0x0000)<<13, // Motor stopped
+    STATUS_MOT_STATUS_ACCELERATION   = (0x0001)<<13,// Motor accelerating
+    STATUS_MOT_STATUS_DECELERATION   = (0x0002)<<13, // Motor decelerating
+    STATUS_MOT_STATUS_CONST_SPD      = (0x0003)<<13 // Motor at constant speed
+};
+std::string toString (MotorStatus motorStatus);
+
+// Easier higher up to deal with a status struct of bools as opposed to bit&
+struct Status
+{
+    // General ControllerState
+    bool isHighZ;
+    bool isBusy;
+    bool isSwitchClosed;
+    bool switchEventDetected;
+
+    // Command Execution State
+    bool performedLastCommand;
+    bool lastCommandInvalid;
+
+    // Fault States
+    bool hasThermalWarning;
+    bool isInThermalShutdown;
+    bool overCurrentDetected;
+    bool stallDetectedPhaseA;
+    bool stallDetectedPhaseB;
+
+    bool stepClockActive;
+
+    // Motor State
+    MotorSpinDirection spinDirection;
+    MotorStatus        motorStatus;
+
+};
+std::string toString (Status status);
 
 // Register address redefines.
 //  See the Param_Handler() function for more info about these.
-#define ABS_POS              0x01
-#define EL_POS               0x02
-#define MARK                 0x03
-#define SPEED                0x04
-#define ACC                  0x05
-#define DECEL                0x06
-#define MAX_SPEED            0x07
-#define MIN_SPEED            0x08
-#define FS_SPD               0x15
-#define KVAL_HOLD            0x09
-#define KVAL_RUN             0x0A
-#define KVAL_ACC             0x0B
-#define KVAL_DEC             0x0C
-#define INT_SPD              0x0D
-#define ST_SLP               0x0E
-#define FN_SLP_ACC           0x0F
-#define FN_SLP_DEC           0x10
-#define K_THERM              0x11
-#define ADC_OUT              0x12
-#define OCD_TH               0x13
-#define STALL_TH             0x14
-#define STEP_MODE            0x16
-#define ALARM_EN             0x17
-#define CONFIG               0x18
-#define STATUS               0x19
+enum ParamRegister
+{
+    ABS_POS               = 0x01,
+    EL_POS                = 0x02,
+    MARK                  = 0x03,
+    SPEED                 = 0x04,
+    ACC                   = 0x05,
+    DECEL                 = 0x06,
+    MAX_SPEED             = 0x07,
+    MIN_SPEED             = 0x08,
+    FS_SPD                = 0x15,
+    KVAL_HOLD             = 0x09,
+    KVAL_RUN              = 0x0A,
+    KVAL_ACC              = 0x0B,
+    KVAL_DEC              = 0x0C,
+    INT_SPD               = 0x0D,
+    ST_SLP                = 0x0E,
+    FN_SLP_ACC            = 0x0F,
+    FN_SLP_DEC            = 0x10,
+    K_THERM               = 0x11,
+    ADC_OUT               = 0x12,
+    OCD_TH                = 0x13,
+    STALL_TH              = 0x14,
+    STEP_MODE             = 0x16,
+    ALARM_EN              = 0x17,
+    CONFIG                = 0x18,
+    STATUS                = 0x19
+};
+std::string toString(ParamRegister paramRegister);
 
 //dSPIN commands
-#define NOP                  0x00
-#define SET_PARAM            0x00
-#define GET_PARAM            0x20
-#define RUN                  0x50
-#define STEP_CLOCK           0x58
-#define MOVE                 0x40
-#define GOTO                 0x60
-#define GOTO_DIR             0x68
-#define GO_UNTIL             0x82
-#define RELEASE_SW           0x92
-#define GO_HOME              0x70
-#define GO_MARK              0x78
-#define RESET_POS            0xD8
-#define RESET_DEVICE         0xC0
-#define SOFT_STOP            0xB0
-#define HARD_STOP            0xB8
-#define SOFT_HIZ             0xA0
-#define HARD_HIZ             0xA8
-#define GET_STATUS           0xD0
+enum Command
+{
+    NOP                   = 0x00,
+    SET_PARAM             = 0x00,
+    GET_PARAM             = 0x20,
+    RUN                   = 0x50,
+    STEP_CLOCK            = 0x58,
+    MOVE                  = 0x40,
+    GOTO                  = 0x60,
+    GOTO_DIR              = 0x68,
+    GO_UNTIL              = 0x82,
+    RELEASE_SW            = 0x92,
+    GO_HOME               = 0x70,
+    GO_MARK               = 0x78,
+    RESET_POS             = 0xD8,
+    RESET_DEVICE          = 0xC0,
+    SOFT_STOP             = 0xB0,
+    HARD_STOP             = 0xB8,
+    SOFT_HIZ              = 0xA0,
+    HARD_HIZ              = 0xA8,
+    GET_STATUS            = 0xD0
+};
+std::string toString(Command command);
+
+
+// General Static Config (meant to be set once at the start and then not really again)
+// NB: valid parameters are always positive. A negative parameter is interpreted as do not set/read.
+struct Config
+{
+    int fullStepThresholdSpeed;
+
+    int holdingKVal;
+    int constantSpeedKVal;
+    int accelStartingKVal;
+    int decelStartingKVal;
+
+    int intersectSpeed;
+    int startSlope;
+    int accelFinalSlope;
+    int declFinalSlope;
+
+    int thermalDriftCoefficient;
+    int adcReading;
+
+    OverCurrentThreshold overCurrentThreshold;
+    int stallThreshold;
+
+    // STEP_MODE register settings
+    StepMode stepMode;
+    SyncSelect syncSelect;
+    bool syncEnable;
+
+    // Alarm Register Settings
+    AlarmState alarmState;
+
+    // CONFIG register settings
+    OscillatorSelect oscillatorSelect;
+    SwitchConfiguration switchConfiguration;
+    OverCurrentDetection overCurrentDetection;
+    SlewRate slewRate;
+    VoltageCompensation voltageCompensation;
+    PwmFrequencyMultiplier pwmFrequencyMultiplier;
+    PwmFrequencyDivider    pwmFrequencyDivider;
+};
+std::string toString(const Config &config);
+
+// It is expected during normal operation that these configs will be
+// changed several times on the fly
+struct ProfileCfg
+{
+    int acceleration; // steps/s^2
+    int deceleration; // steps/s^2
+    int maxSpeed; // steps/s
+    int minSpeed; // steps/s
+};
+std::string toString(const ProfileCfg &profileCfg);
