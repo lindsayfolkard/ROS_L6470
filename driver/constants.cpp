@@ -32,8 +32,8 @@ std::string toString(StepMode stepMode)
     {
     case STEP_SEL_1    : return "Full  step";
     case STEP_SEL_1_2  : return "Half  step";
-    case STEP_SEL_1_4  : return "1/4   microStep";
-    case STEP_SEL_1_8  : return "1/8   microStep";
+    case STEP_SEL_1_4  : return "1/4   microstep";
+    case STEP_SEL_1_8  : return "1/8   microstep";
     case STEP_SEL_1_16 : return "1/16  microstep";
     case STEP_SEL_1_32 : return "1/32  microstep";
     case STEP_SEL_1_64 : return "1/64  microstep";

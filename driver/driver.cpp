@@ -23,19 +23,21 @@ AutoDriver::AutoDriver(int position, int CSPin, int resetPin)
   //_SPI = &SPI;
 }
 
-void AutoDriver::SPIPortConnect(std::unique_ptr<mraa::Spi> SPIPort)
+void
+AutoDriver::SPIPortConnect(std::unique_ptr<mraa::Spi> SPIPort)
 {
   _SPI = std::move(SPIPort);
 }
 
-int AutoDriver::busyCheck(void)
+bool
+AutoDriver::isBusy(void)
 {
   if (_busyPin == -1)
   {
-    if (getParam(STATUS) & 0x0002) return 0;
-    else                           return 1;
+    if (getParam(STATUS) & 0x0002) return false;
+    else                           return true;
   }
-  return 0; // TODO - correct this action
+  return false; // TODO - correct this action
 //  else
 //  {
 //    if (digitalRead(_busyPin) == HIGH) return 0;

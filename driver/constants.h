@@ -26,7 +26,7 @@ enum OverCurrentThreshold
     OCD_TH_6000m = 0x0F
 };
 std::string toString(OverCurrentThreshold overCurrentThreshold);
-std::ostream& operator<<(ostream& os, OverCurrentThreshold overCurrentThreshold)
+inline std::ostream& operator<<(ostream& os, OverCurrentThreshold overCurrentThreshold)
 {
     return os << toString(overCurrentThreshold);
 }
@@ -48,7 +48,7 @@ enum StepMode
 
 };
 std::string toString(StepMode stepMode);
-std::ostream& operator<<(ostream& os, StepMode stepMode)
+inline std::ostream& operator<<(ostream& os, StepMode stepMode)
 {
     return os << toString(stepMode);
 }
@@ -76,7 +76,7 @@ enum SyncSelect
     SYNC_SEL_64  = 0x70
 };
 std::string toString(SyncSelect syncSelect);
-std::ostream& operator<<(ostream& os,SyncSelect syncSelect)
+inline std::ostream& operator<<(ostream& os,SyncSelect syncSelect)
 {
     return os << toString(syncSelect);
 }
@@ -88,7 +88,7 @@ std::ostream& operator<<(ostream& os,SyncSelect syncSelect)
 //  caused the alarm.
 
 #define ALARM_EN_OVERCURRENT       0x01
-#define ALARM_EN_THERMAL_SHUTDOWN	 0x02
+#define ALARM_EN_THERMAL_SHUTDOWN  0x02
 #define ALARM_EN_THERMAL_WARNING   0x04
 #define ALARM_EN_UNDER_VOLTAGE     0x08
 #define ALARM_EN_STALL_DET_A       0x10
@@ -110,7 +110,7 @@ struct AlarmState
     bool badCommandEnabled;
 };
 std::string toString(AlarmState alarmState);
-std::ostream& operator<<(ostream& os,AlarmState alarmState)
+inline std::ostream& operator<<(ostream& os,AlarmState alarmState)
 {
     return os << toString(alarmState);
 }
@@ -139,23 +139,23 @@ enum OscillatorSelect
     CONFIG_EXT_32MHZ_OSCOUT_INVERT  = 0x000F   // External 32MHz crystal, output inverted
 };
 std::string toString(OscillatorSelect oscillatorSelect);
-std::ostream& operator<<(ostream& os,OscillatorSelect oscillatorSelect)
+inline std::ostream& operator<<(ostream& os,OscillatorSelect oscillatorSelect)
 {
     return os << toString(oscillatorSelect);
 }
 
 // Configure the functionality of the external switch input
-#define CONFIG_SW_MODE                 0x0010 // Mask for this bit.
+#define CONFIG_SW_MODE 0x0010 // Mask for this bit.
 enum SwitchConfiguration
 {
     CONFIG_SW_HARD_STOP = 0x0000, // Default; hard stop motor on switch.
-    CONFIG_SW_USER =0x0010        // Tie to the GoUntil and ReleaseSW
+    CONFIG_SW_USER      = 0x0010  // Tie to the GoUntil and ReleaseSW
 
     //  commands to provide jog function.
     //  See page 25 of datasheet.
 };
 std::string toString(SwitchConfiguration switchConfiguration);
-std::ostream& operator<<(ostream& os,SwitchConfiguration switchConfiguration)
+inline std::ostream& operator<<(ostream& os,SwitchConfiguration switchConfiguration)
 {
     return os << toString(switchConfiguration);
 }
@@ -168,7 +168,7 @@ enum VoltageCompensation
     CONFIG_VS_COMP_ENABLE  = 0x0020   // Enable motor voltage compensation.
 };
 std::string toString(VoltageCompensation voltageCompensation);
-std::ostream& operator<<(ostream& os,VoltageCompensation voltageCompensation)
+inline std::ostream& operator<<(ostream& os,VoltageCompensation voltageCompensation)
 {
     return os << toString(voltageCompensation);
 }
@@ -181,7 +181,7 @@ enum OverCurrentDetection
     CONFIG_OC_SD_ENABLE  = 0x0080    // Bridges shutdown on OC detect
 };
 std::string toString(OverCurrentDetection overCurrentDetection);
-std::ostream& operator<<(ostream& os,OverCurrentDetection x)
+inline std::ostream& operator<<(ostream& os,OverCurrentDetection x)
 {
     return os << toString(x);
 }
@@ -195,7 +195,7 @@ enum SlewRate
     CONFIG_SR_530V_us = 0x0300  // 530V/us
 };
 std::string toString(SlewRate slewRate);
-std::ostream& operator<<(ostream& os,SlewRate x)
+inline std::ostream& operator<<(ostream& os,SlewRate x)
 {
     return os << toString(x);
 }
@@ -215,7 +215,7 @@ enum PwmFrequencyMultiplier
     CONFIG_PWM_MUL_2                = (0x07)<<10
 };
 std::string toString(PwmFrequencyMultiplier pwmFrequencyMultiplier);
-std::ostream& operator<<(ostream& os,PwmFrequencyMultiplier x)
+inline std::ostream& operator<<(ostream& os,PwmFrequencyMultiplier x)
 {
     return os << toString(x);
 }
@@ -233,7 +233,34 @@ enum PwmFrequencyDivider
     CONFIG_PWM_DIV_7                = (0x06)<<13
 };
 std::string toString (PwmFrequencyDivider pwmFrequency);
-std::ostream& operator<<(ostream& os,PwmFrequencyDivider x)
+inline std::ostream& operator<<(ostream& os,PwmFrequencyDivider x)
+{
+    return os << toString(x);
+}
+
+enum MotorSpinDirection
+{
+    Clockwise,
+    AntiClockwise
+};
+std::string toString (MotorSpinDirection motorSpinDirection);
+inline std::ostream& operator<<(ostream& os,MotorSpinDirection x)
+{
+    return os << toString(x);
+}
+
+// Status register motor status field
+#define STATUS_MOT_STATUS                0x0060      // field mask
+
+enum MotorStatus
+{
+    STATUS_MOT_STATUS_STOPPED        = (0x0000)<<13, // Motor stopped
+    STATUS_MOT_STATUS_ACCELERATION   = (0x0001)<<13,// Motor accelerating
+    STATUS_MOT_STATUS_DECELERATION   = (0x0002)<<13, // Motor decelerating
+    STATUS_MOT_STATUS_CONST_SPD      = (0x0003)<<13 // Motor at constant speed
+};
+std::string toString (MotorStatus motorStatus);
+inline std::ostream& operator<<(ostream& os,MotorStatus x)
 {
     return os << toString(x);
 }
@@ -257,32 +284,6 @@ std::ostream& operator<<(ostream& os,PwmFrequencyDivider x)
 #define STATUS_STEP_LOSS_B             0x4000 // Stall detected on B bridge
 #define STATUS_SCK_MOD                 0x8000 // Step clock mode is active
 
-enum MotorSpinDirection
-{
-    Clockwise,
-    AntiClockwise
-};
-std::string toString (MotorSpinDirection motorSpinDirection);
-std::ostream& operator<<(ostream& os,MotorSpinDirection x)
-{
-    return os << toString(x);
-}
-
-// Status register motor status field
-#define STATUS_MOT_STATUS                0x0060      // field mask
-
-enum MotorStatus
-{
-    STATUS_MOT_STATUS_STOPPED        = (0x0000)<<13, // Motor stopped
-    STATUS_MOT_STATUS_ACCELERATION   = (0x0001)<<13,// Motor accelerating
-    STATUS_MOT_STATUS_DECELERATION   = (0x0002)<<13, // Motor decelerating
-    STATUS_MOT_STATUS_CONST_SPD      = (0x0003)<<13 // Motor at constant speed
-};
-std::string toString (MotorStatus motorStatus);
-std::ostream& operator<<(ostream& os,MotorStatus x)
-{
-    return os << toString(x);
-}
 // Easier higher up to deal with a status struct of bools as opposed to bit&
 struct Status
 {
@@ -291,6 +292,7 @@ struct Status
     bool isBusy;
     bool isSwitchClosed;
     bool switchEventDetected;
+    bool stepClockActive;
 
     // Command Execution State
     bool performedLastCommand;
@@ -303,12 +305,13 @@ struct Status
     bool stallDetectedPhaseA;
     bool stallDetectedPhaseB;
 
-    bool stepClockActive;
-
     // Motor State
     MotorSpinDirection spinDirection;
     MotorStatus        motorStatus;
 
+    // Speed and Position
+    long position; // steps from home
+    long speed; // steps/s
 };
 std::string toString (Status status);
 std::ostream& operator<<(ostream& os,Status x)

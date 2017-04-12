@@ -21,7 +21,7 @@ void AutoDriver::configSyncPin(uint8_t pinFunc, uint8_t syncSteps)
 
 // The dSPIN chip supports microstepping for a smoother ride. This function
 //  provides an easy front end for changing the microstepping mode.
-void AutoDriver::configStepMode(uint8_t stepMode)
+void AutoDriver::configStepMode(StepMode stepMode)
 {
 
   // Only some of these bits are useful (the lower three). We'll extract the
@@ -37,7 +37,7 @@ void AutoDriver::configStepMode(uint8_t stepMode)
   setParam(STEP_MODE, (unsigned long)stepModeConfig);
 }
 
-uint8_t AutoDriver::getStepMode() {
+StepMode AutoDriver::getStepMode() {
   return (uint8_t)(getParam(STEP_MODE) & 0x07);
 }
 
@@ -118,12 +118,12 @@ float AutoDriver::getDec()
   return accParse(getParam(DECEL));
 }
 
-void AutoDriver::setOCThreshold(uint8_t threshold)
+void AutoDriver::setOCThreshold(OverCurrentThreshold ocThreshold)
 {
-  setParam(OCD_TH, 0x0F & threshold);
+  setParam(OCD_TH, 0x0F & ocThreshold);
 }
 
-uint8_t AutoDriver::getOCThreshold()
+OverCurrentThreshold AutoDriver::getOCThreshold()
 {
   return (uint8_t) (getParam(OCD_TH) & 0xF);
 }
@@ -136,7 +136,7 @@ uint8_t AutoDriver::getOCThreshold()
 //  Divisors of 1-7 are available; multipliers of .625-2 are available. See
 //  datasheet for more details; it's not clear what the frequency being
 //  multiplied/divided here is, but it is clearly *not* the actual clock freq.
-void AutoDriver::setPWMFreq(int divisor, int multiplier)
+void AutoDriver::setPWMFreq(PwmFrequencyDivider divider, PwmFrequencyMultiplier multiplier)
 {
   unsigned long configVal = getParam(CONFIG);
   
@@ -145,22 +145,22 @@ void AutoDriver::setPWMFreq(int divisor, int multiplier)
   // The multiplier is set by config 12:10; mask is 0x1C00
   configVal &= ~(0x1C00);
   // Now we can OR in the masked-out versions of the values passed in.
-  configVal |= ((0xE000&divisor)|(0x1C00&multiplier));
+  configVal |= ((0xE000&divider)|(0x1C00&multiplier));
   setParam(CONFIG, configVal);
 }
 
-int AutoDriver::getPWMFreqDivisor()
+PwmFrequencyDivider AutoDriver::getPWMFreqDivisor()
 {
   return (int) (getParam(CONFIG) & 0xE000);
 }
 
-int AutoDriver::getPWMFreqMultiplier()
+PwmFrequencyMultiplier AutoDriver::getPWMFreqMultiplier()
 {
   return (int) (getParam(CONFIG) & 0x1C00);
 }
 
 // Slew rate of the output in V/us. Can be 180, 290, or 530.
-void AutoDriver::setSlewRate(int slewRate)
+void AutoDriver::setSlewRate(SlewRate slewRate)
 {
   unsigned long configVal = getParam(CONFIG);
   
@@ -171,30 +171,30 @@ void AutoDriver::setSlewRate(int slewRate)
   setParam(CONFIG, configVal);
 }
 
-int AutoDriver::getSlewRate()
+SlewRate AutoDriver::getSlewRate()
 {
   return (int) (getParam(CONFIG) & 0x0300);
 }
 
 // Single bit- do we shutdown the drivers on overcurrent or not?
-void AutoDriver::setOCShutdown(int OCShutdown)
+void AutoDriver::setOCShutdown(OverCurrentDetection overCurrentDetection)
 {
   unsigned long configVal = getParam(CONFIG);
   // This bit is CONFIG 7, mask is 0x0080
   configVal &= ~(0x0080);
   //Now, OR in the masked incoming value.
-  configVal |= (0x0080&OCShutdown);
+  configVal |= (0x0080&overCurrentDetection);
   setParam(CONFIG, configVal);
 }
 
-int AutoDriver::getOCShutdown()
+OverCurrentDetection AutoDriver::getOCShutdown()
 {
   return (int) (getParam(CONFIG) & 0x0080);
 }
 
 // Enable motor voltage compensation? Not at all straightforward- check out
 //  p34 of the datasheet.
-void AutoDriver::setVoltageComp(int vsCompMode)
+void AutoDriver::setVoltageComp(VoltageCompensation vsCompMode)
 {
   unsigned long configVal = getParam(CONFIG);
   // This bit is CONFIG 5, mask is 0x0020
@@ -204,14 +204,14 @@ void AutoDriver::setVoltageComp(int vsCompMode)
   setParam(CONFIG, configVal);
 }
 
-int AutoDriver::getVoltageComp()
+VoltageCompensation AutoDriver::getVoltageComp()
 {
   return (int) (getParam(CONFIG) & 0x0020);
 }
 
 // The switch input can either hard-stop the driver _or_ activate an interrupt.
 //  This bit allows you to select what it does.
-void AutoDriver::setSwitchMode(int switchMode)
+void AutoDriver::setSwitchMode(SwitchConfiguration switchMode)
 {
   unsigned long configVal = getParam(CONFIG);
   // This bit is CONFIG 4, mask is 0x0010
@@ -221,7 +221,7 @@ void AutoDriver::setSwitchMode(int switchMode)
   setParam(CONFIG, configVal);
 }
 
-int AutoDriver::getSwitchMode()
+SwitchConfiguration AutoDriver::getSwitchMode()
 {
   return (int) (getParam(CONFIG) & 0x0010);
 }
@@ -232,7 +232,7 @@ int AutoDriver::getSwitchMode()
 //  frequency you want to drive it; practically, this library assumes it's
 //  being driven at 16MHz. Also, the device will use these bits to set the
 //  math used to figure out steps per second and stuff like that.
-void AutoDriver::setOscMode(int oscillatorMode)
+void AutoDriver::setOscMode(OscillatorSelect oscillatorMode)
 {
   unsigned long configVal = getParam(CONFIG);
   // These bits are CONFIG 3:0, mask is 0x000F
@@ -242,7 +242,7 @@ void AutoDriver::setOscMode(int oscillatorMode)
   setParam(CONFIG, configVal);
 }
 
-int AutoDriver::getOscMode()
+OscillatorSelect AutoDriver::getOscMode()
 {
   return (int) (getParam(CONFIG) & 0x000F);
 }
