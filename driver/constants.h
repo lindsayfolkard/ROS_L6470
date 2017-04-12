@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 // Constant definitions provided by ST
 
 // constant definitions for overcurrent thresholds. Write these values to 
@@ -23,7 +25,11 @@ enum OverCurrentThreshold
     OCD_TH_5625m = 0x0E,
     OCD_TH_6000m = 0x0F
 };
-std::string toString(OverCurrentThreshold OverCurrentThreshold);
+std::string toString(OverCurrentThreshold overCurrentThreshold);
+std::ostream& operator<<(ostream& os, OverCurrentThreshold overCurrentThreshold)
+{
+    return os << toString(overCurrentThreshold);
+}
 
 // STEP_MODE option values.
 // First comes the "microsteps per step" options...
@@ -42,6 +48,10 @@ enum StepMode
 
 };
 std::string toString(StepMode stepMode);
+std::ostream& operator<<(ostream& os, StepMode stepMode)
+{
+    return os << toString(stepMode);
+}
 
 // ...next, define the SYNC_EN bit. When set, the BUSYN pin will instead
 //  output a clock related to the full-step frequency as defined by the
@@ -52,7 +62,7 @@ std::string toString(StepMode stepMode);
 // ...last, define the SYNC_SEL modes. The clock output is defined by
 //  the full-step frequency and the value in these bits- see the datasheet
 //  for a matrix describing that relationship (page 46).
-#define STEP_MODE_SYNC_SEL_\ 0x70
+#define STEP_MODE_SYNC_SEL_ 0x70
 
 enum SyncSelect
 {
@@ -66,6 +76,10 @@ enum SyncSelect
     SYNC_SEL_64  = 0x70
 };
 std::string toString(SyncSelect syncSelect);
+std::ostream& operator<<(ostream& os,SyncSelect syncSelect)
+{
+    return os << toString(syncSelect);
+}
 
 // Bit names for the ALARM_EN register.
 //  Each of these bits defines one potential alarm condition.
@@ -96,6 +110,10 @@ struct AlarmState
     bool badCommandEnabled;
 };
 std::string toString(AlarmState alarmState);
+std::ostream& operator<<(ostream& os,AlarmState alarmState)
+{
+    return os << toString(alarmState);
+}
 
 // CONFIG register renames.
 
@@ -121,6 +139,10 @@ enum OscillatorSelect
     CONFIG_EXT_32MHZ_OSCOUT_INVERT  = 0x000F   // External 32MHz crystal, output inverted
 };
 std::string toString(OscillatorSelect oscillatorSelect);
+std::ostream& operator<<(ostream& os,OscillatorSelect oscillatorSelect)
+{
+    return os << toString(oscillatorSelect);
+}
 
 // Configure the functionality of the external switch input
 #define CONFIG_SW_MODE                 0x0010 // Mask for this bit.
@@ -133,6 +155,10 @@ enum SwitchConfiguration
     //  See page 25 of datasheet.
 };
 std::string toString(SwitchConfiguration switchConfiguration);
+std::ostream& operator<<(ostream& os,SwitchConfiguration switchConfiguration)
+{
+    return os << toString(switchConfiguration);
+}
 
 // Configure the motor voltage compensation mode (see page 34 of datasheet)
 #define CONFIG_EN_VSCOMP               0x0020  // Mask for this bit.
@@ -142,6 +168,10 @@ enum VoltageCompensation
     CONFIG_VS_COMP_ENABLE  = 0x0020   // Enable motor voltage compensation.
 };
 std::string toString(VoltageCompensation voltageCompensation);
+std::ostream& operator<<(ostream& os,VoltageCompensation voltageCompensation)
+{
+    return os << toString(voltageCompensation);
+}
 
 // Configure overcurrent detection event handling
 #define CONFIG_OC_SD                   0x0080  // Mask for this bit.
@@ -151,6 +181,10 @@ enum OverCurrentDetection
     CONFIG_OC_SD_ENABLE  = 0x0080    // Bridges shutdown on OC detect
 };
 std::string toString(OverCurrentDetection overCurrentDetection);
+std::ostream& operator<<(ostream& os,OverCurrentDetection x)
+{
+    return os << toString(x);
+}
 
 // Configure the slew rate of the power bridge output
 #define CONFIG_POW_SR                  0x0300  // Mask for this bit field.
@@ -161,6 +195,10 @@ enum SlewRate
     CONFIG_SR_530V_us = 0x0300  // 530V/us
 };
 std::string toString(SlewRate slewRate);
+std::ostream& operator<<(ostream& os,SlewRate x)
+{
+    return os << toString(x);
+}
 
 // Integer divisors for PWM sinewave generation
 //  See page 32 of the datasheet for more information on this.
@@ -176,11 +214,14 @@ enum PwmFrequencyMultiplier
     CONFIG_PWM_MUL_1_75             = (0x06)<<10,
     CONFIG_PWM_MUL_2                = (0x07)<<10
 };
-std::string toString(PwmWaveMultiplier pwmWaveMultiplier);
+std::string toString(PwmFrequencyMultiplier pwmFrequencyMultiplier);
+std::ostream& operator<<(ostream& os,PwmFrequencyMultiplier x)
+{
+    return os << toString(x);
+}
 
 // Multiplier for the PWM sinewave frequency
 #define CONFIG_F_PWM_INT               0xE000     // mask for this bit field.
-
 enum PwmFrequencyDivider
 {
     CONFIG_PWM_DIV_1                = (0x00)<<13,
@@ -191,7 +232,11 @@ enum PwmFrequencyDivider
     CONFIG_PWM_DIV_6                = (0x05)<<13,
     CONFIG_PWM_DIV_7                = (0x06)<<13
 };
-std::string toString (PwmFrequency pwmFrequency);
+std::string toString (PwmFrequencyDivider pwmFrequency);
+std::ostream& operator<<(ostream& os,PwmFrequencyDivider x)
+{
+    return os << toString(x);
+}
 
 // Status register bit renames- read-only bits conferring information about the
 //  device to the user.
@@ -218,6 +263,10 @@ enum MotorSpinDirection
     AntiClockwise
 };
 std::string toString (MotorSpinDirection motorSpinDirection);
+std::ostream& operator<<(ostream& os,MotorSpinDirection x)
+{
+    return os << toString(x);
+}
 
 // Status register motor status field
 #define STATUS_MOT_STATUS                0x0060      // field mask
@@ -230,7 +279,10 @@ enum MotorStatus
     STATUS_MOT_STATUS_CONST_SPD      = (0x0003)<<13 // Motor at constant speed
 };
 std::string toString (MotorStatus motorStatus);
-
+std::ostream& operator<<(ostream& os,MotorStatus x)
+{
+    return os << toString(x);
+}
 // Easier higher up to deal with a status struct of bools as opposed to bit&
 struct Status
 {
@@ -259,6 +311,10 @@ struct Status
 
 };
 std::string toString (Status status);
+std::ostream& operator<<(ostream& os,Status x)
+{
+    return os << toString(x);
+}
 
 // Register address redefines.
 //  See the Param_Handler() function for more info about these.
@@ -291,6 +347,10 @@ enum ParamRegister
     STATUS                = 0x19
 };
 std::string toString(ParamRegister paramRegister);
+std::ostream& operator<<(ostream& os,ParamRegister x)
+{
+    return os << toString(x);
+}
 
 //dSPIN commands
 enum Command
@@ -316,12 +376,18 @@ enum Command
     GET_STATUS            = 0xD0
 };
 std::string toString(Command command);
-
+std::ostream& operator<<(ostream& os,Command x)
+{
+    return os << toString(x);
+}
 
 // General Static Config (meant to be set once at the start and then not really again)
 // NB: valid parameters are always positive. A negative parameter is interpreted as do not set/read.
 struct Config
 {
+    // Default constructor with known good values
+    Config();
+
     int fullStepThresholdSpeed;
 
     int holdingKVal;
@@ -332,7 +398,7 @@ struct Config
     int intersectSpeed;
     int startSlope;
     int accelFinalSlope;
-    int declFinalSlope;
+    int decelFinalSlope;
 
     int thermalDriftCoefficient;
     int adcReading;
@@ -345,9 +411,6 @@ struct Config
     SyncSelect syncSelect;
     bool syncEnable;
 
-    // Alarm Register Settings
-    AlarmState alarmState;
-
     // CONFIG register settings
     OscillatorSelect oscillatorSelect;
     SwitchConfiguration switchConfiguration;
@@ -356,8 +419,15 @@ struct Config
     VoltageCompensation voltageCompensation;
     PwmFrequencyMultiplier pwmFrequencyMultiplier;
     PwmFrequencyDivider    pwmFrequencyDivider;
+
+    // Alarm Register Settings
+    AlarmState alarmState;
 };
-std::string toString(const Config &config);
+std::string toString(const Config &cfg);
+std::ostream& operator<<(ostream& os,const Config &x)
+{
+    return os << toString(x);
+}
 
 // It is expected during normal operation that these configs will be
 // changed several times on the fly
@@ -369,3 +439,7 @@ struct ProfileCfg
     int minSpeed; // steps/s
 };
 std::string toString(const ProfileCfg &profileCfg);
+std::ostream& operator<<(ostream& os,const ProfileCfg &x)
+{
+    return os << toString(x);
+}
