@@ -26,6 +26,8 @@ int main (int argc, char ** argv)
 
     // Let's try to do some simple shit
     cout << "Status : " << driver.getStatus() << std::endl;
+    driver.softHiZ();
+    cout << "Status : " << driver.getStatus() << std::endl;
 
     //    // Read the config back
 

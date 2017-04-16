@@ -237,7 +237,8 @@ Status AutoDriver::getStatus()
 {
   int temp = 0;
   uint8_t* bytePointer = (uint8_t*)&temp;
-  SPIXfer(GET_STATUS);
+  uint8_t temp1 = SPIXfer(GET_STATUS);
+  std::cout << "Debug - value of temp1 is " << temp1 << std::endl;
   bytePointer[1] = SPIXfer(0);
   bytePointer[0] = SPIXfer(0);
 
@@ -475,7 +476,8 @@ AutoDriver::SPIXfer(uint8_t data)
 
   sendPacket[_position] = data;
   mraa::Result result = _SPI->transfer(sendPacket,recvPacket,_numBoards);
-  std::cout << "REsult from transfer is " << result << std::endl;
-  std::cout << "return value is " << recvPacket[_position] << std::endl;
+  std::cout << "Transfer byte " << (int) sendPacket[_position] << std::endl;
+  std::cout << "Result from transfer is " << (int) result << std::endl;
+  std::cout << "return value is " << (int) recvPacket[_position] << std::endl;
   return recvPacket[_position];
 }
