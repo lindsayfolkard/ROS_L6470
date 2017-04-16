@@ -36,7 +36,7 @@ int main (int argc, char ** argv)
     cout << "Position : " << driver.getPos() << std::endl;
 
     // Fuck it let's try to move
-    driver.move(Forward,5000);
+    driver.move(Forward,50000);
     //    // Read the config back
 
     //    printMenu();
