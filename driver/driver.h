@@ -77,7 +77,6 @@ class AutoDriver
     void softHiZ();
     void hardHiZ();
 
-
     /////////////////////////
     /// Raw Access Set/Get Commands
     ////////////////////////

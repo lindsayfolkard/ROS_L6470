@@ -29,6 +29,12 @@ int main (int argc, char ** argv)
     driver.softHiZ();
     cout << "Status : " << driver.getStatus() << std::endl;
 
+    // Lets get position
+    cout << "Position : " << driver.getPos() << std::endl;
+    cout << "Config   : " << driver.getConfig() << std::endl;
+    driver.resetPos();
+    cout << "Position : " << driver.getPos() << std::endl;
+
     //    // Read the config back
 
     //    printMenu();
