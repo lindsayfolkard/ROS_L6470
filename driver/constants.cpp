@@ -273,7 +273,7 @@ std::string toString(const Config &cfg)
     //ss << "thermalDriftCoefficient : " << cfg.thermalDriftCoefficient << std::endl;
 
     ss << "overCurrentThreshold    : " << cfg.overCurrentThreshold << std::endl;
-    ss << "stallThreshold          : " << cfg.stallThreshold << std::endl;
+    //ss << "stallThreshold          : " << cfg.stallThreshold << std::endl;
 
     ss << "stepMode                : " << cfg.stepMode << std::endl;
     //ss << "syncSelect              : " << cfg.syncSelect << std::endl;
