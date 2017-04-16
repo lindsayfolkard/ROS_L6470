@@ -1,21 +1,25 @@
 #include "driver.h"
+#include <iostream>
 
 //commands.ino - Contains high-level command implementations- movement
 //   and configuration commands, for example.
 
 // Realize the "set parameter" function, to write to the various registers in
 //  the dSPIN chip.
-void AutoDriver::setParam(uint8_t param, unsigned long value)
+void AutoDriver::setParam(ParamRegister param, unsigned long value)
 {
-  param |= SET_PARAM;
-  SPIXfer((uint8_t)param);
-  paramHandler(param, value);
+  uint8_t sendByte=SET_PARAM;
+  sendByte |= param;
+  SPIXfer((uint8_t)sendByte);
+  paramHandler(sendByte, value);
 }
 
 // Realize the "get parameter" function, to read from the various registers in
 //  the dSPIN chip.
 long AutoDriver::getParam(ParamRegister param)
 {
+  uint8_t sendByte=GET_PARAM;
+  sendByte |= param;
   SPIXfer(param | GET_PARAM);
   return paramHandler(param, 0);
 }
@@ -55,7 +59,7 @@ long AutoDriver::getMark()
 //  appropriate integer values for this function.
 void AutoDriver::run(MotorSpinDirection direction, float stepsPerSec)
 {
-  SPIXfer(RUN | dir);
+  SPIXfer(RUN | direction);
   unsigned long integerSpeed = spdCalc(stepsPerSec);
   if (integerSpeed > 0xFFFFF) integerSpeed = 0xFFFFF;
   
@@ -135,7 +139,7 @@ void AutoDriver::goToDir(MotorSpinDirection direction, long pos)
 //  performed at the falling edge, and depending on the value of
 //  act (either RESET or COPY) the value in the ABS_POS register is
 //  either RESET to 0 or COPY-ed into the MARK register.
-void AutoDriver::goUntil(uint8_t action, MotorSpinDirection direction, float stepsPerSec)
+void AutoDriver::goUntil(MotorSpinDirection direction, float stepsPerSec, Action action)
 {
   SPIXfer(GO_UNTIL | action | direction);
   unsigned long integerSpeed = spdCalc(stepsPerSec);
@@ -229,14 +233,39 @@ void AutoDriver::hardHiZ()
 // Fetch and return the 16-bit value in the STATUS register. Resets
 //  any warning flags and exits any error states. Using GetParam()
 //  to read STATUS does not clear these values.
-int AutoDriver::getStatus()
+Status AutoDriver::getStatus()
 {
   int temp = 0;
   uint8_t* bytePointer = (uint8_t*)&temp;
   SPIXfer(GET_STATUS);
   bytePointer[1] = SPIXfer(0);
   bytePointer[0] = SPIXfer(0);
-  return temp;
+
+  // TODO abstract to a nicer functions
+  uint16_t statusValue = bytePointer[0] + 0xFF*bytePointer[1];
+
+  // Parse the status
+  Status status;
+  status.isHighZ = statusValue & STATUS_HIZ;
+  status.isBusy  = statusValue & STATUS_BUSY;
+  status.isSwitchClosed = statusValue & STATUS_SW_F;
+  status.switchEventDetected = statusValue & STATUS_SW_EVN;
+
+  status.performedLastCommand = !(statusValue & STATUS_NOTPERF_CMD);
+  status.lastCommandInvalid   = statusValue & STATUS_WRONG_CMD;
+
+  status.hasThermalWarning = statusValue & STATUS_TH_WRN;
+  status.isInThermalShutdown = statusValue & STATUS_TH_SD;
+  status.overCurrentDetected = statusValue & STATUS_OCD;
+  status.stallDetectedPhaseA = statusValue & STATUS_STEP_LOSS_A;
+  status.stallDetectedPhaseB = statusValue & STATUS_STEP_LOSS_B;
+
+  status.spinDirection = static_cast <MotorSpinDirection> (statusValue & STATUS_DIR);
+  status.motorStatus   = static_cast <MotorStatus> (statusValue & STATUS_MOT_STATUS);
+
+  // TODO - speed and position
+
+  return status;
 }
 
 // Much of the functionality between "get parameter" and "set parameter" is
@@ -435,16 +464,17 @@ AutoDriver::xferParam(unsigned long value, uint8_t bitLen)
 uint8_t
 AutoDriver::SPIXfer(uint8_t data)
 {
-    //  uint8_t dataPacket[_numBoards];
-    //  int i;
-    //  for (i=0; i < _numBoards; i++)
-    //  {
-    //    dataPacket[i] = 0;
-    //  }
-    //  dataPacket[_position] = data;
-  //_SPI->transfer(dataPacket, _numBoards);
-  //_SPI->endTransaction();
-  //digitalWrite(_CSPin, HIGH);
-  //return dataPacket[_position];
-    return _SPI->writeByte(data);
-}s
+  uint8_t sendPacket[_numBoards];
+  uint8_t recvPacket[_numBoards];
+
+  int i;
+  for (i=0; i < _numBoards; i++)
+  {
+    sendPacket[i] = NOP;
+  }
+
+  sendPacket[_position] = data;
+  mraa::Result result = _SPI->transfer(sendPacket,recvPacket,_numBoards);
+  std::cout << "REsult from transfer is " << result << std::endl;
+  return recvPacket[_position];
+}

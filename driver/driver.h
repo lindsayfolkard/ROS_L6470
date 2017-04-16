@@ -6,6 +6,12 @@
 #include <memory>
 #include <stdint.h>
 
+enum Action
+{
+    Action_Reset_AbsPos = 0x00,
+    Action_Copy_AbsPos  = 0x08
+};
+
 class AutoDriver
 {
   public:
@@ -14,8 +20,7 @@ class AutoDriver
     /// Constructors
     /////////////////////////
 
-    AutoDriver(int position, int CSPin, int resetPin, int busyPin);
-    AutoDriver(int position, int CSPin, int resetPin);
+    AutoDriver(int position, int CSPin, int resetPin, int busyPin = -1);
     
     /////////////////////////
     /// Status Commands
@@ -93,6 +98,7 @@ class AutoDriver
     void setVoltageComp(VoltageCompensation vsCompMode);
     void setSwitchMode(SwitchConfiguration switchMode);
     void setOscMode(OscillatorSelect oscillatorMode);
+    void setAlarmState(AlarmState alarmState);
 
     void setAccKVAL(uint8_t kvalInput);
     void setDecKVAL(uint8_t kvalInput);
@@ -155,12 +161,6 @@ class AutoDriver
 //    releaseSw()
 //#define RESET_ABSPOS  0x00
 //#define COPY_ABSPOS   0x08
-
-enum Action
-{
-    Action_Reset_AbsPos = 0x00,
-    Action_Copy_AbsPos  = 0x08
-};
 
 /// #TODO - make pin mapping dynamic as we cannot know in advance how someone would use it in reality.
 // configSyncPin() options: the !BUSY/SYNC pin can be configured to be low when

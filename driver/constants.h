@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
 #include <iostream>
 
@@ -6,6 +7,7 @@
 
 // constant definitions for overcurrent thresholds. Write these values to 
 //  register OCD_TH to set the level at which an overcurrent even occurs.
+#define CONFIG_OC_THRESOLD_REG 0XF
 enum OverCurrentThreshold
 {
     OCD_TH_375m =  0x00,
@@ -26,7 +28,7 @@ enum OverCurrentThreshold
     OCD_TH_6000m = 0x0F
 };
 std::string toString(OverCurrentThreshold overCurrentThreshold);
-inline std::ostream& operator<<(ostream& os, OverCurrentThreshold overCurrentThreshold)
+inline std::ostream& operator<<(std::ostream& os, OverCurrentThreshold overCurrentThreshold)
 {
     return os << toString(overCurrentThreshold);
 }
@@ -48,7 +50,7 @@ enum StepMode
 
 };
 std::string toString(StepMode stepMode);
-inline std::ostream& operator<<(ostream& os, StepMode stepMode)
+inline std::ostream& operator<<(std::ostream& os, StepMode stepMode)
 {
     return os << toString(stepMode);
 }
@@ -57,7 +59,7 @@ inline std::ostream& operator<<(ostream& os, StepMode stepMode)
 //  output a clock related to the full-step frequency as defined by the
 //  SYNC_SEL bits below.
 #define STEP_MODE_SYNC_EN	 0x80  // Mask for this bit
-#define SYNC_EN 0x80
+//#define SYNC_EN 0x80
 
 // ...last, define the SYNC_SEL modes. The clock output is defined by
 //  the full-step frequency and the value in these bits- see the datasheet
@@ -76,7 +78,7 @@ enum SyncSelect
     SYNC_SEL_64  = 0x70
 };
 std::string toString(SyncSelect syncSelect);
-inline std::ostream& operator<<(ostream& os,SyncSelect syncSelect)
+inline std::ostream& operator<<(std::ostream& os,SyncSelect syncSelect)
 {
     return os << toString(syncSelect);
 }
@@ -110,7 +112,7 @@ struct AlarmState
     bool badCommandEnabled;
 };
 std::string toString(AlarmState alarmState);
-inline std::ostream& operator<<(ostream& os,AlarmState alarmState)
+inline std::ostream& operator<<(std::ostream& os,AlarmState alarmState)
 {
     return os << toString(alarmState);
 }
@@ -120,7 +122,7 @@ inline std::ostream& operator<<(ostream& os,AlarmState alarmState)
 // Oscillator options.
 // The dSPIN needs to know what the clock frequency is because it uses that for some
 //  calculations during operation.
-#define CONFIG_OSC_SEL                 0x000F // Mask for this bit field.
+#define CONFIG_OSC_SEL_MASK             0x000F // Mask for this bit field.
 
 enum OscillatorSelect
 {
@@ -139,13 +141,13 @@ enum OscillatorSelect
     CONFIG_EXT_32MHZ_OSCOUT_INVERT  = 0x000F   // External 32MHz crystal, output inverted
 };
 std::string toString(OscillatorSelect oscillatorSelect);
-inline std::ostream& operator<<(ostream& os,OscillatorSelect oscillatorSelect)
+inline std::ostream& operator<<(std::ostream& os,OscillatorSelect oscillatorSelect)
 {
     return os << toString(oscillatorSelect);
 }
 
 // Configure the functionality of the external switch input
-#define CONFIG_SW_MODE 0x0010 // Mask for this bit.
+#define CONFIG_SW_MODE_MASK 0x0010 // Mask for this bit.
 enum SwitchConfiguration
 {
     CONFIG_SW_HARD_STOP = 0x0000, // Default; hard stop motor on switch.
@@ -155,39 +157,39 @@ enum SwitchConfiguration
     //  See page 25 of datasheet.
 };
 std::string toString(SwitchConfiguration switchConfiguration);
-inline std::ostream& operator<<(ostream& os,SwitchConfiguration switchConfiguration)
+inline std::ostream& operator<<(std::ostream& os,SwitchConfiguration switchConfiguration)
 {
     return os << toString(switchConfiguration);
 }
 
 // Configure the motor voltage compensation mode (see page 34 of datasheet)
-#define CONFIG_EN_VSCOMP               0x0020  // Mask for this bit.
+#define CONFIG_EN_VSCOMP_MASK               0x0020  // Mask for this bit.
 enum VoltageCompensation
 {
     CONFIG_VS_COMP_DISABLE = 0x0000,  // Disable motor voltage compensation.
     CONFIG_VS_COMP_ENABLE  = 0x0020   // Enable motor voltage compensation.
 };
 std::string toString(VoltageCompensation voltageCompensation);
-inline std::ostream& operator<<(ostream& os,VoltageCompensation voltageCompensation)
+inline std::ostream& operator<<(std::ostream& os,VoltageCompensation voltageCompensation)
 {
     return os << toString(voltageCompensation);
 }
 
 // Configure overcurrent detection event handling
-#define CONFIG_OC_SD                   0x0080  // Mask for this bit.
+#define CONFIG_OC_DETECTION_MASK                   0x0080  // Mask for this bit.
 enum OverCurrentDetection
 {
     CONFIG_OC_SD_DISABLE = 0x0000,   // Bridges do NOT shutdown on OC detect
     CONFIG_OC_SD_ENABLE  = 0x0080    // Bridges shutdown on OC detect
 };
 std::string toString(OverCurrentDetection overCurrentDetection);
-inline std::ostream& operator<<(ostream& os,OverCurrentDetection x)
+inline std::ostream& operator<<(std::ostream& os,OverCurrentDetection x)
 {
     return os << toString(x);
 }
 
 // Configure the slew rate of the power bridge output
-#define CONFIG_POW_SR                  0x0300  // Mask for this bit field.
+#define CONFIG_SLEW_RATE_MASK                  0x0300  // Mask for this bit field.
 enum SlewRate
 {
     CONFIG_SR_180V_us = 0x0000, // 180V/us
@@ -195,7 +197,7 @@ enum SlewRate
     CONFIG_SR_530V_us = 0x0300  // 530V/us
 };
 std::string toString(SlewRate slewRate);
-inline std::ostream& operator<<(ostream& os,SlewRate x)
+inline std::ostream& operator<<(std::ostream& os,SlewRate x)
 {
     return os << toString(x);
 }
@@ -205,17 +207,17 @@ inline std::ostream& operator<<(ostream& os,SlewRate x)
 #define CONFIG_F_PWM_DEC               0x1C00      // mask for this bit field
 enum PwmFrequencyMultiplier
 {
-    CONFIG_PWM_MUL_0_625            = (0x00)<<10,
-    CONFIG_PWM_MUL_0_75             = (0x01)<<10,
-    CONFIG_PWM_MUL_0_875            = (0x02)<<10,
-    CONFIG_PWM_MUL_1                = (0x03)<<10,
-    CONFIG_PWM_MUL_1_25             = (0x04)<<10,
-    CONFIG_PWM_MUL_1_5              = (0x05)<<10,
-    CONFIG_PWM_MUL_1_75             = (0x06)<<10,
-    CONFIG_PWM_MUL_2                = (0x07)<<10
+    CONFIG_PWM_MUL_0_625  = (0x00)<<10,
+    CONFIG_PWM_MUL_0_75   = (0x01)<<10,
+    CONFIG_PWM_MUL_0_875  = (0x02)<<10,
+    CONFIG_PWM_MUL_1      = (0x03)<<10,
+    CONFIG_PWM_MUL_1_25   = (0x04)<<10,
+    CONFIG_PWM_MUL_1_5    = (0x05)<<10,
+    CONFIG_PWM_MUL_1_75   = (0x06)<<10,
+    CONFIG_PWM_MUL_2      = (0x07)<<10
 };
 std::string toString(PwmFrequencyMultiplier pwmFrequencyMultiplier);
-inline std::ostream& operator<<(ostream& os,PwmFrequencyMultiplier x)
+inline std::ostream& operator<<(std::ostream& os,PwmFrequencyMultiplier x)
 {
     return os << toString(x);
 }
@@ -224,34 +226,33 @@ inline std::ostream& operator<<(ostream& os,PwmFrequencyMultiplier x)
 #define CONFIG_F_PWM_INT               0xE000     // mask for this bit field.
 enum PwmFrequencyDivider
 {
-    CONFIG_PWM_DIV_1                = (0x00)<<13,
-    CONFIG_PWM_DIV_2                = (0x01)<<13,
-    CONFIG_PWM_DIV_3                = (0x02)<<13,
-    CONFIG_PWM_DIV_4                = (0x03)<<13,
-    CONFIG_PWM_DIV_5                = (0x04)<<13,
-    CONFIG_PWM_DIV_6                = (0x05)<<13,
-    CONFIG_PWM_DIV_7                = (0x06)<<13
+    CONFIG_PWM_DIV_1 = (0x00)<<13,
+    CONFIG_PWM_DIV_2 = (0x01)<<13,
+    CONFIG_PWM_DIV_3 = (0x02)<<13,
+    CONFIG_PWM_DIV_4 = (0x03)<<13,
+    CONFIG_PWM_DIV_5 = (0x04)<<13,
+    CONFIG_PWM_DIV_6 = (0x05)<<13,
+    CONFIG_PWM_DIV_7 = (0x06)<<13
 };
 std::string toString (PwmFrequencyDivider pwmFrequency);
-inline std::ostream& operator<<(ostream& os,PwmFrequencyDivider x)
+inline std::ostream& operator<<(std::ostream& os,PwmFrequencyDivider x)
 {
     return os << toString(x);
 }
 
 enum MotorSpinDirection
 {
-    Clockwise,
-    AntiClockwise
+    Reverse=0x00,
+    Forward=0x01
 };
 std::string toString (MotorSpinDirection motorSpinDirection);
-inline std::ostream& operator<<(ostream& os,MotorSpinDirection x)
+inline std::ostream& operator<<(std::ostream& os,MotorSpinDirection x)
 {
     return os << toString(x);
 }
 
 // Status register motor status field
 #define STATUS_MOT_STATUS                0x0060      // field mask
-
 enum MotorStatus
 {
     STATUS_MOT_STATUS_STOPPED        = (0x0000)<<13, // Motor stopped
@@ -260,7 +261,7 @@ enum MotorStatus
     STATUS_MOT_STATUS_CONST_SPD      = (0x0003)<<13 // Motor at constant speed
 };
 std::string toString (MotorStatus motorStatus);
-inline std::ostream& operator<<(ostream& os,MotorStatus x)
+inline std::ostream& operator<<(std::ostream& os,MotorStatus x)
 {
     return os << toString(x);
 }
@@ -313,8 +314,8 @@ struct Status
     long position; // steps from home
     long speed; // steps/s
 };
-std::string toString (Status status);
-std::ostream& operator<<(ostream& os,Status x)
+std::string toString (Status &status);
+inline std::ostream& operator<<(std::ostream& os,Status x)
 {
     return os << toString(x);
 }
@@ -350,7 +351,7 @@ enum ParamRegister
     STATUS                = 0x19
 };
 std::string toString(ParamRegister paramRegister);
-std::ostream& operator<<(ostream& os,ParamRegister x)
+inline std::ostream& operator<<(std::ostream& os,ParamRegister x)
 {
     return os << toString(x);
 }
@@ -379,7 +380,7 @@ enum Command
     GET_STATUS            = 0xD0
 };
 std::string toString(Command command);
-std::ostream& operator<<(ostream& os,Command x)
+inline std::ostream& operator<<(std::ostream& os,Command x)
 {
     return os << toString(x);
 }
@@ -389,7 +390,7 @@ std::ostream& operator<<(ostream& os,Command x)
 struct Config
 {
     // Default constructor with known good values
-    Config();
+    //Config();
 
     int fullStepThresholdSpeed;
 
@@ -427,7 +428,7 @@ struct Config
     AlarmState alarmState;
 };
 std::string toString(const Config &cfg);
-std::ostream& operator<<(ostream& os,const Config &x)
+inline std::ostream& operator<<(std::ostream& os,const Config &x)
 {
     return os << toString(x);
 }
@@ -436,13 +437,14 @@ std::ostream& operator<<(ostream& os,const Config &x)
 // changed several times on the fly
 struct ProfileCfg
 {
-    int acceleration; // steps/s^2
-    int deceleration; // steps/s^2
-    int maxSpeed; // steps/s
-    int minSpeed; // steps/s
+    float acceleration; // steps/s^2
+    float deceleration; // steps/s^2
+    float maxSpeed; // steps/s
+    float minSpeed; // steps/s
 };
 std::string toString(const ProfileCfg &profileCfg);
-std::ostream& operator<<(ostream& os,const ProfileCfg &x)
+inline std::ostream& operator<<(std::ostream& os,const ProfileCfg &x)
 {
     return os << toString(x);
 }
+#endif

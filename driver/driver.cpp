@@ -1,4 +1,5 @@
 #include "driver.h"
+#include <mraa.hpp>
 
 int AutoDriver::_numBoards;
 
@@ -10,23 +11,11 @@ AutoDriver::AutoDriver(int position, int CSPin, int resetPin, int busyPin)
   _resetPin = resetPin;
   _busyPin = busyPin;
   _numBoards++;
-  //_SPI = &SPI;
-}
 
-AutoDriver::AutoDriver(int position, int CSPin, int resetPin)
-{
-  _CSPin = CSPin;
-  _position = position;
-  _resetPin = resetPin;
-  _busyPin = -1;
-  _numBoards++;
-  //_SPI = &SPI;
-}
-
-void
-AutoDriver::SPIPortConnect(std::unique_ptr<mraa::Spi> SPIPort)
-{
-  _SPI = std::move(SPIPort);
+  // Try to initialise the mraa::SPI port
+  _SPI.reset(new mraa::Spi(0));
+  _SPI->mode(mraa::SPI_MODE3);
+  _SPI->frequency(4000000); // Can this be a bit higher ?
 }
 
 bool

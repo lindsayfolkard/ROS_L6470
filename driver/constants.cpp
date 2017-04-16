@@ -1,6 +1,6 @@
 #include "constants.h"
-#include <assert>
-#include <stringstream>
+#include <assert.h>
+#include <sstream>
 
 std::string toString(OverCurrentThreshold overCurrentThreshold)
 {
@@ -107,7 +107,7 @@ std::string toString(OscillatorSelect oscillatorSelect)
 
 std::string toString(SwitchConfiguration switchConfiguration)
 {
-    switch(SwitchConfiguration)
+    switch(switchConfiguration)
     {
     case CONFIG_SW_HARD_STOP : return "Hard Stop";
     case CONFIG_SW_USER : return "User Stop";
@@ -182,8 +182,8 @@ std::string toString (MotorSpinDirection motorSpinDirection)
 {
     switch(motorSpinDirection)
     {
-    case Clockwise      : return "ClockWise";
-    case AntiClockwise  : return "AntiClockWise";
+    case Forward      : return "Forward";
+    case Reverse      : return "Reverse";
     default: assert(!"Invalid argument");
     }
 };
@@ -200,7 +200,7 @@ std::string toString (MotorStatus motorStatus)
     }
 };
 
-std::string toString (Status status)
+std::string toString (Status &status)
 {
     // General ControllerState
     std::stringstream ss;
@@ -223,7 +223,7 @@ std::string toString (Status status)
 
     // Motor State
     ss << "Motor Spin Direction : " << status.spinDirection << std::endl;
-    ss << "MotorStatus          : " << status.motorStatus << std::end;
+    //ss << "MotorStatus          : " << toString(status.motorStatus) << std::end;
     return ss.str();
 
 };
@@ -233,7 +233,6 @@ std::string toString(Command command)
 {
     switch (command)
     {
-    case NOP                   : return "NOP";
     case SET_PARAM             : return "SET_PARAM";
     case GET_PARAM             : return "GET_PARAM";
     case RUN                   : return "RUN";

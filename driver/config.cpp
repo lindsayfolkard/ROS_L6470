@@ -1,5 +1,88 @@
 #include "driver.h"
 
+void
+AutoDriver::setConfig(const Config &cfg)
+{
+    // TODO - handle comms and multiplicity
+    setHoldKVAL(cfg.holdingKVal);
+    setRunKVAL(cfg.constantSpeedKVal);
+    setAccKVAL(cfg.accelStartingKVal);
+    setDecKVAL(cfg.decelStartingKVal);
+    //setIntesect speed
+    //setStartSlope
+    // setAccfinalSlope
+    // setDecFinalSlope
+    // setTHermalDrift
+    // setADCreaing ?
+    setOCThreshold(cfg.overCurrentThreshold);
+    // setStallThreshold TODO
+    configStepMode(cfg.stepMode);
+    // setSyncSelect?
+    // set synce enable ??
+
+    setOscMode(cfg.oscillatorSelect);
+    setSwitchMode(cfg.switchConfiguration);
+    setOCShutdown(cfg.overCurrentDetection);
+    setSlewRate(cfg.slewRate);
+    setVoltageComp(cfg.voltageCompensation);
+    setPWMFreq(cfg.pwmFrequencyDivider,cfg.pwmFrequencyMultiplier);
+    // setAlarm State
+
+}
+
+Config
+AutoDriver::getConfig()
+{
+    Config config;
+    // config.fullStepThresholdSpeed =
+    config.holdingKVal = getHoldKVAL();
+    config.constantSpeedKVal = getRunKVAL();
+    config.accelStartingKVal = getAccKVAL();
+    config.decelStartingKVal = getDecKVAL();
+
+    // config.intersectSpeed =
+    // config.startSlope =
+    // config.accelFinalSlope =
+    // config.decelFinalSlope =
+    // config.thermalDriftCoefficient =
+    // config.adcReading =
+
+    config.overCurrentThreshold = getOCThreshold();
+    config.overCurrentDetection = getOCShutdown();
+    // config.stallThreshold =
+    config.stepMode = getStepMode();
+    // config.syncSelect =
+    // config.syncEnable =
+    config.oscillatorSelect = getOscMode();
+    config.switchConfiguration = getSwitchMode();
+    config.slewRate = getSlewRate();
+    config.voltageCompensation = getVoltageComp();
+    config.pwmFrequencyDivider = getPWMFreqDivisor();
+    config.pwmFrequencyMultiplier = getPWMFreqMultiplier();
+    // config.alarmState =
+    return config;
+}
+
+void
+AutoDriver::setProfileCfg(const ProfileCfg &cfg)
+{
+    setAcc(cfg.acceleration);
+    setDec(cfg.deceleration);
+    setMaxSpeed(cfg.maxSpeed);
+    setMinSpeed(cfg.minSpeed);
+}
+
+ProfileCfg
+AutoDriver::getProfileCfg()
+{
+    ProfileCfg profileCfg;
+    profileCfg.acceleration = getAcc();
+    profileCfg.deceleration = getDec();
+    profileCfg.maxSpeed = getMaxSpeed();
+    profileCfg.minSpeed = getMinSpeed();
+    return profileCfg;
+}
+
 // Setup the SYNC/BUSY pin to be either SYNC or BUSY, and to a desired
 //  ticks per step level.
 void AutoDriver::configSyncPin(uint8_t pinFunc, uint8_t syncSteps)
@@ -31,14 +114,14 @@ void AutoDriver::configStepMode(StepMode stepMode)
   
   // Now we can OR in the new bit settings. Mask the argument so we don't
   //  accidentally the other bits, if the user sends us a non-legit value.
-  stepModeConfig |= (stepMode&0x07);
+  stepModeConfig |= (stepMode&STEP_MODE_STEP_SEL);
   
   // Now push the change to the chip.
   setParam(STEP_MODE, (unsigned long)stepModeConfig);
 }
 
 StepMode AutoDriver::getStepMode() {
-  return (uint8_t)(getParam(STEP_MODE) & 0x07);
+  return static_cast<StepMode>(getParam(STEP_MODE) & STEP_MODE_STEP_SEL);
 }
 
 // This is the maximum speed the dSPIN will attempt to produce.
@@ -51,7 +134,6 @@ void AutoDriver::setMaxSpeed(float stepsPerSecond)
   // Now, we can set that paramter.
   setParam(MAX_SPEED, integerSpeed);
 }
-
 
 float AutoDriver::getMaxSpeed()
 {
@@ -125,7 +207,7 @@ void AutoDriver::setOCThreshold(OverCurrentThreshold ocThreshold)
 
 OverCurrentThreshold AutoDriver::getOCThreshold()
 {
-  return (uint8_t) (getParam(OCD_TH) & 0xF);
+  return static_cast<OverCurrentThreshold> (getParam(OCD_TH) & CONFIG_OC_THRESOLD_REG);
 }
 
 // The next few functions are all breakouts for individual options within the
@@ -141,22 +223,22 @@ void AutoDriver::setPWMFreq(PwmFrequencyDivider divider, PwmFrequencyMultiplier 
   unsigned long configVal = getParam(CONFIG);
   
   // The divisor is set by config 15:13, so mask 0xE000 to clear them.
-  configVal &= ~(0xE000);
+  configVal &= ~(CONFIG_F_PWM_INT);
   // The multiplier is set by config 12:10; mask is 0x1C00
-  configVal &= ~(0x1C00);
+  configVal &= ~(CONFIG_F_PWM_DEC);
   // Now we can OR in the masked-out versions of the values passed in.
-  configVal |= ((0xE000&divider)|(0x1C00&multiplier));
+  configVal |= ((CONFIG_F_PWM_INT&divider)|(CONFIG_F_PWM_DEC&multiplier));
   setParam(CONFIG, configVal);
 }
 
 PwmFrequencyDivider AutoDriver::getPWMFreqDivisor()
 {
-  return (int) (getParam(CONFIG) & 0xE000);
+  return static_cast<PwmFrequencyDivider> (getParam(CONFIG) & CONFIG_F_PWM_INT);
 }
 
 PwmFrequencyMultiplier AutoDriver::getPWMFreqMultiplier()
 {
-  return (int) (getParam(CONFIG) & 0x1C00);
+  return static_cast<PwmFrequencyMultiplier> (getParam(CONFIG) & CONFIG_F_PWM_DEC);
 }
 
 // Slew rate of the output in V/us. Can be 180, 290, or 530.
@@ -165,15 +247,15 @@ void AutoDriver::setSlewRate(SlewRate slewRate)
   unsigned long configVal = getParam(CONFIG);
   
   // These bits live in CONFIG 9:8, so the mask is 0x0300.
-  configVal &= ~(0x0300);
+  configVal &= ~(CONFIG_SLEW_RATE_MASK);
   //Now, OR in the masked incoming value.
-  configVal |= (0x0300&slewRate);
+  configVal |= (CONFIG_SLEW_RATE_MASK&slewRate);
   setParam(CONFIG, configVal);
 }
 
 SlewRate AutoDriver::getSlewRate()
 {
-  return (int) (getParam(CONFIG) & 0x0300);
+  return static_cast<SlewRate> (getParam(CONFIG) & CONFIG_SLEW_RATE_MASK);
 }
 
 // Single bit- do we shutdown the drivers on overcurrent or not?
@@ -181,15 +263,15 @@ void AutoDriver::setOCShutdown(OverCurrentDetection overCurrentDetection)
 {
   unsigned long configVal = getParam(CONFIG);
   // This bit is CONFIG 7, mask is 0x0080
-  configVal &= ~(0x0080);
+  configVal &= ~(CONFIG_OC_DETECTION_MASK);
   //Now, OR in the masked incoming value.
-  configVal |= (0x0080&overCurrentDetection);
+  configVal |= (CONFIG_OC_DETECTION_MASK&overCurrentDetection);
   setParam(CONFIG, configVal);
 }
 
 OverCurrentDetection AutoDriver::getOCShutdown()
 {
-  return (int) (getParam(CONFIG) & 0x0080);
+  return static_cast<OverCurrentDetection> (getParam(CONFIG) & CONFIG_OC_DETECTION_MASK);
 }
 
 // Enable motor voltage compensation? Not at all straightforward- check out
@@ -198,15 +280,15 @@ void AutoDriver::setVoltageComp(VoltageCompensation vsCompMode)
 {
   unsigned long configVal = getParam(CONFIG);
   // This bit is CONFIG 5, mask is 0x0020
-  configVal &= ~(0x0020);
+  configVal &= ~(CONFIG_EN_VSCOMP_MASK);
   //Now, OR in the masked incoming value.
-  configVal |= (0x0020&vsCompMode);
+  configVal |= (CONFIG_EN_VSCOMP_MASK&vsCompMode);
   setParam(CONFIG, configVal);
 }
 
 VoltageCompensation AutoDriver::getVoltageComp()
 {
-  return (int) (getParam(CONFIG) & 0x0020);
+  return static_cast <VoltageCompensation> (getParam(CONFIG) & CONFIG_EN_VSCOMP_MASK);
 }
 
 // The switch input can either hard-stop the driver _or_ activate an interrupt.
@@ -215,15 +297,15 @@ void AutoDriver::setSwitchMode(SwitchConfiguration switchMode)
 {
   unsigned long configVal = getParam(CONFIG);
   // This bit is CONFIG 4, mask is 0x0010
-  configVal &= ~(0x0010);
+  configVal &= ~(CONFIG_SW_MODE_MASK);
   //Now, OR in the masked incoming value.
-  configVal |= (0x0010 & switchMode);
+  configVal |= (CONFIG_SW_MODE_MASK & switchMode);
   setParam(CONFIG, configVal);
 }
 
 SwitchConfiguration AutoDriver::getSwitchMode()
 {
-  return (int) (getParam(CONFIG) & 0x0010);
+  return static_cast <SwitchConfiguration> (getParam(CONFIG) & CONFIG_SW_MODE_MASK);
 }
 
 // There are a number of clock options for this chip- it can be configured to
@@ -236,15 +318,15 @@ void AutoDriver::setOscMode(OscillatorSelect oscillatorMode)
 {
   unsigned long configVal = getParam(CONFIG);
   // These bits are CONFIG 3:0, mask is 0x000F
-  configVal &= ~(0x000F);
+  configVal &= ~(CONFIG_OSC_SEL_MASK);
   //Now, OR in the masked incoming value.
-  configVal |= (0x000F&oscillatorMode);
+  configVal |= (CONFIG_OSC_SEL_MASK&oscillatorMode);
   setParam(CONFIG, configVal);
 }
 
 OscillatorSelect AutoDriver::getOscMode()
 {
-  return (int) (getParam(CONFIG) & 0x000F);
+  return static_cast <OscillatorSelect> (getParam(CONFIG) & CONFIG_OSC_SEL_MASK);
 }
 
 // The KVAL registers are...weird. I don't entirely understand how they differ

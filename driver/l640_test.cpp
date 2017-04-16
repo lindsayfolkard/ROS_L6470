@@ -21,32 +21,32 @@ std::vector<long> getArguments(const std::string &input,int argCount);
 
 int main (int argc, char ** argv)
 {
-    // Instantiate the mraa SPI class
-    std::unique_ptr<mraa::Spi> spi;
-    spi.reset(new mraa::Spi(0));
-
     // Instantiate the AutoDriver
     AutoDriver driver(0,0,0);
-    driver.SPIPortConnect(std::move(spi));
 
-    printMenu();
+    // Let's try to do some simple shit
+    cout << "Status : " << driver.getStatus() << std::endl;
 
-    // Enter Command Loop
-    while (true)
-    {
-        cout <<">>";
-        std::string input;
-        cin >> input;
-        try
-        {
-            handleMenuOption(input,driver);
-        }
-        catch (std::exception &e)
-        {
-            cout << "Caught exception with message " << e.what() << endl;
-            cout << "Continuing in the hope everything is fine"<<endl;
-        }
-    }
+    //    // Read the config back
+
+    //    printMenu();
+
+    //    // Enter Command Loop
+    //    while (true)
+    //    {
+    //        cout <<">>";
+    //        std::string input;
+    //        cin >> input;
+    //        try
+    //        {
+    //            handleMenuOption(input,driver);
+    //        }
+    //        catch (std::exception &e)
+    //        {
+    //            cout << "Caught exception with message " << e.what() << endl;
+    //            cout << "Continuing in the hope everything is fine"<<endl;
+    //        }
+    //    }
 }
 
 void printUsage(int argc, char **argv)
@@ -142,111 +142,111 @@ void printMenu()
 void handleMenuOption(const std::string &input , AutoDriver &driver)
 {
 
-    if      ( input.find(" busyCheck")!= std::string::npos)
+    if      ( input.find("busyCheck")!= std::string::npos)
     {
-        cout << "BusyState = " << driver.busyCheck() << endl;
+	cout << "BusyState = " << driver.isBusy() << endl;
     }
-    else if ( input.find(" getStatus")!= std::string::npos)
+    else if ( input.find("getStatus")!= std::string::npos)
     {
         cout << "Status = " << driver.getStatus() << endl;
     }
-    else if ( input.find(" setParam")!= std::string::npos )
+    else if ( input.find("setParam")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,2);
-        driver.setParam(arguments[0],arguments[1]);
+	driver.setParam(static_cast<ParamRegister> (arguments[0]),arguments[1]);
     }
-    else if ( input.find( " setLoSpdOpt")!= std::string::npos )
+    else if ( input.find("setLoSpdOpt")!= std::string::npos )
     {
         assert(!"TODO");
     }
-    else if ( input.find( " configSyncPin(uint8_t pinFunc, uint8_t syncSteps!= std::string::npos )")!= std::string::npos )
+    else if ( input.find("configSyncPin")!= std::string::npos )
     {
         assert(!"TODO");
     }
-    else if ( input.find( "configStepMode")!= std::string::npos )
+    else if ( input.find("configStepMode")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,1);
-        driver.configStepMode((uint8_t)arguments[0]);
+	driver.configStepMode(static_cast<StepMode>(arguments[0]));
     }
-    else if ( input.find( "setMaxSpeed")!= std::string::npos )
+    else if ( input.find("setMaxSpeed")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,1);
         driver.setMaxSpeed((uint8_t)arguments[0]);
     }
-    else if ( input.find( "setMinSpeed")!= std::string::npos )
+    else if ( input.find("setMinSpeed")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,1);
         driver.setMinSpeed((uint8_t)arguments[0]);
     }
-    else if ( input.find( "setFullSpeed")!= std::string::npos )
+    else if ( input.find("setFullSpeed")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,1);
         driver.setFullSpeed((uint8_t)arguments[0]);
     }
-    else if ( input.find( "setAcc")!= std::string::npos )
+    else if ( input.find("setAcc")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,1);
         driver.setAcc((uint8_t)arguments[0]);
     }
-    else if ( input.find( "setDec")!= std::string::npos )
+    else if ( input.find("setDec")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,1);
         driver.setDec((uint8_t)arguments[0]);
     }
-    else if ( input.find( " setOCThreshold(uint8_t threshold!= std::string::npos )")!= std::string::npos )
+    else if ( input.find("setOCThreshold")!= std::string::npos )
     {
         assert (!"TODO");
     }
-    else if ( input.find( " setPWMFreq(int divisor, int multiplier!= std::string::npos )")!= std::string::npos )
+    else if ( input.find( "setPWMFreq")!= std::string::npos )
     {
         assert (!"TODO");
     }
-    else if ( input.find( " setSlewRate(int slewRate!= std::string::npos )")!= std::string::npos )
+    else if ( input.find("setSlewRate")!= std::string::npos )
     {
         assert (!"TODO");
     }
-    else if ( input.find( " setOCShutdown(int OCShutdown!= std::string::npos )")!= std::string::npos )
+    else if ( input.find("setOCShutdown")!= std::string::npos )
     {
         assert (!"TODO");
     }
-    else if ( input.find( " setVoltageComp(int vsCompMode!= std::string::npos )")!= std::string::npos )
+    else if ( input.find("setVoltageComp")!= std::string::npos )
     {
         assert (!"TODO");
     }
-    else if ( input.find( " setSwitchMode(int switchMode!= std::string::npos )")!= std::string::npos )
+    else if ( input.find("setSwitchMode")!= std::string::npos )
     {
         assert (!"TODO");
     }
-    else if ( input.find( " setOscMode(int oscillatorMode!= std::string::npos )")!= std::string::npos )
+    else if ( input.find("setOscMode")!= std::string::npos )
     {
         assert (!"TODO");
     }
-    else if ( input.find( " setAccKVAL(uint8_t kvalInput!= std::string::npos )")!= std::string::npos )
+    else if ( input.find("setAccKVAL")!= std::string::npos )
     {
         assert (!"TODO");
     }
-    else if ( input.find( " setDecKVAL(uint8_t kvalInput!= std::string::npos )")!= std::string::npos )
+    else if ( input.find("setDecKVAL")!= std::string::npos )
     {
         assert (!"TODO");
     }
-    else if ( input.find( " setRunKVAL(uint8_t kvalInput!= std::string::npos )")!= std::string::npos )
+    else if ( input.find("setRunKVAL")!= std::string::npos )
     {
         assert (!"TODO");
     }
-    else if ( input.find( " setHoldKVAL(uint8_t kvalInput!= std::string::npos )")!= std::string::npos )
+    else if ( input.find("setHoldKVAL")!= std::string::npos )
     {
         assert (!"TODO");
     }
-    else if ( input.find( "getParam")!= std::string::npos )
+    else if ( input.find("getParam")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,1);
-        cout << "Param " << arguments[0] << " = " << driver.getParam((uint8_t)arguments[0]) << endl;
+	cout << "Param " << arguments[0] << " = " << driver.getParam(static_cast<ParamRegister>(arguments[0])) << endl;
     }
-    else if ( input.find( "getLoSpdOpt")!= std::string::npos )
+    else if ( input.find("getLoSpdOpt")!= std::string::npos )
     {
         assert (!"TODO");
     }
-    else if ( input.find( "getStepMode")!= std::string::npos )
+    else if ( input.find("getStepMode")!= std::string::npos )
     {
         cout << "Step Mode = " << driver.getStepMode() << endl;
     }
@@ -330,17 +330,17 @@ void handleMenuOption(const std::string &input , AutoDriver &driver)
     else if ( input.find("run")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,2);
-        driver.run(arguments[0],arguments[1]);
+	driver.run(static_cast<MotorSpinDirection>(arguments[0]),arguments[1]);
     }
     else if ( input.find("stepClock")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,1);
-        driver.stepClock(arguments[0]);
+	driver.stepClock(static_cast<MotorSpinDirection>(arguments[0]));
     }
     else if ( input.find("move")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,2);
-        driver.move(arguments[0],arguments[1]);
+	driver.move(static_cast<MotorSpinDirection>(arguments[0]),arguments[1]);
     }
     else if ( input.find("goTo")!= std::string::npos )
     {
@@ -350,17 +350,17 @@ void handleMenuOption(const std::string &input , AutoDriver &driver)
     else if ( input.find("goToDir")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,2);
-        driver.goToDir(arguments[0],arguments[1]);
+	driver.goToDir(static_cast<MotorSpinDirection>(arguments[0]),arguments[1]);
     }
     else if ( input.find("goUntil")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,3);
-        driver.goUntil(arguments[0],arguments[1],arguments[2]);
+	driver.goUntil(static_cast<MotorSpinDirection>(arguments[0]),arguments[1],static_cast<Action>(arguments[2]));
     }
     else if ( input.find("releaseSw")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,2);
-        driver.releaseSw(arguments[0],arguments[1]);
+	driver.releaseSw(static_cast<MotorSpinDirection>(arguments[0]),static_cast<Action>(arguments[1]));
     }
     else if ( input.find("goHome")!= std::string::npos )
     {
