@@ -184,7 +184,8 @@ std::string toString (MotorSpinDirection motorSpinDirection)
     {
     case Forward      : return "Forward";
     case Reverse      : return "Reverse";
-    default: assert(!"Invalid argument");
+    default	      : return "";
+    //default: assert(!"Invalid argument");
     }
 };
 
