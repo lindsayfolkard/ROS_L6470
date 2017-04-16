@@ -476,5 +476,6 @@ AutoDriver::SPIXfer(uint8_t data)
   sendPacket[_position] = data;
   mraa::Result result = _SPI->transfer(sendPacket,recvPacket,_numBoards);
   std::cout << "REsult from transfer is " << result << std::endl;
+  std::cout << "return value is " << recvPacket[_position] << std::endl;
   return recvPacket[_position];
 }
