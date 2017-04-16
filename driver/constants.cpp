@@ -276,10 +276,10 @@ std::string toString(const Config &cfg)
     ss << "stallThreshold          : " << cfg.stallThreshold << std::endl;
 
     ss << "stepMode                : " << cfg.stepMode << std::endl;
-    ss << "syncSelect              : " << cfg.syncSelect << std::endl;
-    ss << "syncEnable              : " << (cfg.syncEnable ? "Yes" : "No") << std::endl;
+    //ss << "syncSelect              : " << cfg.syncSelect << std::endl;
+    //ss << "syncEnable              : " << (cfg.syncEnable ? "Yes" : "No") << std::endl;
 
-    ss << "alarmState              : " << cfg.alarmState << std::endl;
+    //ss << "alarmState              : " << cfg.alarmState << std::endl;
 
     ss << "oscillatorSelect        : " << cfg.oscillatorSelect << std::endl;
     ss << "switchConfiguration     :"  << cfg.switchConfiguration << std::endl;
