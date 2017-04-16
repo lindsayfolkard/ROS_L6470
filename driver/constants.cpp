@@ -265,12 +265,12 @@ std::string toString(const Config &cfg)
     ss << "accelStartingKVal       : " << cfg.accelStartingKVal << std::endl;
     ss << "decelStartingKVal       : " << cfg.decelStartingKVal << std::endl;
 
-    ss << "intersectSpeed          : " << cfg.intersectSpeed << " steps/s " << std::endl;
-    ss << "startSlope              : " << cfg.startSlope << std::endl;
-    ss << "accelFinalSlope         : " << cfg.accelFinalSlope << std::endl;
-    ss << "decelFinalSlope         : " << cfg.decelFinalSlope << std::endl;
+    //ss << "intersectSpeed          : " << cfg.intersectSpeed << " steps/s " << std::endl;
+    //ss << "startSlope              : " << cfg.startSlope << std::endl;
+    //ss << "accelFinalSlope         : " << cfg.accelFinalSlope << std::endl;
+    //ss << "decelFinalSlope         : " << cfg.decelFinalSlope << std::endl;
 
-    ss << "thermalDriftCoefficient : " << cfg.thermalDriftCoefficient << std::endl;
+    //ss << "thermalDriftCoefficient : " << cfg.thermalDriftCoefficient << std::endl;
 
     ss << "overCurrentThreshold    : " << cfg.overCurrentThreshold << std::endl;
     ss << "stallThreshold          : " << cfg.stallThreshold << std::endl;
