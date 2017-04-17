@@ -16,6 +16,8 @@ AutoDriver::AutoDriver(int position, int CSPin, int resetPin, int busyPin)
   _SPI.reset(new mraa::Spi(0));
   _SPI->mode(mraa::SPI_MODE3);
   _SPI->frequency(4000000); // Can this be a bit higher ?
+
+  // Configure the board
 }
 
 bool

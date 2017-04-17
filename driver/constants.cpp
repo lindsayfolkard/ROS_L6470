@@ -259,17 +259,9 @@ std::string toString(Command command)
 std::string toString(const Config &cfg)
 {
     std::stringstream ss;
+
+    ss << "BackEmfConfig : " << std::endl << cfg.backEmfConfig << std::endl;
     ss << "fullStepThresholdSpeed  : " << cfg.fullStepThresholdSpeed << " steps/s" << std::endl;
-
-    ss << "holdingKVal             : " << cfg.holdingKVal << std::endl;
-    ss << "constantSpeedKVal       : " << cfg.constantSpeedKVal << std::endl;
-    ss << "accelStartingKVal       : " << cfg.accelStartingKVal << std::endl;
-    ss << "decelStartingKVal       : " << cfg.decelStartingKVal << std::endl;
-
-    //ss << "intersectSpeed          : " << cfg.intersectSpeed << " steps/s " << std::endl;
-    //ss << "startSlope              : " << cfg.startSlope << std::endl;
-    //ss << "accelFinalSlope         : " << cfg.accelFinalSlope << std::endl;
-    //ss << "decelFinalSlope         : " << cfg.decelFinalSlope << std::endl;
 
     //ss << "thermalDriftCoefficient : " << cfg.thermalDriftCoefficient << std::endl;
 

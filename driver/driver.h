@@ -2,6 +2,7 @@
 
 #include <mraa.hpp>
 #include "constants.h"
+#include "motor.h"
 #include "support.h"
 #include <memory>
 #include <stdint.h>
@@ -58,7 +59,7 @@ class AutoDriver
 
     // Position Commands
     void move(MotorSpinDirection direction, unsigned long numSteps);
-    void goTo(long pos); // merge ???
+    void goTo(long pos);
     void goToDir(MotorSpinDirection direction, long pos);
     void goHome();
     void goMark();
@@ -91,6 +92,7 @@ class AutoDriver
     void setDec(float stepsPerSecondPerSecond);
 
     void setOCThreshold(OverCurrentThreshold ocThreshold);
+    void setStallThreshold(OverCurrentThreshold stallCurrent);
     void setPWMFreq(PwmFrequencyDivider divider, PwmFrequencyMultiplier multiplier);
     void setSlewRate(SlewRate slewRate);
     void setOCShutdown(OverCurrentDetection overCurrentDetection);
@@ -103,23 +105,27 @@ class AutoDriver
     void setDecKVAL(uint8_t kvalInput);
     void setRunKVAL(uint8_t kvalInput);
     void setHoldKVAL(uint8_t kvalInput);
+    void setBackEmfConfig(const BackEmfConfig &backEmfConfig);
 
-    bool getLoSpdOpt();
-    StepMode getStepMode();
+    bool  getLoSpdOpt();
     float getMaxSpeed();
     float getMinSpeed();
     float getFullSpeed();
     float getAcc();
     float getDec();
 
-    OverCurrentThreshold getOCThreshold();
-    PwmFrequencyDivider getPWMFreqDivisor();
+    BackEmfConfig	   getBackEmfConfig();
+    StepMode		   getStepMode();
+    OverCurrentThreshold   getOCThreshold();
+    OverCurrentThreshold   getStallThreshold();
+    PwmFrequencyDivider	   getPWMFreqDivisor();
     PwmFrequencyMultiplier getPWMFreqMultiplier();
-    SlewRate getSlewRate();
-    OverCurrentDetection getOCShutdown();
-    VoltageCompensation getVoltageComp();
-    SwitchConfiguration getSwitchMode();
-    OscillatorSelect getOscMode();
+    SlewRate		   getSlewRate();
+    OverCurrentDetection   getOCShutdown();
+    VoltageCompensation	   getVoltageComp();
+    SwitchConfiguration	   getSwitchMode();
+    OscillatorSelect	   getOscMode();
+    AlarmState		   getAlarmState();
 
     uint8_t getAccKVAL();
     uint8_t getDecKVAL();
@@ -139,27 +145,6 @@ class AutoDriver
     static int _numBoards; // count of the number of boards instantiated --> remove (do we need this here)
     std::unique_ptr<mraa::Spi> _SPI;
 };
-
-// User constants for public functions.
-
-// dSPIN direction options: functions that accept dir as an argument can be
-//  passed one of these constants. These functions are:
-//    run()
-//    stepClock()
-//    move()
-//    goToDir()
-//    goUntil()
-//    releaseSw()
-//#define FWD  0x01
-//#define REV  0x00
-
-// dSPIN action options: functions that accept action as an argument can be
-//  passed one of these constants. The contents of ABSPOS will either be
-//  reset or copied to MARK, depending on the value sent. These functions are:
-//    goUntil()
-//    releaseSw()
-//#define RESET_ABSPOS  0x00
-//#define COPY_ABSPOS   0x08
 
 /// #TODO - make pin mapping dynamic as we cannot know in advance how someone would use it in reality.
 // configSyncPin() options: the !BUSY/SYNC pin can be configured to be low when

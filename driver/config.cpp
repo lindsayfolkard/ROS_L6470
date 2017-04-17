@@ -4,18 +4,14 @@ void
 AutoDriver::setConfig(const Config &cfg)
 {
     // TODO - handle comms and multiplicity
-    setHoldKVAL(cfg.holdingKVal);
-    setRunKVAL(cfg.constantSpeedKVal);
-    setAccKVAL(cfg.accelStartingKVal);
-    setDecKVAL(cfg.decelStartingKVal);
-    //setIntesect speed
-    //setStartSlope
-    // setAccfinalSlope
-    // setDecFinalSlope
+
+    // Set BackEmf Settings
+    setBackEmfConfig(cfg.backEmfConfig);
+
     // setTHermalDrift
     // setADCreaing ?
     setOCThreshold(cfg.overCurrentThreshold);
-    // setStallThreshold TODO
+    setStallThreshold(cfg.stallThreshold);
     configStepMode(cfg.stepMode);
     // setSyncSelect?
     // set synce enable ??
@@ -210,6 +206,19 @@ OverCurrentThreshold AutoDriver::getOCThreshold()
   return static_cast<OverCurrentThreshold> (getParam(OCD_TH) & CONFIG_OC_THRESOLD_REG);
 }
 
+void
+AutoDriver::setStallThreshold(OverCurrentThreshold stallCurrent)
+{
+    setParam(STALL_TH,0x0F & stallCurrent);
+}
+
+OverCurrentThreshold
+AutoDriver::getStallThreshold()
+{
+    const long stallThresholdMask=0xFF; // TODO - fix!!
+    return static_cast<OverCurrentThreshold> (getParam(STALL_TH) & stallThresholdMask);
+}
+
 // The next few functions are all breakouts for individual options within the
 //  single register CONFIG. We'll read CONFIG, blank some bits, then OR in the
 //  new value.
@@ -372,6 +381,42 @@ void AutoDriver::setHoldKVAL(uint8_t kvalInput)
 uint8_t AutoDriver::getHoldKVAL()
 {
   return (uint8_t) getParam(KVAL_HOLD);
+}
+
+void
+AutoDriver::setBackEmfConfig(const BackEmfConfig &backEmfConfig)
+{
+    // Set the K Values
+    setHoldKVAL(backEmfConfig.holdingKVal);
+    setRunKVAL(backEmfConfig.constantSpeedKVal);
+    setAccKVAL(backEmfConfig.accelStartingKVal);
+    setDecKVAL(backEmfConfig.decelStartingKVal);
+
+    // Set the intersect speed and slope of the curve
+    setParam(INT_SPD,backEmfConfig.intersectSpeed);
+    setParam(ST_SLP,backEmfConfig.startSlope);
+    setParam(FN_SLP_ACC,backEmfConfig.accelFinalSlope);
+    setParam(FN_SLP_DEC,backEmfConfig.decelFinalSlope);
+}
+
+BackEmfConfig
+AutoDriver::getBackEmfConfig()
+{
+    BackEmfConfig backEmfConfig;
+
+    // Get the K Values
+    backEmfConfig.holdingKVal = getHoldKVAL();
+    backEmfConfig.constantSpeedKVal = getRunKVAL();
+    backEmfConfig.accelStartingKVal = getAccKVAL();
+    backEmfConfig.decelStartingKVal = getDecKVAL();
+
+    // Get the intersect speed and slope of the curve
+    backEmfConfig.intersectSpeed  = getParam(INT_SPD);
+    backEmfConfig.startSlope      = getParam(ST_SLP);
+    backEmfConfig.accelFinalSlope = getParam(FN_SLP_ACC);
+    backEmfConfig.decelFinalSlope = getParam(FN_SLP_DEC);
+
+    return backEmfConfig;
 }
 
 // Enable or disable the low-speed optimization option. With LSPD_OPT enabled,

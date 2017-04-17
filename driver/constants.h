@@ -2,6 +2,7 @@
 #define CONSTANTS_H
 
 #include <iostream>
+#include "motor.h"
 
 // Constant definitions provided by ST
 
@@ -392,23 +393,16 @@ struct Config
     // Default constructor with known good values
     //Config();
 
+    // Very Important w.r.t smooth motor driving
+    // See motor.h for more information
+    BackEmfConfig backEmfConfig;
+
     int fullStepThresholdSpeed;
-
-    int holdingKVal;
-    int constantSpeedKVal;
-    int accelStartingKVal;
-    int decelStartingKVal;
-
-    int intersectSpeed;
-    int startSlope;
-    int accelFinalSlope;
-    int decelFinalSlope;
-
     int thermalDriftCoefficient;
     int adcReading;
 
     OverCurrentThreshold overCurrentThreshold;
-    int stallThreshold;
+    OverCurrentThreshold stallThreshold;
 
     // STEP_MODE register settings
     StepMode stepMode;
