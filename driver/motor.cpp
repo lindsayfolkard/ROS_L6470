@@ -16,7 +16,7 @@ std::string toString(const BackEmfConfig &backEmfConfig)
     return ss.str();
 }
 
-std::string toString(StepperMotorType motorType)
+std::string toString(StepperMotorSize motorType)
 {
     switch (motorType)
     {
@@ -27,6 +27,25 @@ std::string toString(StepperMotorType motorType)
     default : assert (!"Invalid motorType");
     }
 }
+
+// Constructor
+StepperMotor::StepperMotor(StepperMotorSize  _motorSize,
+                           StepperMotorModel _motorModel,
+                           double            _stepAngle,
+                           double            _ratedCurrent,
+                           double            _phaseResistance,
+                           double            _phaseInductance,
+                           double            _holdingTorque,
+                           double            _ke):
+    motorSize(_motorSize),
+    motorModel(_motorModel),
+    stepAngle(_stepAngle),
+    ratedCurrent(_ratedCurrent),
+    phaseResistance(_phaseResistance),
+    phaseInductance(_phaseInductance),
+    holdingTorque(_holdingTorque),
+    Ke(_ke){}
+
 
 std::string toString(StepperMotorModel stepperModel)
 {
@@ -41,7 +60,7 @@ std::string toString(StepperMotorModel stepperModel)
 std::string toString(const StepperMotor &x)
 {
     std::stringstream ss;
-    ss << "Motor Type          : " << x.motorType  << std::endl;
+    ss << "Motor Type          : " << x.motorSize  << std::endl;
     ss << "Motor Model         : " << x.motorModel << std::endl;
     ss << "Step Angle          : " << x.stepAngle  << " deg" << std::endl;
     ss << "Rated Current       : " << x.ratedCurrent << " A" << std::endl;

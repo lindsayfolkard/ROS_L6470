@@ -21,15 +21,15 @@ inline std::ostream& operator<<(std::ostream& os,const BackEmfConfig &x)
     return os << toString(x);
 }
 
-enum StepperMotorType
+enum StepperMotorSize
 {
     NEMA11,
     NEMA14,
     NEMA17,
     NEMA23
 };
-std::string toString(StepperMotorType motorType);
-inline std::ostream& operator<<(std::ostream& os,StepperMotorType x)
+std::string toString(StepperMotorSize motorType);
+inline std::ostream& operator<<(std::ostream& os,StepperMotorSize x)
 {
     return os << toString(x);
 }
@@ -37,7 +37,8 @@ inline std::ostream& operator<<(std::ostream& os,StepperMotorType x)
 enum StepperMotorModel
 {
     StepperModel_Nema23_57H703,
-    StepperModel_Nema23_57BYGH51
+    StepperModel_Nema23_57BYGH51,
+    StepperModel_Nema17_42BYGHW811
 };
 std::string toString(StepperMotorModel stepperModel);
 inline std::ostream& operator<<(std::ostream& os,StepperMotorModel x)
@@ -47,8 +48,18 @@ inline std::ostream& operator<<(std::ostream& os,StepperMotorModel x)
 
 struct StepperMotor
 {
+    // Constructor
+    StepperMotor(StepperMotorSize _motorSize,
+                 StepperMotorModel _motorModel,
+                 double            _stepAngle,
+                 double            _ratedCurrent,
+                 double            _phaseResistance,
+                 double            _phaseInductance,
+                 double            _holdingTorque,
+                 double            _ke);
+
     // Motor Type information
-    const StepperMotorType  motorType;
+    const StepperMotorSize  motorSize;
     const StepperMotorModel motorModel;
 
     // Motor Information
@@ -84,15 +95,42 @@ BackEmfConfig BackEmfConfigFromStepper(const StepperMotor & stepperMotor , doubl
 ///
 
 /// Source : ???
-struct Stepper_57H703 : StepperMotor
+struct Stepper_57H703 : public StepperMotor
 {
-    Stepper_57H703():
-	motorType(NEMA17),
-	motorModel(StepperModel_Nema23_57H703),
-	stepAngle(1.8),
-	ratedCurrent(3.0),
-	phaseResistance(0.9),
-	phaseInductance(3.4),
-	holdingTorque(2.012),
-	Ke(0.073){}
+    Stepper_57H703() : StepperMotor(
+        NEMA23,
+        StepperModel_Nema23_57H703,
+        1.8,
+        3.0,
+        0.9,
+        3.4,
+        2.012,
+        0.073){}
 };
+
+struct Stepper_42BYGHW811 : public StepperMotor
+{
+    Stepper_42BYGHW811() : StepperMotor(
+       NEMA17,
+       StepperModel_Nema17_42BYGHW811,
+       1.8,
+       2.5,
+       1.25,
+       1.8,
+       0.48,
+       0.014){}
+};
+
+struct Stepper_57BYGH51 : public StepperMotor
+{
+    Stepper_57BYGH51() : StepperMotor(
+        NEMA23,
+        StepperModel_Nema23_57BYGH51,
+        1.8,
+        1.5,
+        3.5,
+        12,
+        1.0,
+        0.054){}
+};
+

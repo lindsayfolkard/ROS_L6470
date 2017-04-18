@@ -3,26 +3,28 @@
 void
 AutoDriver::setConfig(const Config &cfg)
 {
-    // TODO - handle comms and multiplicity
-
     // Set BackEmf Settings
     setBackEmfConfig(cfg.backEmfConfig);
 
+    // Motor Thermal Drift (ignore for now)
     // setTHermalDrift
-    // setADCreaing ?
+
+    // Current Thresholds
     setOCThreshold(cfg.overCurrentThreshold);
     setStallThreshold(cfg.stallThreshold);
-    configStepMode(cfg.stepMode);
-    // setSyncSelect?
-    // set synce enable ??
+    setOCShutdown(cfg.overCurrentDetection);
 
+    // Step Mode
+    setStepMode(cfg.stepMode);
+    setSyncSelect(cfg.syncSelect,cfg.syncEnable);
+
+    // Set Oscillator related configs
     setOscMode(cfg.oscillatorSelect);
     setSwitchMode(cfg.switchConfiguration);
-    setOCShutdown(cfg.overCurrentDetection);
     setSlewRate(cfg.slewRate);
     setVoltageComp(cfg.voltageCompensation);
     setPWMFreq(cfg.pwmFrequencyDivider,cfg.pwmFrequencyMultiplier);
-    // setAlarm State
+    setAlarmState(cfg.alarmState);
 
 }
 
@@ -30,32 +32,27 @@ Config
 AutoDriver::getConfig()
 {
     Config config;
-    // config.fullStepThresholdSpeed =
-    config.holdingKVal = getHoldKVAL();
-    config.constantSpeedKVal = getRunKVAL();
-    config.accelStartingKVal = getAccKVAL();
-    config.decelStartingKVal = getDecKVAL();
 
-    // config.intersectSpeed =
-    // config.startSlope =
-    // config.accelFinalSlope =
-    // config.decelFinalSlope =
+    config.backEmfConfig = getBackEmfConfig();
+
     // config.thermalDriftCoefficient =
-    // config.adcReading =
 
     config.overCurrentThreshold = getOCThreshold();
     config.overCurrentDetection = getOCShutdown();
-    // config.stallThreshold =
-    config.stepMode = getStepMode();
-    // config.syncSelect =
-    // config.syncEnable =
-    config.oscillatorSelect = getOscMode();
-    config.switchConfiguration = getSwitchMode();
-    config.slewRate = getSlewRate();
-    config.voltageCompensation = getVoltageComp();
-    config.pwmFrequencyDivider = getPWMFreqDivisor();
-    config.pwmFrequencyMultiplier = getPWMFreqMultiplier();
-    // config.alarmState =
+    config.stallThreshold       = getStallThreshold();
+
+    config.stepMode             = getStepMode();
+    config.syncSelect           = getSyncSelect();
+    config.syncEnable           = getSyncEnable();
+
+    config.oscillatorSelect         = getOscMode();
+    config.switchConfiguration      = getSwitchMode();
+    config.slewRate                 = getSlewRate();
+    config.voltageCompensation      = getVoltageComp();
+    config.pwmFrequencyDivider      = getPWMFreqDivisor();
+    config.pwmFrequencyMultiplier   = getPWMFreqMultiplier();
+    config.alarmState               = getAlarmState();
+
     return config;
 }
 
@@ -81,32 +78,82 @@ AutoDriver::getProfileCfg()
 
 // Setup the SYNC/BUSY pin to be either SYNC or BUSY, and to a desired
 //  ticks per step level.
-void AutoDriver::configSyncPin(uint8_t pinFunc, uint8_t syncSteps)
+void AutoDriver::setSyncSelect( SyncSelect syncSelect , bool syncEnable)
 {
   // Only some of the bits in this register are of interest to us; we need to
   //  clear those bits. It happens that they are the upper four.
+  const uint8_t syncMask = 0x0F;
   uint8_t syncPinConfig = (uint8_t)getParam(STEP_MODE);
-  syncPinConfig &= 0x0F;
+  syncPinConfig &= syncMask;
   
   // Now, let's OR in the arguments. We're going to mask the incoming
   //  data to avoid touching any bits that aren't appropriate. See datasheet
   //  for more info about which bits we're touching.
-  syncPinConfig |= ((pinFunc & 0x80) | (syncSteps & 0x70));
+  const uint8_t syncEnableMask = 0x80;
+  const uint8_t syncSelectMask = 0x70;
+  syncPinConfig |= ((syncEnable & syncEnableMask) | (syncSelect & syncSelectMask));
   
   // Now we should be able to send that uint8_t right back to the dSPIN- it
   //  won't corrupt the other bits, and the changes are made.
   setParam(STEP_MODE, (unsigned long)syncPinConfig);
 }
 
+void
+AutoDriver::setAlarmState(AlarmState alarmState)
+{
+    uint8_t alarmStateByte=0x00;
+    alarmState.overCurrentEnabled     ? alarmStateByte |= 0x01;
+    alarmState.thermalShutdownEnabled ? alarmStateByte |= 0x02;
+    alarmState.thermalWarningEnabled  ? alarmStateByte |= 0x04;
+    alarmState.underVoltageEnabled    ? alarmStateByte |= 0x08;
+    alarmState.stallDetectionAEnabled ? alarmStateByte |= 0x10;
+    alarmState.stallDetectionBEnabled ? alarmStateByte |= 0x20;
+    alarmState.switchTurnOnEnabled    ? alarmStateByte |= 0x40;
+    alarmState.badCommandEnabled      ? alarmStateByte |= 0x80;
+    setParam(ALARM_EN,alarmStateByte);
+}
+
+AlarmState
+AutoDriver::getAlarmState()
+{
+    AlarmState alarmState;
+    uint8_t alarmStateByte = getParam(ALARM_EN);
+
+    alarmState.overCurrentEnabled     = alarmStateByte & 0x01;
+    alarmState.thermalShutdownEnabled = alarmStateByte & 0x02;
+    alarmState.thermalWarningEnabled  = alarmStateByte & 0x04;
+    alarmState.underVoltageEnabled    = alarmStateByte & 0x08;
+    alarmState.stallDetectionAEnabled = alarmStateByte & 0x10;
+    alarmState.stallDetectionBEnabled = alarmStateByte & 0x20;
+    alarmState.switchTurnOnEnabled    = alarmStateByte & 0x40;
+    alarmState.badCommandEnabled      = alarmStateByte & 0x80;
+
+    return alarmState;
+}
+
+SyncSelect
+AutoDriver::getSyncSelect()
+{
+    const uint8_t syncSelectMask = 0x70;
+    return static_cast<StepMode>(getParam(STEP_MODE) & syncSelectMask);
+}
+
+bool
+AutoDriver::getSyncEnable()
+{
+    const uint8_t syncEnableMask = 0x80;
+    return (getParam(STEP_MODE) & syncEnableMask);
+}
+
 // The dSPIN chip supports microstepping for a smoother ride. This function
 //  provides an easy front end for changing the microstepping mode.
-void AutoDriver::configStepMode(StepMode stepMode)
+void AutoDriver::setStepMode(StepMode stepMode)
 {
-
   // Only some of these bits are useful (the lower three). We'll extract the
   //  current contents, clear those three bits, then set them accordingly.
+  const uint8_t stepModeMask = 0xF8;
   uint8_t stepModeConfig = (uint8_t)getParam(STEP_MODE);
-  stepModeConfig &= 0xF8;
+  stepModeConfig &= stepModeMask;
   
   // Now we can OR in the new bit settings. Mask the argument so we don't
   //  accidentally the other bits, if the user sends us a non-legit value.
@@ -196,27 +243,27 @@ float AutoDriver::getDec()
   return accParse(getParam(DECEL));
 }
 
-void AutoDriver::setOCThreshold(OverCurrentThreshold ocThreshold)
+void AutoDriver::setOCThreshold(CurrentThreshold ocThreshold)
 {
   setParam(OCD_TH, 0x0F & ocThreshold);
 }
 
-OverCurrentThreshold AutoDriver::getOCThreshold()
+CurrentThreshold AutoDriver::getOCThreshold()
 {
-  return static_cast<OverCurrentThreshold> (getParam(OCD_TH) & CONFIG_OC_THRESOLD_REG);
+  return static_cast<CurrentThreshold> (getParam(OCD_TH) & CONFIG_OC_THRESOLD_REG);
 }
 
 void
-AutoDriver::setStallThreshold(OverCurrentThreshold stallCurrent)
+AutoDriver::setStallThreshold(CurrentThreshold stallCurrent)
 {
     setParam(STALL_TH,0x0F & stallCurrent);
 }
 
-OverCurrentThreshold
+CurrentThreshold
 AutoDriver::getStallThreshold()
 {
     const long stallThresholdMask=0xFF; // TODO - fix!!
-    return static_cast<OverCurrentThreshold> (getParam(STALL_TH) & stallThresholdMask);
+    return static_cast<CurrentThreshold> (getParam(STALL_TH) & stallThresholdMask);
 }
 
 // The next few functions are all breakouts for individual options within the

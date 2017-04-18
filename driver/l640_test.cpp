@@ -176,7 +176,7 @@ void handleMenuOption(const std::string &input , AutoDriver &driver)
     else if ( input.find("configStepMode")!= std::string::npos )
     {
         std::vector<long> arguments = getArguments(input,1);
-	driver.configStepMode(static_cast<StepMode>(arguments[0]));
+        driver.setStepMode(static_cast<StepMode>(arguments[0]));
     }
     else if ( input.find("setMaxSpeed")!= std::string::npos )
     {

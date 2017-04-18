@@ -85,14 +85,14 @@ class AutoDriver
     long getParam(ParamRegister param);
     
     void setLoSpdOpt(bool enable);
-    void configSyncPin(uint8_t pinFunc, uint8_t syncSteps); /// ???
-    void configStepMode(StepMode stepMode);
+    void setSyncSelect( SyncSelect syncSelect , bool syncEnable);
+    void setStepMode(StepMode stepMode);
     void setFullSpeed(float stepsPerSecond);
     void setAcc(float stepsPerSecondPerSecond);
     void setDec(float stepsPerSecondPerSecond);
 
-    void setOCThreshold(OverCurrentThreshold ocThreshold);
-    void setStallThreshold(OverCurrentThreshold stallCurrent);
+    void setOCThreshold(CurrentThreshold ocThreshold);
+    void setStallThreshold(CurrentThreshold stallCurrent);
     void setPWMFreq(PwmFrequencyDivider divider, PwmFrequencyMultiplier multiplier);
     void setSlewRate(SlewRate slewRate);
     void setOCShutdown(OverCurrentDetection overCurrentDetection);
@@ -116,8 +116,10 @@ class AutoDriver
 
     BackEmfConfig	   getBackEmfConfig();
     StepMode		   getStepMode();
-    OverCurrentThreshold   getOCThreshold();
-    OverCurrentThreshold   getStallThreshold();
+    SyncSelect		   getSyncSelect();
+    bool                   getSyncEnable();
+    CurrentThreshold	   getOCThreshold();
+    CurrentThreshold	   getStallThreshold();
     PwmFrequencyDivider	   getPWMFreqDivisor();
     PwmFrequencyMultiplier getPWMFreqMultiplier();
     SlewRate		   getSlewRate();

@@ -2,9 +2,9 @@
 #include <assert.h>
 #include <sstream>
 
-std::string toString(OverCurrentThreshold overCurrentThreshold)
+std::string toString(CurrentThreshold currentThreshold)
 {
-    switch (overCurrentThreshold)
+    switch (currentThreshold)
     {
     case OCD_TH_375m  : return "375 ma";
     case OCD_TH_750m  : return "750 ma";

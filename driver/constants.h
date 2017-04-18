@@ -9,7 +9,7 @@
 // constant definitions for overcurrent thresholds. Write these values to 
 //  register OCD_TH to set the level at which an overcurrent even occurs.
 #define CONFIG_OC_THRESOLD_REG 0XF
-enum OverCurrentThreshold
+enum CurrentThreshold
 {
     OCD_TH_375m =  0x00,
     OCD_TH_750m =  0x01,
@@ -28,8 +28,8 @@ enum OverCurrentThreshold
     OCD_TH_5625m = 0x0E,
     OCD_TH_6000m = 0x0F
 };
-std::string toString(OverCurrentThreshold overCurrentThreshold);
-inline std::ostream& operator<<(std::ostream& os, OverCurrentThreshold overCurrentThreshold)
+std::string toString(CurrentThreshold currentThreshold);
+inline std::ostream& operator<<(std::ostream& os, CurrentThreshold currentThreshold)
 {
     return os << toString(overCurrentThreshold);
 }
@@ -399,10 +399,9 @@ struct Config
 
     int fullStepThresholdSpeed;
     int thermalDriftCoefficient;
-    int adcReading;
 
-    OverCurrentThreshold overCurrentThreshold;
-    OverCurrentThreshold stallThreshold;
+    CurrentThreshold overCurrentThreshold;
+    CurrentThreshold stallThreshold;
 
     // STEP_MODE register settings
     StepMode stepMode;
