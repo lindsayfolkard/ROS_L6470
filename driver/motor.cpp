@@ -6,10 +6,10 @@
 std::string toString(const BackEmfConfig &backEmfConfig)
 {
     std::stringstream ss;
-    ss << "KVAL_HOLD  : " << backEmfConfig.holdingKVal	     << std::endl;
-    ss << "KVAL_RUN   : " << backEmfConfig.constantSpeedKVal << std::endl;
-    ss << "KVAL_ACC   : " << backEmfConfig.accelStartingKVal << std::endl;
-    ss << "KVAL_DEC   : " << backEmfConfig.decelStartingKVal << std::endl;
+    ss << "KVAL_HOLD  : " << (int) backEmfConfig.holdingKVal	     << std::endl;
+    ss << "KVAL_RUN   : " << (int) backEmfConfig.constantSpeedKVal << std::endl;
+    ss << "KVAL_ACC   : " << (int) backEmfConfig.accelStartingKVal << std::endl;
+    ss << "KVAL_DEC   : " << (int) backEmfConfig.decelStartingKVal << std::endl;
     ss << "INT_SPEED  : " << backEmfConfig.intersectSpeed    << std::endl;
     ss << "ST_SLP     : " << backEmfConfig.startSlope        << std::endl;
     ss << "FN_SLP_ACC : " << backEmfConfig.accelFinalSlope   << std::endl;

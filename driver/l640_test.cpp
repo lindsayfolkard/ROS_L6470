@@ -37,14 +37,37 @@ int main (int argc, char ** argv)
 
     // Lets set the config
     Stepper_42BYGHW811 nema17BackEmfConfig;
-    BackEmfConfig backEmfConfig = BackEmfConfigFromStepper(nema17BackEmfConfig,24,3.5);
+    BackEmfConfig backEmfConfig = BackEmfConfigFromStepper(nema17BackEmfConfig,24,2.5);
     Config driverConfig;
     driverConfig.backEmfConfig = backEmfConfig;
 
     driver.setConfig(driverConfig);
+    
+    // LEts set a profile config
+    cout << "ProfileCfg" << driver.getProfileCfg() << std::endl;
+    ProfileCfg profileCfg = driver.getProfileCfg();
+    profileCfg.maxSpeed=650;
+    profileCfg.minSpeed=80;
+    profileCfg.acceleration=100;
+    profileCfg.deceleration=100;    
+
+    driver.setProfileCfg(profileCfg);
+    cout << "New profile cfg is " << profileCfg << std::endl;
 
     // Fuck it let's try to move
-    driver.move(Forward,50000);
+    driver.softStop();
+    driver.run(Forward,400);
+
+    int count =0;
+    const int threshold = 200;
+    while (++count < threshold)
+    {
+      cout << "Position = " << driver.getPos() << std::endl;
+      cout << "Status = " << driver.getStatus() << std::endl;	
+      usleep(50000);
+    }
+
+    driver.softStop();
     //    // Read the config back
 
     //    printMenu();

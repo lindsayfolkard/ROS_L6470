@@ -249,15 +249,15 @@ Status AutoDriver::getStatus()
   Status status;
   status.isHighZ = statusValue & STATUS_HIZ;
   status.isBusy  = statusValue & STATUS_BUSY;
-  status.isSwitchClosed = statusValue & STATUS_SW_F;
+  status.isSwitchClosed = !(statusValue & STATUS_SW_F);
   status.switchEventDetected = statusValue & STATUS_SW_EVN;
 
   status.performedLastCommand = !(statusValue & STATUS_NOTPERF_CMD);
   status.lastCommandInvalid   = statusValue & STATUS_WRONG_CMD;
 
-  status.hasThermalWarning = statusValue & STATUS_TH_WRN;
-  status.isInThermalShutdown = statusValue & STATUS_TH_SD;
-  status.overCurrentDetected = statusValue & STATUS_OCD;
+  status.hasThermalWarning = !(statusValue & STATUS_TH_WRN);
+  status.isInThermalShutdown = !(statusValue & STATUS_TH_SD);
+  status.overCurrentDetected = !(statusValue & STATUS_OCD);
   status.stallDetectedPhaseA = statusValue & STATUS_STEP_LOSS_A;
   status.stallDetectedPhaseB = statusValue & STATUS_STEP_LOSS_B;
 
@@ -475,9 +475,9 @@ AutoDriver::SPIXfer(uint8_t data)
   }
 
   sendPacket[_position] = data;
-  mraa::Result result = _SPI->transfer(sendPacket,recvPacket,_numBoards);
-  std::cout << "Transfer byte " << (int) sendPacket[_position] << std::endl;
-  std::cout << "Result from transfer is " << (int) result << std::endl;
-  std::cout << "return value is " << (int) recvPacket[_position] << std::endl;
+  _SPI->transfer(sendPacket,recvPacket,_numBoards);
+  //std::cout << "Transfer byte " << (int) sendPacket[_position] << std::endl;
+  //std::cout << "Result from transfer is " << (int) result << std::endl;
+  //std::cout << "return value is " << (int) recvPacket[_position] << std::endl;
   return recvPacket[_position];
 }
