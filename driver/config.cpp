@@ -102,14 +102,14 @@ void
 AutoDriver::setAlarmState(AlarmState alarmState)
 {
     uint8_t alarmStateByte=0x00;
-    alarmState.overCurrentEnabled     ? alarmStateByte |= 0x01;
-    alarmState.thermalShutdownEnabled ? alarmStateByte |= 0x02;
-    alarmState.thermalWarningEnabled  ? alarmStateByte |= 0x04;
-    alarmState.underVoltageEnabled    ? alarmStateByte |= 0x08;
-    alarmState.stallDetectionAEnabled ? alarmStateByte |= 0x10;
-    alarmState.stallDetectionBEnabled ? alarmStateByte |= 0x20;
-    alarmState.switchTurnOnEnabled    ? alarmStateByte |= 0x40;
-    alarmState.badCommandEnabled      ? alarmStateByte |= 0x80;
+    alarmState.overCurrentEnabled     ? alarmStateByte |= 0x01 : alarmStateByte|=0;
+    alarmState.thermalShutdownEnabled ? alarmStateByte |= 0x02 : alarmStateByte|=0;
+    alarmState.thermalWarningEnabled  ? alarmStateByte |= 0x04 : alarmStateByte|=0;
+    alarmState.underVoltageEnabled    ? alarmStateByte |= 0x08 : alarmStateByte|=0;
+    alarmState.stallDetectionAEnabled ? alarmStateByte |= 0x10 : alarmStateByte|=0;
+    alarmState.stallDetectionBEnabled ? alarmStateByte |= 0x20 : alarmStateByte|=0;
+    alarmState.switchTurnOnEnabled    ? alarmStateByte |= 0x40 : alarmStateByte|=0;
+    alarmState.badCommandEnabled      ? alarmStateByte |= 0x80 : alarmStateByte|=0;
     setParam(ALARM_EN,alarmStateByte);
 }
 
@@ -135,7 +135,7 @@ SyncSelect
 AutoDriver::getSyncSelect()
 {
     const uint8_t syncSelectMask = 0x70;
-    return static_cast<StepMode>(getParam(STEP_MODE) & syncSelectMask);
+    return static_cast<SyncSelect>(getParam(STEP_MODE) & syncSelectMask);
 }
 
 bool

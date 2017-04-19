@@ -31,7 +31,7 @@ enum CurrentThreshold
 std::string toString(CurrentThreshold currentThreshold);
 inline std::ostream& operator<<(std::ostream& os, CurrentThreshold currentThreshold)
 {
-    return os << toString(overCurrentThreshold);
+    return os << toString(currentThreshold);
 }
 
 // STEP_MODE option values.

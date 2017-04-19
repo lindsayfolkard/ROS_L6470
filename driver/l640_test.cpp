@@ -35,6 +35,14 @@ int main (int argc, char ** argv)
     driver.resetPos();
     cout << "Position : " << driver.getPos() << std::endl;
 
+    // Lets set the config
+    Stepper_42BYGHW811 nema17BackEmfConfig;
+    BackEmfConfig backEmfConfig = BackEmfConfigFromStepper(nema17BackEmfConfig,24,3.5);
+    Config driverConfig;
+    driverConfig.backEmfConfig = backEmfConfig;
+
+    driver.setConfig(driverConfig);
+
     // Fuck it let's try to move
     driver.move(Forward,50000);
     //    // Read the config back

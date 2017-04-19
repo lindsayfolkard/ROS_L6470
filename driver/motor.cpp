@@ -1,6 +1,7 @@
 #include "motor.h"
 #include <sstream>
 #include <math.h>
+#include <assert.h>
 
 std::string toString(const BackEmfConfig &backEmfConfig)
 {
@@ -76,9 +77,9 @@ BackEmfConfig BackEmfConfigFromStepper(const StepperMotor & stepperMotor , doubl
     BackEmfConfig backEmfConfig;
 
     // Calculate the respective KVals
-    const kValMultiplier = 256; // 2^8
-    const double kVal = ((stepperMotor.phaseResistance*phaseCurrent)/vbus)*kValMultiplier;
-    assert(kVal > 0 && kval < 0xFF);
+    const int kValMultiplier = 256; // 2^8
+    const uint8_t kVal = ((stepperMotor.phaseResistance*phaseCurrent)/vbus)*kValMultiplier;
+    assert(kVal > 0 && kVal < 0xFF);
     backEmfConfig.accelStartingKVal = kVal;
     backEmfConfig.holdingKVal = kVal;
     backEmfConfig.constantSpeedKVal = kVal;
