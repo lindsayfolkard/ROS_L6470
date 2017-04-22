@@ -1,9 +1,6 @@
 #include "driver.h"
 #include <iostream>
 
-//commands.ino - Contains high-level command implementations- movement
-//   and configuration commands, for example.
-
 // Realize the "set parameter" function, to write to the various registers in
 //  the dSPIN chip.
 void AutoDriver::setParam(ParamRegister param, unsigned long value)
@@ -25,9 +22,9 @@ long AutoDriver::getParam(ParamRegister param)
 }
 
 // Returns the content of the ABS_POS register, which is a signed 22-bit number
-//  indicating the number of steps the motor has traveled from the HOME
-//  position. HOME is defined by zeroing this register, and it is zero on
-//  startup.
+// indicating the number of steps the motor has traveled from the HOME
+// position. HOME is defined by zeroing this register, and it is zero on
+// startup.
 long AutoDriver::getPos()
 {
   long temp = getParam(ABS_POS);
@@ -37,6 +34,15 @@ long AutoDriver::getPos()
   //  its appropriate sign.
   if (temp & 0x00200000) temp |= 0xffc00000;
   return temp;
+}
+
+// Returns the current motor speed, which is an unsigned 20-bit number
+long AutoDriver::getSpeed()
+{
+  long temp = getParam(SPEED);
+
+  // Convert to steps/s
+  return spdCalc(temp);
 }
 
 // Just like getPos(), but for MARK.
@@ -51,11 +57,11 @@ long AutoDriver::getMark()
   return temp;
 }
 
-// RUN sets the motor spinning in a direction (defined by the constants
+//  RUN sets the motor spinning in a direction (defined by the constants
 //  FWD and REV). Maximum speed and minimum speed are defined
 //  by the MAX_SPEED and MIN_SPEED registers; exceeding the FS_SPD value
 //  will switch the device into full-step mode.
-// The spdCalc() function is provided to convert steps/s values into
+//  The spdCalc() function is provided to convert steps/s values into
 //  appropriate integer values for this function.
 void AutoDriver::run(MotorSpinDirection direction, float stepsPerSec)
 {
@@ -444,7 +450,7 @@ long AutoDriver::paramHandler(uint8_t param, unsigned long value)
 long
 AutoDriver::xferParam(unsigned long value, uint8_t bitLen)
 {
-  uint8_t byteLen = bitLen/8;      // How many BYTES do we have?
+  uint8_t byteLen = bitLen/8;   // How many BYTES do we have?
   if (bitLen%8 > 0) byteLen++;  // Make sure not to lose any partial uint8_t values.
 
   uint8_t temp;

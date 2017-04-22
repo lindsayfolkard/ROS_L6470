@@ -29,9 +29,4 @@ AutoDriver::isBusy(void)
     else                           return true;
   }
   return false; // TODO - correct this action
-//  else
-//  {
-//    if (digitalRead(_busyPin) == HIGH) return 0;
-//    else                               return 1;
-//  }
 }

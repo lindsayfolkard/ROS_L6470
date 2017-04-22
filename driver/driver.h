@@ -33,9 +33,9 @@ class AutoDriver
 
     // Individual get functions if only very specific data needed
     bool   isBusy();
-    long   getPos();
-    // getSpeed ??
-    long   getMark();
+    long   getPos(); // steps
+    long   getSpeed(); // steps/s
+    long   getMark(); // steps?
 
     /////////////////////////
     /// Configuration Commands
