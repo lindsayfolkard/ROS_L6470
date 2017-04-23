@@ -440,4 +440,58 @@ inline std::ostream& operator<<(std::ostream& os,const ProfileCfg &x)
 {
     return os << toString(x);
 }
-#endif
+
+///
+/// The Various structs used as arguments to commands
+///
+
+struct RunCommand
+{
+    MotorSpinDirection direction;
+    float stepsPerSec;
+};
+std::string toString(const RunCommand &x);
+inline std::ostream& operator<<(std::ostream& os,const RunCommand &x)
+{
+    return os << toString(x);
+}
+
+enum Action
+{
+    Action_Reset_AbsPos = 0x00,
+    Action_Copy_AbsPos  = 0x08
+};
+
+struct GoUntilCommand
+{
+    MotorSpinDirection direction;
+    float stepsPerSec;
+    Action action;
+};
+std::string toString(const GoUntilCommand &x);
+inline std::ostream& operator<<(std::ostream& os,const GoUntilCommand &x)
+{
+    return os << toString(x);
+}
+
+struct MoveCommand
+{
+    MotorSpinDirection direction;
+    unsigned long numSteps;
+};
+std::string toString(const MoveCommand &x);
+inline std::ostream& operator<<(std::ostream& os,const MoveCommand &x)
+{
+    return os << toString(x);
+}
+
+struct GoToDirCommand
+{
+    MotorSpinDirection direction;
+    long pos;
+};
+std::string toString(const GoToDirCommand &x);
+inline std::ostream& operator<<(std::ostream& os,const GoToDirCommand &x)
+{
+    return os << toString(x);
+}

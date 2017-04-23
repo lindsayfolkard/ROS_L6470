@@ -294,3 +294,31 @@ std::string toString(const ProfileCfg &profileCfg)
     ss << "minSpeed     = " << profileCfg.minSpeed     << " steps/s"   << std::endl;
     return ss.str();
 };
+
+std::string toString(const RunCommand &x)
+{
+    std::stringstream ss;
+    ss <<"direction = " << x.direction << " , speed = " << x.stepsPerSec << "steps/s" << std::endl;
+    return ss.str();
+}
+
+std::string toString(const GoUntilCommand &x)
+{
+    std::stringstream ss;
+    ss <<"direction = " << x.direction << " , speed = " << x.stepsPerSec << "steps/s" << " , Action = " << x.action;
+    return ss.str();
+}
+
+std::string toString(const MoveCommand &x)
+{
+    std::stringstream ss;
+    ss << "direction = " << x.direction << " , steps = " << x.numSteps << " steps";
+    return ss.str();
+}
+
+std::string toString(const GoToDirCommand &x)
+{
+    std::stringstream ss;
+    ss << "direction = " << x.direction << " , position = " << x.pos;
+    return ss.str();
+}
