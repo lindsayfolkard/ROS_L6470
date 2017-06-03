@@ -35,7 +35,15 @@ MultiDriver::MultiDriver(const std::vector<StepperMotor> &motors,
 std::vector<Status>
 MultiDriver::getStatus()
 {
+    // Send the request
+    SPIXfer(GET_STATUS);
 
+    // Get the responses
+    std::map<int,uint16_t> emptyMap();
+    std::vector<uint16_t> states = SPIXfer(emptyMap());
+
+    // Parse the responses
+    // TODO - once it is abstracted
 }
 
 // Individual get functions if only very specific data needed
@@ -79,8 +87,6 @@ MultiDriver::getSpeed()
 std::vector<long>
 MultiDriver::getMark()
 {
-    long temp = getParam(MARK);
-
     std::vector <long> marks = getParam(MARK);
     for (auto element : marks)
     {
@@ -246,50 +252,33 @@ MultiDriver::hardHiZ(const std::map<int,bool> &resetPosition)
 /// Raw Access Set/Get Commands
 ////////////////////////
 void
-MultiDriver::setParam(ParamRegister param, std::vector <unsigned long> &values)
+MultiDriver::setParam(ParamRegister param, std::map <int,T> &values)
 {
+    uint8_t sendByte=SET_PARAM;
+    sendByte |= param;
 
+    // Send the param request
+    SPIXfer(sendByte);
+
+    // Set the value of each parameter as needed
+    xferParam(values,toBitLength(param));
 }
 
 // Realize the "get parameter" function, to read from the various registers in
 //  the dSPIN chip.
-std::vector<long>
+std::vector<T>
 MultiDriver::getParam(ParamRegister param)
 {
       uint8_t sendByte=GET_PARAM;
       sendByte |= param;
 
       // Send the param request
-      std::vector<uint8_t> paramRequest(motors_.size(),(param | GET_PARAM));
-      SPIXfer(paramRequest);
+      SPIXfer(sendByte);
 
-      // Parse the response
-      return SPIXfer<long>();
-
-      // TODO ???
-      //return paramHandler(param, 0);
+      // Parse the response from multiple boards
+      std::map<int,T> emptyMap();
+      return xferParam(emptyMap(),toBitLength(param));
 }
-
-//std::vector<uint8_t>
-//MultiDriver::SPIXfer(const std::map<int, uint8_t> &data)
-//{
-//    // Check map validity
-//    checkMapIsValid<uint8_t>(data);
-
-//    uint8_t sendPacket[motors_.size()] = {NOP};
-//    uint8_t recvPacket[motors_.size()] = {NOP};
-
-//    for (auto element : data)
-//    {
-//        sendPacket[data.first] = data.second;
-//    }
-
-//    SPI_->transfer(sendPacket,recvPacket,_numBoards);
-//    //std::cout << "Transfer byte " << (int) sendPacket[_position] << std::endl;
-//    //std::cout << "Result from transfer is " << (int) result << std::endl;
-//    //std::cout << "return value is " << (int) recvPacket[_position] << std::endl;
-//    return std::vector<uint8_t>(recvPacket,motors_.size());
-//}
 
 // R == recieve data type
 // S == send data type
@@ -306,7 +295,8 @@ MultiDriver::SPIXfer(const std::map<int, S> &data)
     // NB: need to be careful here that we are dealing with contiguos memory ??
     std::vector<R> recvData(motors_.size(),0); // should init to all zeroes...
 
-    for (int i=0; i < sizeof(S) ; ++i)
+    // < S or < R ???
+    for (int i=0; i < sizeof(R) ; ++i)
     {
         uint8_t byteSendPacket [motors_.size()]={NOP};
         uint8_t byteRecvPacket [motors_.size()]={NOP};
@@ -316,7 +306,7 @@ MultiDriver::SPIXfer(const std::map<int, S> &data)
             byteSendPacket[data.first] = (data.second << (i*8)) & 0xFF;
         }
 
-        SPI_->transfer(byteSendPacket,byteRecvPacket,_numBoards);
+        SPI_->transfer(byteSendPacket,byteRecvPacket,motors_.size());
 
         for (int j=0; j < motors_.size();++j)
         {
@@ -324,41 +314,41 @@ MultiDriver::SPIXfer(const std::map<int, S> &data)
         }
     }
 
-
     //std::cout << "Transfer byte " << (int) sendPacket[_position] << std::endl;
     //std::cout << "Result from transfer is " << (int) result << std::endl;
     //std::cout << "return value is " << (int) recvPacket[_position] << std::endl;
     return recvData;
 }
 
-template <typename T> std::vector<T>
-MultiDriver::SPIXfer(const std::vector<T> &data = std::vector<T>())
+template <typename R> std::vector<R>
+MultiDriver::SPIXfer(uint8_t requestValue)
 {
-// TODO
+    // Create an appropriate map
+    std::map<int,uint8_t> request;
+    for (int i=0 ; i < motors_.size() ; ++i)
+    {
+        map.insert(std::pair<int,uint8_t>(i,requestValue));
+    }
+
+    // Send the request
+    SPIXfer(request);
 }
 
-//std::vector<long> MultiDriver::xferParam(const std::map<int,unsigned long> &parameters, uint8_t bitLen)
-//{
-//    uint8_t byteLen = bitLen/8;   // How many BYTES do we have?
-//    if (bitLen%8 > 0) byteLen++;  // Make sure not to lose any partial uint8_t values.
+std::vector<R>
+MultiDriver::xferParam(const std::map<int,S> &parameters, uint8_t bitLen)
+{
+    uint8_t byteLen = bitLen/8;   // How many BYTES do we have?
+    if (bitLen%8 > 0) byteLen++;  // Make sure not to lose any partial uint8_t values.
 
-//    uint8_t temp;
+    // Send and recieve the response
+    std::vector<R> response = SPIXfer(parameters);
 
-//    unsigned long retVal = 0;
+    // Trim the response
+    unsigned long mask = 0xffffffff >> (32-bitLen);
+    for (auto element : response)
+    {
+        element = element & mask;
+    }
 
-//    for (int i = 0; i < byteLen; i++)
-//    {
-//      retVal = retVal << 8;
-//      temp = SPIXfer((uint8_t)(value>>((byteLen-i-1)*8)));
-//      retVal |= temp;
-//    }
-
-//    unsigned long mask = 0xffffffff >> (32-bitLen);
-//    return retVal & mask;
-//}
-
-//long
-//MultiDriver::paramHandler(uint8_t param, unsigned long value)
-//{
-
-//}
+    return response;
+}

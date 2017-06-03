@@ -109,8 +109,8 @@ class MultiDriver
     /////////////////////////
     /// Raw Access Set/Get Commands
     ////////////////////////
-    void setParam(ParamRegister param, std::vector <unsigned long> &values);
-    std::vector<long> getParam(ParamRegister param);
+    void setParam(ParamRegister param, std::map<int, T> &values);
+    std::vector<T> getParam(ParamRegister param);
     
     //    void setLoSpdOpt(bool enable);
     //    void setSyncSelect( SyncSelect syncSelect , bool syncEnable);
@@ -166,7 +166,7 @@ class MultiDriver
 
     std::vector<uint8_t> SPIXfer(const std::map<int,uint8_t> &data);
     std::vector<long> xferParam(const std::map<int,unsigned long> &parameters, uint8_t bitLen);
-    long paramHandler(uint8_t param, unsigned long value);
+    std::vector<long> paramHandler(uint8_t param, unsigned long value);
      
     int chipSelectPin_;
     int resetPin_;

@@ -98,6 +98,8 @@ BackEmfConfig BackEmfConfigFromStepper(const StepperMotor & stepperMotor , doubl
 /// most used steppers. Feel free to add a model and submit a pull request.
 ///
 
+/// Model  :
+/// Type   :
 /// Source : ???
 struct Stepper_57H703 : public StepperMotor
 {
@@ -112,6 +114,9 @@ struct Stepper_57H703 : public StepperMotor
         0.073){}
 };
 
+/// Model  :
+/// Type   :
+/// Source : ???
 struct Stepper_42BYGHW811 : public StepperMotor
 {
     Stepper_42BYGHW811() : StepperMotor(
@@ -125,6 +130,9 @@ struct Stepper_42BYGHW811 : public StepperMotor
        0.014){}
 };
 
+/// Model  :
+/// Type   :
+/// Source : ???
 struct Stepper_57BYGH51 : public StepperMotor
 {
     Stepper_57BYGH51() : StepperMotor(

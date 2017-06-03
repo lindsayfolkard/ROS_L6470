@@ -435,7 +435,7 @@ long AutoDriver::paramHandler(uint8_t param, unsigned long value)
     //  users should refer to the datasheet to ensure that they fully understand each one of
     //  the bits in the register.
     case STATUS:  // STATUS is a read-only register
-      retVal = xferParam(0, 16);;
+      retVal = xferParam(0, 16);
       break;
     default:
       SPIXfer((uint8_t)value);

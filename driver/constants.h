@@ -351,11 +351,12 @@ enum ParamRegister
     CONFIG                = 0x18,
     STATUS                = 0x19
 };
-std::string toString(ParamRegister paramRegister);
-inline std::ostream& operator<<(std::ostream& os,ParamRegister x)
-{
-    return os << toString(x);
-}
+//std::string toString(ParamRegister paramRegister);
+//inline std::ostream& operator<<(std::ostream& os,ParamRegister x)
+//{
+//    return os << toString(x);
+//}
+int toBitLength(ParamRegister paramRegister);
 
 //dSPIN commands
 enum Command
