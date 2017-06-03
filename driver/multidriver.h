@@ -10,7 +10,7 @@
 #include <map>
 
 // Template validity check
-template typename <T> void checkMapIsValid (const std::map <int,T> &input , int motorLength)
+template <typename T> void checkMapIsValid (const std::map <int,T> &input , int motorLength)
 {
     if (input.size() > motorLength)
     {
@@ -57,9 +57,9 @@ class MultiDriver
 
     // Individual get functions if only very specific data needed
     std::vector<bool> isBusy();
-    std::vector<long> getPos(); // steps
+    std::vector<long> getPos();   // steps
     std::vector<long> getSpeed(); // steps/s
-    std::vector<long> getMark(); // steps?
+    std::vector<long> getMark();  // steps?
 
     /////////////////////////
     /// Configuration Commands
@@ -70,6 +70,10 @@ class MultiDriver
 
     void setProfileCfg(const std::map<int,ProfileCfg> &cfg);
     std::vector<ProfileCfg> getProfileCfg();
+
+    //    void setFullSpeed(float stepsPerSecond);
+    //    void setAcc(float stepsPerSecondPerSecond);
+    //    void setDec(float stepsPerSecondPerSecond);
     
     /////////////////////////
     /// Operational Commands
