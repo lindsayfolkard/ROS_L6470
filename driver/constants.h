@@ -320,6 +320,7 @@ inline std::ostream& operator<<(std::ostream& os,Status x)
 {
     return os << toString(x);
 }
+Status parseStatus (uint16_t statusValue);
 
 // Register address redefines.
 //  See the Param_Handler() function for more info about these.
@@ -446,10 +447,25 @@ inline std::ostream& operator<<(std::ostream& os,const ProfileCfg &x)
 /// The Various structs used as arguments to commands
 ///
 
-struct RunCommand
+struct DataCommand
+{
+    // Most commands to the DSPIN contain an initial command byte and then a corresponding series of data bytes
+    // Generic function to return the uint8_t command byte (b1 to send to device)
+    virtual uint8_t toCommand() = 0;
+
+    // Generic function to return the actual data to send through to the board and the number of bytes to send
+    virtual long toData(int &bitLength) = 0;
+
+};
+
+struct RunCommand : public DataCommand
 {
     MotorSpinDirection direction;
     float stepsPerSec;
+
+    uint8_t toCommand() override;
+    long toData(int &bitLength) override;
+
 };
 std::string toString(const RunCommand &x);
 inline std::ostream& operator<<(std::ostream& os,const RunCommand &x)
@@ -463,11 +479,14 @@ enum Action
     Action_Copy_AbsPos  = 0x08
 };
 
-struct GoUntilCommand
+struct GoUntilCommand : public DataCommand
 {
     MotorSpinDirection direction;
     float stepsPerSec;
     Action action;
+
+    uint8_t toCommand() override;
+    long toData(int &bitLength) override;
 };
 std::string toString(const GoUntilCommand &x);
 inline std::ostream& operator<<(std::ostream& os,const GoUntilCommand &x)
@@ -475,10 +494,13 @@ inline std::ostream& operator<<(std::ostream& os,const GoUntilCommand &x)
     return os << toString(x);
 }
 
-struct MoveCommand
+struct MoveCommand : public DataCommand
 {
     MotorSpinDirection direction;
     unsigned long numSteps;
+
+    uint8_t toCommand() override;
+    long toData(int &bitLength) override;
 };
 std::string toString(const MoveCommand &x);
 inline std::ostream& operator<<(std::ostream& os,const MoveCommand &x)
@@ -486,10 +508,13 @@ inline std::ostream& operator<<(std::ostream& os,const MoveCommand &x)
     return os << toString(x);
 }
 
-struct GoToDirCommand
+struct GoToDirCommand : public DataCommand
 {
     MotorSpinDirection direction;
     long pos;
+
+    uint8_t toCommand() override;
+    long toData(int &bitLength) override;
 };
 std::string toString(const GoToDirCommand &x);
 inline std::ostream& operator<<(std::ostream& os,const GoToDirCommand &x)

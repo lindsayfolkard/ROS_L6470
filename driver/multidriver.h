@@ -30,6 +30,7 @@ template <typename T> void checkMapIsValid (const std::map <int,T> &input , int 
 // Description : A single class which manages all daisy chained motors at once
 // Rationale   : The L6470 uses a daisy chaining approach to handle comms. This daisy chaining is a bit tricky
 //               and is hard to separate into parts without giving redundant comms.
+// FML - this is a real bitch...!!
 
 class MultiDriver
 {
@@ -82,7 +83,6 @@ class MultiDriver
     // Speed Commands
     void run(const std::map<int,RunCommand> &runCommands);
     void goUntil(const std::map <int,GoUntilCommand> &goUntilCommands);
-    void stepClock(const std::map <int,MotorSpinDirection> &directions);
     void releaseSw(const std::map <int,GoUntilCommand> &releaseSWCommands);
 
     // Position Commands

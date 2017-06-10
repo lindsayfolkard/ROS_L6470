@@ -252,23 +252,7 @@ Status AutoDriver::getStatus()
   uint16_t statusValue = bytePointer[0] + 0xFF*bytePointer[1];
 
   // Parse the status
-  Status status;
-  status.isHighZ = statusValue & STATUS_HIZ;
-  status.isBusy  = statusValue & STATUS_BUSY;
-  status.isSwitchClosed = !(statusValue & STATUS_SW_F);
-  status.switchEventDetected = statusValue & STATUS_SW_EVN;
-
-  status.performedLastCommand = !(statusValue & STATUS_NOTPERF_CMD);
-  status.lastCommandInvalid   = statusValue & STATUS_WRONG_CMD;
-
-  status.hasThermalWarning = !(statusValue & STATUS_TH_WRN);
-  status.isInThermalShutdown = !(statusValue & STATUS_TH_SD);
-  status.overCurrentDetected = !(statusValue & STATUS_OCD);
-  status.stallDetectedPhaseA = statusValue & STATUS_STEP_LOSS_A;
-  status.stallDetectedPhaseB = statusValue & STATUS_STEP_LOSS_B;
-
-  status.spinDirection = static_cast <MotorSpinDirection> (statusValue & STATUS_DIR);
-  status.motorStatus   = static_cast <MotorStatus> (statusValue & STATUS_MOT_STATUS);
+  Status status = parseStatus(statusValue);
 
   // TODO - speed and position
 

@@ -43,7 +43,13 @@ MultiDriver::getStatus()
     std::vector<uint16_t> states = SPIXfer(emptyMap());
 
     // Parse the responses
-    // TODO - once it is abstracted
+    std::vector<Status> statusVector;
+    for (auto state : states)
+    {
+        statusVector.push_back(parseStatus(state));
+    }
+
+    return statusVector;
 }
 
 // Individual get functions if only very specific data needed
@@ -131,28 +137,83 @@ MultiDriver::getProfileCfg()
 ////////////////////////
 
 // Speed Commands
+
+//  RUN sets the motor spinning in a direction (defined by the constants
+//  FWD and REV). Maximum speed and minimum speed are defined
+//  by the MAX_SPEED and MIN_SPEED registers; exceeding the FS_SPD value
+//  will switch the device into full-step mode.
+//  The spdCalc() function is provided to convert steps/s values into
+//  appropriate integer values for this function.
 void
 MultiDriver::run(const std::map<int,RunCommand> &runCommands)
 {
+    // Send the desired run commands
+    std::map<int,uint8_t> commandMap;
 
+    for (auto element : runCommands)
+    {
+        commandMap.insert(std::pair<int,uint8_t>(element.first,(RUN | element.second.direction)));
+    }
+    SPIXfer(RUN | direction);
+
+    // Send the desired speeds
+    std::map<int,uint32_t> speedMap;
+    for (auto element : runCommands)
+    {
+        // Now we need to push this value out to the dSPIN. The 32-bit value is
+        //  stored in memory in little-endian format, but the dSPIN expects a
+        //  big-endian output, so we need to reverse the uint8_t-order of the
+        //  data as we're sending it out. Note that only 3 of the 4 bytes are
+        //  valid here.
+
+        /// TODO - handle the big endian transition
+        uint32_t integerSpeed = spdCalc(element.second.stepsPerSec);
+        if (integerSpeed > 0xFFFFF) integerSpeed = 0xFFFFF;
+        speedMap.insert(std::pair<int,uint32_t>(element.first,integerSpeed));
+
+    }
+
+    SPIXfer(speedMap);
 }
 
+// GoUntil will set the motor running with direction dir (REV or
+//  FWD) until a falling edge is detected on the SW pin. Depending
+//  on bit SW_MODE in CONFIG, either a hard stop or a soft stop is
+//  performed at the falling edge, and depending on the value of
+//  act (either RESET or COPY) the value in the ABS_POS register is
+//  either RESET to 0 or COPY-ed into the MARK register.
 void
 MultiDriver::goUntil(const std::map <int,GoUntilCommand> &goUntilCommands)
 {
+    // Send the go until commands
+    std::map<int,uint8_t> commands;
+    std::map<int,uint32_t> speeds;
+    for (auto element : goUntilCommands)
+    {
+        commands.insert(std::pair<int,uint8>(element.first,(GO_UNTIL | element.second.action | element.second.direction)));
 
+        uint32_t integerSpeed = spdCalc(element.second.stepsPerSec);
+        if (integerSpeed > 0x3FFFFF) integerSpeed = 0x3FFFFF;
+        speeds.insert(std::pair<int,uint8_t>(element.first,integerSpeed));
+
+    }
+    SPIXfer(commands);
+
+    // Send the required speeds
+    SPIXfer(speeds);
 }
 
-void
-MultiDriver::stepClock(const std::map <int,MotorSpinDirection> &directions)
-{
-
-}
-
+// Similar in nature to GoUntil, ReleaseSW produces motion at the
+//  higher of two speeds: the value in MIN_SPEED or 5 steps/s.
+//  The motor continues to run at this speed until a rising edge
+//  is detected on the switch input, then a hard stop is performed
+//  and the ABS_POS register is either COPY-ed into MARK or RESET to
+//  0, depending on whether RESET or COPY was passed to the function
+//  for act.
 void
 MultiDriver::releaseSw(const std::map <int,GoUntilCommand> &releaseSWCommands)
 {
-
+SPIXfer(RELEASE_SW | action | direction);
 }
 
 // Position Commands
