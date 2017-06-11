@@ -7,6 +7,12 @@
 // General Information regarding motor tuning can be found here :
 // http://www.st.com/content/ccc/resource/technical/document/application_note/ad/fc/fb/f0/f7/c7/4c/48/DM00061093.pdf/files/DM00061093.pdf/jcr:content/translations/en.DM00061093.pdf
 // (page 15 lists recommended values)
+
+///
+/// \brief The BackEmfConfig struct
+/// contains all information that is needed to
+/// configure a motor to be used with a controller
+///
 struct BackEmfConfig
 {
     uint8_t holdingKVal;

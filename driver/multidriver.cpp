@@ -1,5 +1,6 @@
 #include "multidriver.h"
 #include <mraa.hpp>
+#include <exception>
 
 MultiDriver::MultiDriver(const std::vector<StepperMotor> &motors, int chipSelectPin, int resetPin, int busyPin):
     motors_(motors),
@@ -12,19 +13,32 @@ MultiDriver::MultiDriver(const std::vector<StepperMotor> &motors, int chipSelect
   SPI_.reset(new mraa::Spi(0));
   SPI_->mode(mraa::SPI_MODE3);
   SPI_->frequency(4000000); // Can this be a bit higher ?
+}
 
+void
+MultiDriver::checkMotorIsValid(int motor)
+{
+    if (motor < 0 || motor > motors_.size() )
+    {
+        throw; // TODO - fix which exception that is thrown
+    }
 }
 
 MultiDriver::MultiDriver(const std::vector<StepperMotor> &motors,
-                         const std::map <int,Config>     &config,
+                         const std::vector<Config>       &configs,
                          int                              chipSelectPin,
                          int                              resetPin,
                          int                              busyPin):
     MultiDriver(motors,chipSelectPin,resetPin,busyPin)
 {
-    setConfig(config);
-}
+    int motor=0;
+    for (const Config &cfg : configs)
+    {
+        setConfig(cfg,motor);
+        ++motor;
+    }
 
+}
 
 /////////////////////////
 /// Status Commands
@@ -52,6 +66,15 @@ MultiDriver::getStatus()
     return statusVector;
 }
 
+Status
+MultiDriver::getStatus(int motor)
+{
+    checkMotorIsValid(motor);
+    std::vector<Status> states = getStatus();
+    //checkVectorIsValid(states,motor);
+    return states[motor];
+}
+
 // Individual get functions if only very specific data needed
 std::vector<bool>
 MultiDriver::isBusy()
@@ -63,6 +86,15 @@ MultiDriver::isBusy()
         isBusyVector[i] = statusVector[i].isBusy;
     }
     return isBusyVector;
+}
+
+bool
+MultiDriver::isBusy(int motor)
+{
+    checkMotorIsValid(motor);
+    std:vector<bool> busyVector = isBusy();
+
+    return busyVector[motor];
 }
 
 std::vector<long>
@@ -90,6 +122,14 @@ MultiDriver::getSpeed()
     return speeds;
 }
 
+long
+MultiDriver::getSpeed(int motor)
+{
+    checkMotorIsValid(motor);
+    std::vector<long> speeds = getSpeed();
+    return speeds[motor];
+}
+
 std::vector<long>
 MultiDriver::getMark()
 {
@@ -104,33 +144,16 @@ MultiDriver::getMark()
     return marks;
 }
 
-/////////////////////////
-/// Configuration Commands
-/////////////////////////
-
-void
-MultiDriver::setConfig(const std::map<int,Config> &cfg)
+long
+MultiDriver::getMark(int motor)
 {
- // TODO
+    checkMotorIsValid(motor);
+    std::vector<long> marks = getMark();
+    return marks[motor];
 }
 
-std::vector<Config>
-MultiDriver::getConfig()
-{
- // TODO if needed
-}
 
-void
-MultiDriver::setProfileCfg(const std::map<int,ProfileCfg> &cfg)
-{
-// TODO
-}
 
-std::vector<ProfileCfg>
-MultiDriver::getProfileCfg()
-{
-// TODO
-}
 
 /////////////////////////
 /// Operational Commands
@@ -147,33 +170,13 @@ MultiDriver::getProfileCfg()
 void
 MultiDriver::run(const std::map<int,RunCommand> &runCommands)
 {
-    // Send the desired run commands
-    std::map<int,uint8_t> commandMap;
+    sendCommands(runCommands);
+}
 
-    for (auto element : runCommands)
-    {
-        commandMap.insert(std::pair<int,uint8_t>(element.first,(RUN | element.second.direction)));
-    }
-    SPIXfer(RUN | direction);
-
-    // Send the desired speeds
-    std::map<int,uint32_t> speedMap;
-    for (auto element : runCommands)
-    {
-        // Now we need to push this value out to the dSPIN. The 32-bit value is
-        //  stored in memory in little-endian format, but the dSPIN expects a
-        //  big-endian output, so we need to reverse the uint8_t-order of the
-        //  data as we're sending it out. Note that only 3 of the 4 bytes are
-        //  valid here.
-
-        /// TODO - handle the big endian transition
-        uint32_t integerSpeed = spdCalc(element.second.stepsPerSec);
-        if (integerSpeed > 0xFFFFF) integerSpeed = 0xFFFFF;
-        speedMap.insert(std::pair<int,uint32_t>(element.first,integerSpeed));
-
-    }
-
-    SPIXfer(speedMap);
+void
+MultiDriver::run(const RunCommand &runCommand , int motor)
+{
+    sendCommand(runCommand,motor);
 }
 
 // GoUntil will set the motor running with direction dir (REV or
@@ -185,22 +188,13 @@ MultiDriver::run(const std::map<int,RunCommand> &runCommands)
 void
 MultiDriver::goUntil(const std::map <int,GoUntilCommand> &goUntilCommands)
 {
-    // Send the go until commands
-    std::map<int,uint8_t> commands;
-    std::map<int,uint32_t> speeds;
-    for (auto element : goUntilCommands)
-    {
-        commands.insert(std::pair<int,uint8>(element.first,(GO_UNTIL | element.second.action | element.second.direction)));
+    sendCommands(goUntilCommands);
+}
 
-        uint32_t integerSpeed = spdCalc(element.second.stepsPerSec);
-        if (integerSpeed > 0x3FFFFF) integerSpeed = 0x3FFFFF;
-        speeds.insert(std::pair<int,uint8_t>(element.first,integerSpeed));
-
-    }
-    SPIXfer(commands);
-
-    // Send the required speeds
-    SPIXfer(speeds);
+void
+MultiDriver::goUntil(const GoUntilCommand &command, int motor)
+{
+    sendCommand(goUntilCommand,motor);
 }
 
 // Similar in nature to GoUntil, ReleaseSW produces motion at the
@@ -211,205 +205,154 @@ MultiDriver::goUntil(const std::map <int,GoUntilCommand> &goUntilCommands)
 //  0, depending on whether RESET or COPY was passed to the function
 //  for act.
 void
-MultiDriver::releaseSw(const std::map <int,GoUntilCommand> &releaseSWCommands)
+MultiDriver::releaseSw(const std::map<int, ReleaseSwCommand> &releaseSWCommands)
 {
-SPIXfer(RELEASE_SW | action | direction);
+    sendCommands(releaseSWCommands);
+}
+
+void
+MultiDriver::releaseSw(const ReleaseSwCommand &command , int motor)
+{
+    sendCommand(command,motor);
 }
 
 // Position Commands
 void
 MultiDriver::move(const std::map <int,MoveCommand> &moveCommands)
 {
-
+    sendCommands(moveCommands);
 }
 
 void
-MultiDriver::goTo(const std::map <int,long> &positions)
+MultiDriver::move(const MoveCommand &command , int motor)
 {
-
+    sendCommand(command,motor);
 }
 
 void
-MultiDriver::goToDir(const std::map <int,GoToCommand> &goToCommands)
+MultiDriver::goTo(const std::map <int,GoToCommand> &goToCommands)
 {
-
+    sendCommands(goToCommands);
 }
 
 void
-MultiDriver::goHome(const std::map <int,bool> &goHome)
+MultiDriver::goTo(const GoToCommand &command , int motor)
 {
-
+    sendCommand(command,motor);
 }
 
 void
-MultiDriver::goMark(const std::map <int,bool> &goMark)
+MultiDriver::goToDir(const std::map <int,GoToDirCommand> &goToDirCommands)
 {
+    sendCommands(goToDirCommands);
+}
 
+void
+MultiDriver::goToDir(const GoToDirCommand &command , int motor)
+{
+    sendCommand(command,motor);
+}
+
+void
+MultiDriver::goHome(const std::vector<int> &motors_)
+{
+    sendCommands(motors,GO_HOME);
+}
+
+void
+MultiDriver::goHome(int motor)
+{
+    goHome(std::vector<int>{motor});
+}
+
+void
+MultiDriver::goMark(const std::vector<int> &motors)
+{
+    sendCommand(motors,GO_MARK);
+}
+
+void
+MultiDriver::goMark(int motor)
+{
+    goMark(std::vector<int>{motor});
 }
 
 // Set Commands
 void
-MultiDriver::setMaxSpeed(const std::map <int,float> &maxSpeeds)
-{
-
-}
-
-void
-MultiDriver::setMinSpeed(const std::map <int,float> &minSpeeds)
-{
-
-}
-
-void
 MultiDriver::setMark(const std::map <int,long> &marks)
 {
+    setParam(MARK,marks);
+}
 
+void
+MultiDriver::setMark(long mark, int motor)
+{
+    std::map<int,long> marks = {{motor,mark}};
 }
 
 void
 MultiDriver::setPos(const std::map<int,long> &newPositions)
 {
-
+    setParam(ABS_POS,newPositions);
 }
 
 void
-MultiDriver::resetPos(const std::map<int,bool> &resetPosition)
+MultiDriver::setPos(long pos , int motor)
 {
-
+    setParam(ABS_POS , pos , motor);
 }
 
 void
-MultiDriver::resetDev(const std::map<int,bool> &resetDev)
+MultiDriver::resetPos(const std::vector<int> &motors)
 {
+    sendCommand(motors,RESET_POS);
+}
 
+void
+MultiDriver::resetDev(const std::vector<int> &motors)
+{
+    sendCommand(motors,RESET_DEVICE);
 }
 
 // Stop Commands
 void
-MultiDriver::softStop(const std::map<int,bool> &resetPosition)
+MultiDriver::softStop(const std::vector<int> &motors)
 {
-
+    sendCommands(motors,SOFT_STOP);
 }
 
 void
-MultiDriver::hardStop(const std::map<int,bool> &resetPosition)
+MultiDriver::hardStop(const std::vector<int> &motors)
 {
-
+    sendCommands(motors,HARD_STOP);
 }
 
 void
-MultiDriver::softHiZ(const std::map<int,bool> &resetPosition)
+MultiDriver::hardStop(int motor)
 {
-
+    hardStop(std::vector<int>{motor});
 }
 
 void
-MultiDriver::hardHiZ(const std::map<int,bool> &resetPosition)
+MultiDriver::softHiZ(const std::vector<int> &motors)
 {
-
+    sendCommands(motors,SOFT_HIZ);
 }
 
-/////////////////////////
-/// Raw Access Set/Get Commands
-////////////////////////
 void
-MultiDriver::setParam(ParamRegister param, std::map <int,T> &values)
+MultiDriver::softHiZ(int motor)
 {
-    uint8_t sendByte=SET_PARAM;
-    sendByte |= param;
-
-    // Send the param request
-    SPIXfer(sendByte);
-
-    // Set the value of each parameter as needed
-    xferParam(values,toBitLength(param));
+    softHiZ(std::Vector<int>{motor});
 }
 
-// Realize the "get parameter" function, to read from the various registers in
-//  the dSPIN chip.
-std::vector<T>
-MultiDriver::getParam(ParamRegister param)
+void
+MultiDriver::hardHiZ(const std::vector<int> &motors)
 {
-      uint8_t sendByte=GET_PARAM;
-      sendByte |= param;
-
-      // Send the param request
-      SPIXfer(sendByte);
-
-      // Parse the response from multiple boards
-      std::map<int,T> emptyMap();
-      return xferParam(emptyMap(),toBitLength(param));
+    sendCommands(motors,HARD_HIZ);
 }
 
-// R == recieve data type
-// S == send data type
-// TODO - should pretty much be the same data type/length everytime. TODO - check
-template <typename R , typename S> std::vector<R>
-MultiDriver::SPIXfer(const std::map<int, S> &data)
+void
+MultiDriver::hardHiZ(int motor)
 {
-    // Check map validity
-    checkMapIsValid<S>(data);
-
-    // The L6470 Accepts data daisy chained in 1 byte blocks
-    // (i.e controller1byte1,controller2byte1,...,<BREAK>,controller1byte2,controller2byte2,... etc..)s
-
-    // NB: need to be careful here that we are dealing with contiguos memory ??
-    std::vector<R> recvData(motors_.size(),0); // should init to all zeroes...
-
-    // < S or < R ???
-    for (int i=0; i < sizeof(R) ; ++i)
-    {
-        uint8_t byteSendPacket [motors_.size()]={NOP};
-        uint8_t byteRecvPacket [motors_.size()]={NOP};
-
-        for (const auto element : data)
-        {
-            byteSendPacket[data.first] = (data.second << (i*8)) & 0xFF;
-        }
-
-        SPI_->transfer(byteSendPacket,byteRecvPacket,motors_.size());
-
-        for (int j=0; j < motors_.size();++j)
-        {
-            recvData[j] |= (byteRecvPacket[j] >> (i*8));
-        }
-    }
-
-    //std::cout << "Transfer byte " << (int) sendPacket[_position] << std::endl;
-    //std::cout << "Result from transfer is " << (int) result << std::endl;
-    //std::cout << "return value is " << (int) recvPacket[_position] << std::endl;
-    return recvData;
-}
-
-template <typename R> std::vector<R>
-MultiDriver::SPIXfer(uint8_t requestValue)
-{
-    // Create an appropriate map
-    std::map<int,uint8_t> request;
-    for (int i=0 ; i < motors_.size() ; ++i)
-    {
-        map.insert(std::pair<int,uint8_t>(i,requestValue));
-    }
-
-    // Send the request
-    SPIXfer(request);
-}
-
-std::vector<R>
-MultiDriver::xferParam(const std::map<int,S> &parameters, uint8_t bitLen)
-{
-    uint8_t byteLen = bitLen/8;   // How many BYTES do we have?
-    if (bitLen%8 > 0) byteLen++;  // Make sure not to lose any partial uint8_t values.
-
-    // Send and recieve the response
-    std::vector<R> response = SPIXfer(parameters);
-
-    // Trim the response
-    unsigned long mask = 0xffffffff >> (32-bitLen);
-    for (auto element : response)
-    {
-        element = element & mask;
-    }
-
-    return response;
+    hardHiZ(std::vector<int>{motor});
 }
