@@ -1,30 +1,15 @@
 #pragma once
 
 #include <mraa.hpp>
-#include "constants.h"
+#include "types.h"
 #include "motor.h"
 #include "support.h"
+#include "commands.h"
 #include <memory>
 #include <stdint.h>
 #include <vector>
 #include <map>
-
-// Template validity check
-template <typename T> void checkMapIsValid (const std::map <int,T> &input , int motorLength)
-{
-    if (input.size() > motorLength)
-    {
-        assert (!"Invalid map size");
-    }
-
-    for (auto pair : input)
-    {
-        if (input.first >= motorLength || input.first < 0)
-        {
-            assert(!"Invalid map entry");
-        }
-    }
-}
+#include <assert.h>
 
 // MultiDriver
 // Description : A single class which manages all daisy chained motors at once
@@ -87,7 +72,7 @@ class MultiDriver
     ///
 
     // Profile is different, this we want to set efficiently since it is real-time critical
-    void setProfileCfg(const std::map<int,ProfileCfg> &cfg);
+    void setProfileCfg(const std::map<int,ProfileCfg> &cfgs);
     void setProfileCfg(const ProfileCfg &cfg , int motor);
 
     //Profile Raw parameters
@@ -98,7 +83,10 @@ class MultiDriver
     void setDec(float stepsPerSecondPerSecond , int motor );
 
     void setMaxSpeed(const std::map <int,float> &maxSpeeds);
+    void setMaxSpeed(float stepsPerSecond , int motor);
+
     void setMinSpeed(const std::map <int,float> &minSpeeds);
+    void setMinSpeed(float stepsPerSecond , int motor);
 
     ProfileCfg getProfileCfg(int motor);
 
@@ -109,23 +97,23 @@ class MultiDriver
     ////////////////////////
 
     // Speed Commands
-    void run(const std::map<int,RunCommand> &runCommands);
+    void run(const std::map<int, DataCommand> &runCommands);
     void run(const RunCommand &runCommand , int motor);
 
-    void goUntil(const std::map <int,GoUntilCommand> &goUntilCommands);
+    void goUntil(const std::map<int, DataCommand> &goUntilCommands);
     void goUntil(const GoUntilCommand &command , int motor);
 
-    void releaseSw(const std::map <int,ReleaseSwCommand> &releaseSWCommands);
-    void releaseSw(const ReleaseSwCommand &command , int motor);
+//    void releaseSw(const std::map <int,ReleaseSwCommand> &releaseSWCommands);
+//    void releaseSw(const ReleaseSwCommand &command , int motor);
 
     // Position Commands
-    void move(const std::map <int,MoveCommand> &moveCommands);
+    void move(const std::map <int,DataCommand> &moveCommands);
     void move(const MoveCommand &command , int motor);
 
-    void goTo(const std::map <int,GoToCommand> &goToCommands);
+    void goTo(const std::map <int,DataCommand> &goToCommands);
     void goTo(const GoToCommand &command , int motor);
 
-    void goToDir(const std::map <int,GoToDirCommand> &goToDirCommands);
+    void goToDir(const std::map <int,DataCommand> &goToDirCommands);
     void goToDir(const GoToDirCommand &command , int motor);
 
     void goHome(const std::vector <int> &motors);
@@ -145,12 +133,14 @@ class MultiDriver
     void softHiZ(int motor);
 
     void hardHiZ(const std::vector <int> &motors);
-    void hardHiz(int motor);
+    void hardHiZ(int motor);
 
     // Set Commands
-    void setMark(const std::map <int,long> &marks);
-    void setPos(const std::map<int,long> &newPositions);
+    //void setMark(const std::map<int, long> &marks);
+    //void setPos(const std::map<int,long> &newPositions);
+    void setPos(long pos , int motor);
     void resetPos(const std::vector <int> &motors);
+    void resetPos(int motor);
     void resetDev(const std::vector <int> &motors);
 
     /////////////////////////
@@ -180,7 +170,6 @@ class MultiDriver
     void setDecKVAL(uint8_t kvalInput , int motor );
     void setRunKVAL(uint8_t kvalInput , int motor );
     void setHoldKVAL(uint8_t kvalInput , int motor );
-    void setBackEmfConfig(const BackEmfConfig &backEmfConfig , int motor );
 
     bool  getLoSpdOpt( int motor );
     float getMaxSpeed( int motor );
@@ -189,7 +178,6 @@ class MultiDriver
     float getAcc( int motor );
     float getDec( int motor );
 
-    BackEmfConfig	   getBackEmfConfig( int motor );
     StepMode		   getStepMode( int motor );
     SyncSelect		   getSyncSelect( int motor );
     bool                   getSyncEnable( int motor );
@@ -211,20 +199,44 @@ class MultiDriver
         
   private:
 
+    // Sends requestValue to all motors
     std::vector<uint32_t> SPIXfer(uint8_t requestValue);
+
+    // Send requestValue to only the specified motor
+    uint32_t SPIXfer(uint8_t requestValue, int motor);
+
     std::vector<uint32_t> SPIXfer(const std::map<int, uint32_t> &data , int bitLength);
     std::vector<uint32_t> xferParam(const std::map<int,uint32_t> &parameters, uint8_t bitLen);
 
     void sendCommands(const std::map <int,DataCommand> &dataCommands);
     void sendCommands(const std::vector<int> &motors , uint8_t commandByte);
+    void sendCommand(const DataCommand &dataCommand , int motor);
 
     void checkMotorIsValid(int motor);
 
+    // Template validity check
+    template <typename T> void checkMapIsValid (const std::map <int,T> &input)
+    {
+        if (input.size() > motors_.size())
+        {
+            assert (!"Invalid map size");
+        }
+
+        for (const auto &element : input)
+        {
+            if ((unsigned int) element.first >= motors_.size() || element.first < 0)
+            {
+                assert(!"Invalid map entry");
+            }
+        }
+    }
+
+    const std::vector<StepperMotor> motors_;
     int chipSelectPin_;
     int resetPin_;
     int busyPin_;
     std::unique_ptr<mraa::Spi> SPI_;
-    const std::vector<StepperMotor> motors_;
+
 };
 
 /// #TODO - make pin mapping dynamic as we cannot know in advance how someone would use it in reality.

@@ -60,9 +60,8 @@ MultiDriver::getConfig(int motor)
 }
 
 void
-MultiDriver::setProfileCfg(const std::map<int,ProfileCfg> &cfg)
+MultiDriver::setProfileCfg(const std::map<int,ProfileCfg> &cfgs)
 {
-    ProfileCfg profile;
     std::map<int,float> accel;
     std::map<int,float> decel;
     std::map<int,float> maxVel;
@@ -70,16 +69,23 @@ MultiDriver::setProfileCfg(const std::map<int,ProfileCfg> &cfg)
 
     for (const auto motor : cfgs)
     {
-        accel.insert(std::pair<int,float>(motor.first,motor.second.accel));
-        decel.insert(std::pair<int,float>(motor.first,motor.second.decel));
-        maxVel.insert(std::pair<int,float>(motor.first,motor.second.maxVel));
-        minVel.insert(std::pair<int,float>(motor.first,motor.second.minVel));
+        accel.insert(std::pair<int,float>(motor.first,motor.second.acceleration));
+        decel.insert(std::pair<int,float>(motor.first,motor.second.deceleration));
+        maxVel.insert(std::pair<int,float>(motor.first,motor.second.maxSpeed));
+        minVel.insert(std::pair<int,float>(motor.first,motor.second.minSpeed));
     }
 
     setAcc(accel);
     setDec(decel);
     setMaxSpeed(maxVel);
     setMinSpeed(minVel);
+}
+
+void MultiDriver::setProfileCfg(const ProfileCfg &cfg, int motor)
+{
+    checkMotorIsValid(motor);
+    std::map<int,ProfileCfg> cfgMap = {{motor,cfg}};
+    setProfileCfg(cfgMap);
 }
 
 ProfileCfg
@@ -174,7 +180,7 @@ MultiDriver::setMinSpeed(const std::map <int,float> &minSpeeds)
     for (const auto element : minSpeeds)
     {
         // MIN_SPEED also contains the LSPD_OPT flag, so we need to protect that.
-        unsigned long temp = getParam(MIN_SPEED,motor) & 0x00001000;
+        unsigned long temp = getParam(MIN_SPEED,element.first) & 0x00001000;
 
         intMinSpeeds.insert(std::pair<int,uint32_t>(element.first,minSpdCalc(element.second)|temp));
     }
@@ -215,7 +221,7 @@ void MultiDriver::setSyncSelect( SyncSelect syncSelect , bool syncEnable , int m
   // Only some of the bits in this register are of interest to us; we need to
   //  clear those bits. It happens that they are the upper four.
   const uint8_t syncMask = 0x0F;
-  uint8_t syncPinConfig = (uint8_t)getParam(STEP_MODE);
+  uint8_t syncPinConfig = (uint8_t)getParam(STEP_MODE,motor);
   syncPinConfig &= syncMask;
 
   // Now, let's OR in the arguments. We're going to mask the incoming

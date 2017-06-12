@@ -1,43 +1,25 @@
 #include "commands.h"
+#include <sstream>
+#include <assert.h>
+#include "support.h"
 
-///
-/// Run Commands
-///
+uint32_t toBigEndian (uint32_t value)
+{
+    assert("TODO!!");
+    return 0;
+}
+
+uint32_t capMaxValue(uint32_t value , int bitLength)
+{
+    assert("TODO!!");
+    return 0;
+}
 
 std::string toString(const RunCommand &x)
 {
     std::stringstream ss;
     ss <<"direction = " << x.direction << " , speed = " << x.stepsPerSec << "steps/s" << std::endl;
     return ss.str();
-}
-
-uint8_t
-RunCommand::toCommand()
-{
-    return (RUN | direction);
-}
-
-long
-RunCommand::toData(int &bitLength)
-{
-    bitLength=toBitLength(SPEED);
-    return toBigEndian(capMaxValue(spdCalc(stepsPerSec),bitLength));
-}
-
-///
-/// GoUntilCommand
-///
-uint8_t
-GoUntilCommand::toCommand()
-{
-    return (GO_UNTIL | action | direction);
-}
-
-long
-GoUntilCommand::toData(int &bitLength)
-{
-    bitLength = toBitLength(SPEED);
-    return toBigEndian(capMaxValue(spdCalc(stepsPerSec),bitLength));
 }
 
 std::string toString(const GoUntilCommand &x)
@@ -47,23 +29,6 @@ std::string toString(const GoUntilCommand &x)
     return ss.str();
 }
 
-///
-/// MoveCommand
-///
-
-uint8_t
-MoveCommand::toCommand()
-{
-    return (MOVE|direction);
-}
-
-long
-MoveCommand::toData(int &bitLength)
-{
-    bitLength = toBitLength(ABS_POS);
-    return toBigEndian(capMaxValue(numSteps,bitLength));
-}
-
 std::string toString(const MoveCommand &x)
 {
     std::stringstream ss;
@@ -71,42 +36,9 @@ std::string toString(const MoveCommand &x)
     return ss.str();
 }
 
-///
-/// GoToCommand
-///
-
-std::String toString(const GoToCommand &command)
+std::string toString(const GoToCommand &command)
 {
-    return "pos = " << command.pos;
-}
-
-uint8_t
-GoToCommand::toCommand()
-{
-    return GOTO;
-}
-
-long
-GoToCommand::toData()
-{
-    return capMaxValue(pos,toBitLEngth(ABS_POS));
-}
-
-///
-/// GoToDirCommand
-///
-
-uint8_t
-GoToDirCommand::toCommand()
-{
-    return (GOTO_DIR | direction);
-}
-
-long
-GoToDirCommand::toData(int &bitLength)
-{
-    bitLength = toBitLength(ABS_POS);
-    return toBigEndian(capMaxValue(pos,bitLength));
+    return "pos = " + command.pos;
 }
 
 std::string toString(const GoToDirCommand &x)
