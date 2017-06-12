@@ -1,5 +1,7 @@
 #include <iostream>
 #include "multidriver.h"
+#include "types.h"
+#include "commands.h"
 #include <stdexcept>
 #include <string>
 #include <regex>
@@ -14,25 +16,28 @@ using namespace std;
 
 void printMenu();
 void printUsage(int argc, char **argv);
-void handleMenuOption(const std::string &input, AutoDriver &driver);
+//void handleMenuOption(const std::string &input, AutoDriver &driver);
 std::vector<long> getArguments(const std::string &input,int argCount);
-
 
 int main (int argc, char ** argv)
 {
+    // Create the stepper motor
+    Stepper_42BYGHW811 stepper;
+    std::vector<StepperMotor> motors = {stepper};
+
     // Instantiate the AutoDriver
-    AutoDriver driver(0,0,0);
+    MultiDriver driver(motors,0,0,0);
 
     // Let's try to do some simple shit
-    cout << "Status : " << driver.getStatus() << std::endl;
-    driver.softHiZ();
-    cout << "Status : " << driver.getStatus() << std::endl;
+    cout << "Status : " << driver.getStatus(0) << std::endl;
+    driver.softHiZ(0);
+    cout << "Status : " << driver.getStatus(0) << std::endl;
 
     // Lets get position
-    cout << "Position : " << driver.getPos() << std::endl;
-    cout << "Config   : " << driver.getConfig() << std::endl;
-    driver.resetPos();
-    cout << "Position : " << driver.getPos() << std::endl;
+    cout << "Position : " << driver.getPos(0) << std::endl;
+    cout << "Config   : " << driver.getConfig(0) << std::endl;
+    driver.resetPos(0);
+    cout << "Position : " << driver.getPos(0) << std::endl;
 
     // Lets set the config
     Stepper_42BYGHW811 nema17BackEmfConfig;
@@ -40,33 +45,34 @@ int main (int argc, char ** argv)
     Config driverConfig;
     driverConfig.backEmfConfig = backEmfConfig;
 
-    driver.setConfig(driverConfig);
+    driver.setConfig(driverConfig,0);
     
     // LEts set a profile config
-    cout << "ProfileCfg" << driver.getProfileCfg() << std::endl;
-    ProfileCfg profileCfg = driver.getProfileCfg();
+    ProfileCfg profileCfg = driver.getProfileCfg(0);
+    cout << "ProfileCfg" << profileCfg << std::endl;
     profileCfg.maxSpeed=650;
     profileCfg.minSpeed=80;
     profileCfg.acceleration=100;
     profileCfg.deceleration=100;    
 
-    driver.setProfileCfg(profileCfg);
+    driver.setProfileCfg(profileCfg,0);
     cout << "New profile cfg is " << profileCfg << std::endl;
 
     // Fuck it let's try to move
-    driver.softStop();
-    driver.run(Forward,400);
+    driver.softStop(0);
+    RunCommand runCommand(Forward,400);
+    driver.run(runCommand,0);
 
     int count =0;
     const int threshold = 200;
     while (++count < threshold)
     {
-      cout << "Position = " << driver.getPos() << std::endl;
-      cout << "Status = " << driver.getStatus() << std::endl;	
+      cout << "Position = " << driver.getPos(0) << std::endl;
+      cout << "Status = " << driver.getStatus(0) << std::endl;
       usleep(50000);
     }
 
-    driver.softStop();
+    driver.softStop(0);
     //    // Read the config back
 
     //    printMenu();
@@ -178,278 +184,278 @@ void printMenu()
   cout << "============================================================" << endl;
 }
 
-// Really ugly, but hey it works and easy to understand what is going on
-void handleMenuOption(const std::string &input , AutoDriver &driver)
-{
+//// Really ugly, but hey it works and easy to understand what is going on
+//void handleMenuOption(const std::string &input , AutoDriver &driver)
+//{
 
-    if      ( input.find("busyCheck")!= std::string::npos)
-    {
-	cout << "BusyState = " << driver.isBusy() << endl;
-    }
-    else if ( input.find("getStatus")!= std::string::npos)
-    {
-        cout << "Status = " << driver.getStatus() << endl;
-    }
-    else if ( input.find("setParam")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,2);
-	driver.setParam(static_cast<ParamRegister> (arguments[0]),arguments[1]);
-    }
-    else if ( input.find("setLoSpdOpt")!= std::string::npos )
-    {
-        assert(!"TODO");
-    }
-    else if ( input.find("configSyncPin")!= std::string::npos )
-    {
-        assert(!"TODO");
-    }
-    else if ( input.find("configStepMode")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,1);
-        driver.setStepMode(static_cast<StepMode>(arguments[0]));
-    }
-    else if ( input.find("setMaxSpeed")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,1);
-        driver.setMaxSpeed((uint8_t)arguments[0]);
-    }
-    else if ( input.find("setMinSpeed")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,1);
-        driver.setMinSpeed((uint8_t)arguments[0]);
-    }
-    else if ( input.find("setFullSpeed")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,1);
-        driver.setFullSpeed((uint8_t)arguments[0]);
-    }
-    else if ( input.find("setAcc")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,1);
-        driver.setAcc((uint8_t)arguments[0]);
-    }
-    else if ( input.find("setDec")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,1);
-        driver.setDec((uint8_t)arguments[0]);
-    }
-    else if ( input.find("setOCThreshold")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find( "setPWMFreq")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("setSlewRate")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("setOCShutdown")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("setVoltageComp")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("setSwitchMode")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("setOscMode")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("setAccKVAL")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("setDecKVAL")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("setRunKVAL")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("setHoldKVAL")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("getParam")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,1);
-	cout << "Param " << arguments[0] << " = " << driver.getParam(static_cast<ParamRegister>(arguments[0])) << endl;
-    }
-    else if ( input.find("getLoSpdOpt")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("getStepMode")!= std::string::npos )
-    {
-        cout << "Step Mode = " << driver.getStepMode() << endl;
-    }
-    else if ( input.find("getMaxSpeed")!= std::string::npos )
-    {
-        cout << "Max Speed = " << driver.getMaxSpeed() << endl;
-    }
-    else if ( input.find("getMinSpeed")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,1);
-        cout << "Min Speed = " << driver.getMinSpeed() << endl;
-    }
-    else if ( input.find("getFullSpeed")!= std::string::npos )
-    {
-        cout << "Full Speed = " << driver.getFullSpeed() << endl;
-    }
-    else if ( input.find("getAcc")!= std::string::npos )
-    {
-        cout << "Acc = " << driver.getAcc() << endl;
-    }
-    else if ( input.find("getDec")!= std::string::npos )
-    {
-        cout << "Dec = " << driver.getDec() << endl;
-    }
-    else if ( input.find("getOCThreshold(!= std::string::npos )")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("getPWMFreqDivisor(!= std::string::npos )")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("getPWMFreqMultiplier(!= std::string::npos )")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("getSlewRate(!= std::string::npos )")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("getOCShutdown(!= std::string::npos )")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("getVoltageComp(!= std::string::npos )")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("getSwitchMode(!= std::string::npos )")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("getOscMode(!= std::string::npos )")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("getAccKVAL(!= std::string::npos )")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("getDecKVAL(!= std::string::npos )")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("getRunKVAL(!= std::string::npos )")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("getHoldKVAL(!= std::string::npos )")!= std::string::npos )
-    {
-        assert (!"TODO");
-    }
-    else if ( input.find("getPos")!= std::string::npos )
-    {
-        cout << "Pos = " << driver.getPos() << endl;
-    }
-    else if ( input.find("getMark")!= std::string::npos )
-    {
-        cout << "Mark = " << driver.getMark() << endl;
-    }
-    else if ( input.find("run")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,2);
-	driver.run(static_cast<MotorSpinDirection>(arguments[0]),arguments[1]);
-    }
-    else if ( input.find("stepClock")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,1);
-	driver.stepClock(static_cast<MotorSpinDirection>(arguments[0]));
-    }
-    else if ( input.find("move")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,2);
-	driver.move(static_cast<MotorSpinDirection>(arguments[0]),arguments[1]);
-    }
-    else if ( input.find("goTo")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,1);
-        driver.goTo(arguments[0]);
-    }
-    else if ( input.find("goToDir")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,2);
-	driver.goToDir(static_cast<MotorSpinDirection>(arguments[0]),arguments[1]);
-    }
-    else if ( input.find("goUntil")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,3);
-	driver.goUntil(static_cast<MotorSpinDirection>(arguments[0]),arguments[1],static_cast<Action>(arguments[2]));
-    }
-    else if ( input.find("releaseSw")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,2);
-	driver.releaseSw(static_cast<MotorSpinDirection>(arguments[0]),static_cast<Action>(arguments[1]));
-    }
-    else if ( input.find("goHome")!= std::string::npos )
-    {
-        driver.goHome();
-    }
-    else if ( input.find("goMark")!= std::string::npos )
-    {
-        driver.goMark();
-    }
-    else if ( input.find("setMark")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,1);
-        driver.setMark(arguments[0]);
-    }
-    else if ( input.find("setPos")!= std::string::npos )
-    {
-        std::vector<long> arguments = getArguments(input,1);
-        driver.setPos(arguments[0]);
-    }
-    else if ( input.find("resetPos")!= std::string::npos )
-    {
-        driver.resetPos();
-    }
-    else if ( input.find("resetDev")!= std::string::npos )
-    {
-        driver.resetDev();
-    }
-    else if ( input.find("soft")!= std::string::npos )
-    {
-        driver.softStop();
-    }
-    else if ( input.find("hardStop")!= std::string::npos )
-    {
-        driver.hardStop();
-    }
-    else if ( input.find("softHiZ")!= std::string::npos )
-    {
-        driver.softHiZ();
-    }
-    else if ( input.find("hardHiZ")!= std::string::npos )
-    {
-        driver.hardHiZ();
-    }
-    else
-    {
-        throw std::runtime_error("Unable to parse input command " + input);
-    }
+//    if      ( input.find("busyCheck")!= std::string::npos)
+//    {
+//	cout << "BusyState = " << driver.isBusy() << endl;
+//    }
+//    else if ( input.find("getStatus")!= std::string::npos)
+//    {
+//        cout << "Status = " << driver.getStatus() << endl;
+//    }
+//    else if ( input.find("setParam")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,2);
+//	driver.setParam(static_cast<ParamRegister> (arguments[0]),arguments[1]);
+//    }
+//    else if ( input.find("setLoSpdOpt")!= std::string::npos )
+//    {
+//        assert(!"TODO");
+//    }
+//    else if ( input.find("configSyncPin")!= std::string::npos )
+//    {
+//        assert(!"TODO");
+//    }
+//    else if ( input.find("configStepMode")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,1);
+//        driver.setStepMode(static_cast<StepMode>(arguments[0]));
+//    }
+//    else if ( input.find("setMaxSpeed")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,1);
+//        driver.setMaxSpeed((uint8_t)arguments[0]);
+//    }
+//    else if ( input.find("setMinSpeed")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,1);
+//        driver.setMinSpeed((uint8_t)arguments[0]);
+//    }
+//    else if ( input.find("setFullSpeed")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,1);
+//        driver.setFullSpeed((uint8_t)arguments[0]);
+//    }
+//    else if ( input.find("setAcc")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,1);
+//        driver.setAcc((uint8_t)arguments[0]);
+//    }
+//    else if ( input.find("setDec")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,1);
+//        driver.setDec((uint8_t)arguments[0]);
+//    }
+//    else if ( input.find("setOCThreshold")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find( "setPWMFreq")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("setSlewRate")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("setOCShutdown")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("setVoltageComp")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("setSwitchMode")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("setOscMode")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("setAccKVAL")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("setDecKVAL")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("setRunKVAL")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("setHoldKVAL")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("getParam")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,1);
+//	cout << "Param " << arguments[0] << " = " << driver.getParam(static_cast<ParamRegister>(arguments[0])) << endl;
+//    }
+//    else if ( input.find("getLoSpdOpt")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("getStepMode")!= std::string::npos )
+//    {
+//        cout << "Step Mode = " << driver.getStepMode() << endl;
+//    }
+//    else if ( input.find("getMaxSpeed")!= std::string::npos )
+//    {
+//        cout << "Max Speed = " << driver.getMaxSpeed() << endl;
+//    }
+//    else if ( input.find("getMinSpeed")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,1);
+//        cout << "Min Speed = " << driver.getMinSpeed() << endl;
+//    }
+//    else if ( input.find("getFullSpeed")!= std::string::npos )
+//    {
+//        cout << "Full Speed = " << driver.getFullSpeed() << endl;
+//    }
+//    else if ( input.find("getAcc")!= std::string::npos )
+//    {
+//        cout << "Acc = " << driver.getAcc() << endl;
+//    }
+//    else if ( input.find("getDec")!= std::string::npos )
+//    {
+//        cout << "Dec = " << driver.getDec() << endl;
+//    }
+//    else if ( input.find("getOCThreshold(!= std::string::npos )")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("getPWMFreqDivisor(!= std::string::npos )")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("getPWMFreqMultiplier(!= std::string::npos )")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("getSlewRate(!= std::string::npos )")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("getOCShutdown(!= std::string::npos )")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("getVoltageComp(!= std::string::npos )")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("getSwitchMode(!= std::string::npos )")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("getOscMode(!= std::string::npos )")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("getAccKVAL(!= std::string::npos )")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("getDecKVAL(!= std::string::npos )")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("getRunKVAL(!= std::string::npos )")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("getHoldKVAL(!= std::string::npos )")!= std::string::npos )
+//    {
+//        assert (!"TODO");
+//    }
+//    else if ( input.find("getPos")!= std::string::npos )
+//    {
+//        cout << "Pos = " << driver.getPos() << endl;
+//    }
+//    else if ( input.find("getMark")!= std::string::npos )
+//    {
+//        cout << "Mark = " << driver.getMark() << endl;
+//    }
+//    else if ( input.find("run")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,2);
+//	driver.run(static_cast<MotorSpinDirection>(arguments[0]),arguments[1]);
+//    }
+//    else if ( input.find("stepClock")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,1);
+//	driver.stepClock(static_cast<MotorSpinDirection>(arguments[0]));
+//    }
+//    else if ( input.find("move")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,2);
+//	driver.move(static_cast<MotorSpinDirection>(arguments[0]),arguments[1]);
+//    }
+//    else if ( input.find("goTo")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,1);
+//        driver.goTo(arguments[0]);
+//    }
+//    else if ( input.find("goToDir")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,2);
+//	driver.goToDir(static_cast<MotorSpinDirection>(arguments[0]),arguments[1]);
+//    }
+//    else if ( input.find("goUntil")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,3);
+//	driver.goUntil(static_cast<MotorSpinDirection>(arguments[0]),arguments[1],static_cast<Action>(arguments[2]));
+//    }
+//    else if ( input.find("releaseSw")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,2);
+//	driver.releaseSw(static_cast<MotorSpinDirection>(arguments[0]),static_cast<Action>(arguments[1]));
+//    }
+//    else if ( input.find("goHome")!= std::string::npos )
+//    {
+//        driver.goHome();
+//    }
+//    else if ( input.find("goMark")!= std::string::npos )
+//    {
+//        driver.goMark();
+//    }
+//    else if ( input.find("setMark")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,1);
+//        driver.setMark(arguments[0]);
+//    }
+//    else if ( input.find("setPos")!= std::string::npos )
+//    {
+//        std::vector<long> arguments = getArguments(input,1);
+//        driver.setPos(arguments[0]);
+//    }
+//    else if ( input.find("resetPos")!= std::string::npos )
+//    {
+//        driver.resetPos();
+//    }
+//    else if ( input.find("resetDev")!= std::string::npos )
+//    {
+//        driver.resetDev();
+//    }
+//    else if ( input.find("soft")!= std::string::npos )
+//    {
+//        driver.softStop();
+//    }
+//    else if ( input.find("hardStop")!= std::string::npos )
+//    {
+//        driver.hardStop();
+//    }
+//    else if ( input.find("softHiZ")!= std::string::npos )
+//    {
+//        driver.softHiZ();
+//    }
+//    else if ( input.find("hardHiZ")!= std::string::npos )
+//    {
+//        driver.hardHiZ();
+//    }
+//    else
+//    {
+//        throw std::runtime_error("Unable to parse input command " + input);
+//    }
 
-}
+//}
 
 std::vector<long> getArguments(const std::string &input,int argCount)
 {

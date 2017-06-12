@@ -1,4 +1,5 @@
 #include "multidriver.h"
+#include "types.h"
 
 /////////////////////////
 /// Configuration Commands
@@ -283,7 +284,7 @@ void MultiDriver::setStepMode(StepMode stepMode,int motor)
   // Only some of these bits are useful (the lower three). We'll extract the
   //  current contents, clear those three bits, then set them accordingly.
   const uint8_t stepModeMask = 0xF8;
-  uint8_t stepModeConfig = (uint8_t)getParam(STEP_MODE);
+  uint8_t stepModeConfig = (uint8_t)getParam(STEP_MODE,motor);
   stepModeConfig &= stepModeMask;
 
   // Now we can OR in the new bit settings. Mask the argument so we don't

@@ -156,10 +156,10 @@ class MultiDriver
     /////////////////////////
     /// Raw Access Set/Get Commands
     ////////////////////////
-    void setParam(ParamRegister param, std::map<int, T> &values);
-    void setParam(ParamRegister param , long value , int motor);
-    std::vector<T> getParam(ParamRegister param);
-    T getParam(ParamRegister param , int motor);
+    void setParam(ParamRegister param, std::map<int, uint32_t> &values);
+    void setParam(ParamRegister param , uint32_t value , int motor);
+    std::vector<uint32_t> getParam(ParamRegister param);
+    uint32_t getParam(ParamRegister param , int motor);
     
     void setLoSpdOpt(bool enable , int motor );
     void setSyncSelect( SyncSelect syncSelect , bool syncEnable , int motor );
@@ -211,9 +211,9 @@ class MultiDriver
         
   private:
 
-    std::vector<uint8_t> SPIXfer(const std::map<int,uint8_t> &data);
-    std::vector<long> xferParam(const std::map<int,unsigned long> &parameters, uint8_t bitLen);
-    std::vector<long> paramHandler(uint8_t param, unsigned long value);
+    std::vector<uint32_t> SPIXfer(uint8_t requestValue);
+    std::vector<uint32_t> SPIXfer(const std::map<int, uint32_t> &data , int bitLength);
+    std::vector<uint32_t> xferParam(const std::map<int,uint32_t> &parameters, uint8_t bitLen);
 
     void sendCommands(const std::map <int,DataCommand> &dataCommands);
     void sendCommands(const std::vector<int> &motors , uint8_t commandByte);

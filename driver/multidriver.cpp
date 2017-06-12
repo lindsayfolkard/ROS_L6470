@@ -1,4 +1,5 @@
 #include "multidriver.h"
+#include "commands.h"
 #include <mraa.hpp>
 #include <exception>
 
@@ -50,11 +51,11 @@ std::vector<Status>
 MultiDriver::getStatus()
 {
     // Send the request
-    SPIXfer(GET_STATUS);
+    SPIXfer(GET_STATUS,8/*bitLength*/);
 
     // Get the responses
-    std::map<int,uint16_t> emptyMap();
-    std::vector<uint16_t> states = SPIXfer(emptyMap());
+    std::map<int,uint32_t> emptyMap();
+    std::vector<uint32_t> states = SPIXfer(emptyMap(),toBitLength(STATUS));
 
     // Parse the responses
     std::vector<Status> statusVector;
@@ -71,7 +72,6 @@ MultiDriver::getStatus(int motor)
 {
     checkMotorIsValid(motor);
     std::vector<Status> states = getStatus();
-    //checkVectorIsValid(states,motor);
     return states[motor];
 }
 

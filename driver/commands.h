@@ -21,9 +21,15 @@ struct DataCommand
 
 struct RunCommand : public DataCommand
 {
+    RunCommand(MotorSpinDirection _direction , float _stepsPerSec):
+        direction(_direction),
+        stepsPerSec(_stepsPerSec){}
+
+    // Variables
     MotorSpinDirection direction;
     float stepsPerSec;
 
+    // Functions
     uint8_t toCommand() override;
     long toData(int &bitLength) override;
 
@@ -42,10 +48,18 @@ enum Action
 
 struct GoUntilCommand : public DataCommand
 {
+    // Constructor
+    GoUntilCommand(MotorSpinDirection _direction , float _stepsPerSec , Action _action):
+        direction(_direction),
+        stepsPerSec(_stepsPerSec),
+        action(_action){}
+
+    // Variables
     MotorSpinDirection direction;
     float stepsPerSec;
     Action action;
 
+    // Functions
     uint8_t toCommand() override;
     long toData(int &bitLength) override;
 };
@@ -57,6 +71,10 @@ inline std::ostream& operator<<(std::ostream& os,const GoUntilCommand &x)
 
 struct MoveCommand : public DataCommand
 {
+    MoveCommand(MotorSpinDirection _direction , unsigned long _numSteps):
+        direction(_direction),
+        numSteps(_numSteps){}
+
     MotorSpinDirection direction;
     unsigned long numSteps;
 
@@ -69,16 +87,24 @@ inline std::ostream& operator<<(std::ostream& os,const MoveCommand &x)
     return os << toString(x);
 }
 
-// Making this a struct so that it makes sense w.r.t everything else...
+// Making this a struct so that it makes sense w.r.t everything else sending a command
 struct GoToCommand : public DataCommand
 {
+    GoToCommand(long _pos):
+        pos(_pos){}
+
     long pos;
+
     uint8_t toCommand() override;
     long toData(int &bitLength) override;
 };
 
 struct GoToDirCommand : public DataCommand
 {
+    GoToDirCommand(MotorSpinDirection _direction , long _pos):
+        direction(_direction),
+        pos(_pos){}
+
     MotorSpinDirection direction;
     long pos;
 
