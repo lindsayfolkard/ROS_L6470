@@ -1,6 +1,5 @@
-#include <mraa.hpp>
 #include <iostream>
-#include "driver.h"
+#include "multidriver.h"
 #include <stdexcept>
 #include <string>
 #include <regex>
@@ -109,71 +108,71 @@ void printMenu()
   cout << "------------------------------------------------------------" << endl << endl;
 
   cout << "------------------- Config Set Commands --------------------" << endl;
-  cout << " setParam(uint8_t param, unsigned long value)" << endl;
-  cout << " setLoSpdOpt(bool enable)" << endl;
-  cout << " configSyncPin(uint8_t pinFunc, uint8_t syncSteps)" << endl;
-  cout << " configStepMode(uint8_t stepMode)" << endl;
-  cout << " setMaxSpeed(float stepsPerSecond)" << endl;
-  cout << " setMinSpeed(float stepsPerSecond)" << endl;
-  cout << " setFullSpeed(float stepsPerSecond)" << endl;
-  cout << " setAcc(float stepsPerSecondPerSecond)" << endl;
-  cout << " setDec(float stepsPerSecondPerSecond)" << endl;
-  cout << " setOCThreshold(uint8_t threshold)" << endl;
-  cout << " setPWMFreq(int divisor, int multiplier)" << endl;
-  cout << " setSlewRate(int slewRate)" << endl;
-  cout << " setOCShutdown(int OCShutdown)" << endl;
-  cout << " setVoltageComp(int vsCompMode)" << endl;
-  cout << " setSwitchMode(int switchMode)" << endl;
-  cout << " setOscMode(int oscillatorMode)" << endl;
-  cout << " setAccKVAL(uint8_t kvalInput)" << endl;
-  cout << " setDecKVAL(uint8_t kvalInput)" << endl;
-  cout << " setRunKVAL(uint8_t kvalInput)" << endl;
-  cout << " setHoldKVAL(uint8_t kvalInput)" << endl;
+  cout << " setParam(uint8_t param, unsigned long value , int motor)" << endl;
+  cout << " setLoSpdOpt(bool enable , int motor)" << endl;
+  cout << " configSyncPin(uint8_t pinFunc, uint8_t syncSteps , int motor)" << endl;
+  cout << " configStepMode(uint8_t stepMode , int motor)" << endl;
+  cout << " setMaxSpeed(float stepsPerSecond , int motor)" << endl;
+  cout << " setMinSpeed(float stepsPerSecond , int motor)" << endl;
+  cout << " setFullSpeed(float stepsPerSecond , int motor)" << endl;
+  cout << " setAcc(float stepsPerSecondPerSecond , int motor)" << endl;
+  cout << " setDec(float stepsPerSecondPerSecond , int motor)" << endl;
+  cout << " setOCThreshold(uint8_t threshold , int motor)" << endl;
+  cout << " setPWMFreq(int divisor, int multiplier , int motor)" << endl;
+  cout << " setSlewRate(int slewRate , int motor)" << endl;
+  cout << " setOCShutdown(int OCShutdown , int motor)" << endl;
+  cout << " setVoltageComp(int vsCompMode , int motor)" << endl;
+  cout << " setSwitchMode(int switchMode , int motor)" << endl;
+  cout << " setOscMode(int oscillatorMode , int motor)" << endl;
+  cout << " setAccKVAL(uint8_t kvalInput , int motor)" << endl;
+  cout << " setDecKVAL(uint8_t kvalInput , int motor)" << endl;
+  cout << " setRunKVAL(uint8_t kvalInput , int motor)" << endl;
+  cout << " setHoldKVAL(uint8_t kvalInput , int motor)" << endl;
   cout << "------------------------------------------------------------" << endl << endl;
 
   cout << "------------------- Config Get Commands --------------------" << endl;
-  cout << " getParam(uint8_t param)" << endl;
-  cout << " getLoSpdOpt()" << endl;
-  cout << " getStepMode()" << endl;
-  cout << " getMaxSpeed()" << endl;
-  cout << " getMinSpeed()" << endl;
-  cout << " getFullSpeed()" << endl;
-  cout << " getAcc()" << endl;
-  cout << " getDec()" << endl;
-  cout << " getOCThreshold()" << endl;
-  cout << " getPWMFreqDivisor()" << endl;
-  cout << " getPWMFreqMultiplier()" << endl;
-  cout << " getSlewRate()" << endl;
-  cout << " getOCShutdown()" << endl;
-  cout << " getVoltageComp()" << endl;
-  cout << " getSwitchMode()" << endl;
-  cout << " getOscMode()" << endl;
-  cout << " getAccKVAL()" << endl;
-  cout << " getDecKVAL()" << endl;
-  cout << " getRunKVAL()" << endl;
-  cout << " getHoldKVAL()" << endl;
+  cout << " getParam(uint8_t param , int motor)" << endl;
+  cout << " getLoSpdOpt(int motor)" << endl;
+  cout << " getStepMode(int motor)" << endl;
+  cout << " getMaxSpeed(int motor)" << endl;
+  cout << " getMinSpeed(int motor)" << endl;
+  cout << " getFullSpeed(int motor)" << endl;
+  cout << " getAcc(int motor)" << endl;
+  cout << " getDec(int motor)" << endl;
+  cout << " getOCThreshold(int motor)" << endl;
+  cout << " getPWMFreqDivisor(int motor)" << endl;
+  cout << " getPWMFreqMultiplier(int motor)" << endl;
+  cout << " getSlewRate(int motor)" << endl;
+  cout << " getOCShutdown(int motor)" << endl;
+  cout << " getVoltageComp(int motor)" << endl;
+  cout << " getSwitchMode(int motor)" << endl;
+  cout << " getOscMode(int motor)" << endl;
+  cout << " getAccKVAL(int motor)" << endl;
+  cout << " getDecKVAL(int motor)" << endl;
+  cout << " getRunKVAL(int motor)" << endl;
+  cout << " getHoldKVAL(int motor)" << endl;
   cout << "------------------------------------------------------------" << endl << endl;
 
   cout << "------------------- Operational Commands -------------------" << endl;
-  cout << " getPos()" << endl;
-  cout << " getMark()" << endl;
-  cout << " run(uint8_t dir, float stepsPerSec)" << endl;
-  cout << " stepClock(uint8_t dir)" << endl;
-  cout << " move(uint8_t dir, unsigned long numSteps)" << endl;
-  cout << " goTo(long pos)" << endl;
-  cout << " goToDir(uint8_t dir, long pos)" << endl;
-  cout << " goUntil(uint8_t action, uint8_t dir, float stepsPerSec)" << endl;
-  cout << " releaseSw(uint8_t action, uint8_t dir)" << endl;
-  cout << " goHome()" << endl;
-  cout << " goMark()" << endl;
-  cout << " setMark(long newMark)" << endl;
-  cout << " setPos(long newPos)" << endl;
-  cout << " resetPos()" << endl;
-  cout << " resetDev()" << endl;
-  cout << " softStop()" << endl;
-  cout << " hardStop()" << endl;
-  cout << " softHiZ()" << endl;
-  cout << " hardHiZ()" << endl;
+  cout << " getPos(int motor)" << endl;
+  cout << " getMark(int motor)" << endl;
+  cout << " run(uint8_t dir, float stepsPerSec , int motor)" << endl;
+  cout << " stepClock(uint8_t dir , int motor)" << endl;
+  cout << " move(uint8_t dir, unsigned long numSteps , int motor)" << endl;
+  cout << " goTo(long pos , int motor)" << endl;
+  cout << " goToDir(uint8_t dir, long pos , int motor)" << endl;
+  cout << " goUntil(uint8_t action, uint8_t dir, float stepsPerSec , int motor)" << endl;
+  cout << " releaseSw(uint8_t action, uint8_t dir , int motor)" << endl;
+  cout << " goHome(int motor)" << endl;
+  cout << " goMark(int motor)" << endl;
+  cout << " setMark(long newMark , int motor)" << endl;
+  cout << " setPos(long newPos , int motor)" << endl;
+  cout << " resetPos(int motor)" << endl;
+  cout << " resetDev(int motor)" << endl;
+  cout << " softStop(int motor)" << endl;
+  cout << " hardStop(int motor)" << endl;
+  cout << " softHiZ(int motor)" << endl;
+  cout << " hardHiZ(int motor)" << endl;
   cout << "------------------------------------------------------------" << endl << endl;
 
   cout << "============================================================" << endl;
