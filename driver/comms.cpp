@@ -1,4 +1,5 @@
 #include "multidriver.h"
+#include <iostream>
 #include "types.h"
 #include <map>
 #include <vector>
@@ -11,6 +12,13 @@ void
 MultiDriver::setParam(ParamRegister param, std::map <int,uint32_t> &values)
 {
     checkMapIsValid<uint32_t>(values);
+	
+    if (commsDebugLevel_ >= CommsDebugOnlyActions) 
+    {
+	std::cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||" << std::endl;
+        std::cout << "(CommsDebug) : Set Param [" << param << "] with map : " 
+                  << std::endl << toMapString(values,toBitLength(param)) << std::endl;
+    } 
 
     uint8_t sendByte=SET_PARAM;
     sendByte |= param;
@@ -26,6 +34,11 @@ MultiDriver::setParam(ParamRegister param, std::map <int,uint32_t> &values)
 
     // Set the value of each parameter as needed
     xferParam(values,toBitLength(param));
+
+    if (commsDebugLevel_ >= CommsDebugOnlyActions) 
+    {
+	std::cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||" << std::endl << std::endl;
+    } 
 }
 void
 MultiDriver::setParam(ParamRegister param , uint32_t value , int motor)
@@ -55,7 +68,21 @@ uint32_t
 MultiDriver::getParam(ParamRegister param , int motor)
 {
     checkMotorIsValid(motor);
+
+    if (commsDebugLevel_ >= CommsDebugOnlyActions) 
+    {
+	std::cout << "___________________________________________" << std::endl;
+        std::cout << "(CommsDebug) : Get Param [" << param << "] " << std::endl << std::endl;
+    } 
+
     std::vector<uint32_t> values = getParam(param);
+    
+    if (commsDebugLevel_ >= CommsDebugOnlyActions) 
+    {
+	std::cout << "(CommsDebug) : Got Param [" << param << "] --> " << values[motor] << "(0x" << std::hex << param << std::dec << ")" << std::endl;
+        std::cout << "___________________________________________" << std::endl << std::endl;
+    } 
+
     return values[motor];
 }
 
@@ -64,6 +91,14 @@ MultiDriver::SPIXfer(const std::map<int, uint32_t> &data , int bitLength)
 {
     // Check map validity
     checkMapIsValid<uint32_t>(data);
+
+    if (commsDebugLevel_ == CommsDebugEverything) 
+    {
+	
+        std::cout << "-------------- (CommsDebug) : SPIXfer -----------------" << std::endl 
+                  << "bitLength = " << bitLength << " ,  Data (length = " << data.size() << ") -->"
+                  << std::endl << toMapString(data,bitLength) << std::endl;
+    } 
 
     // The L6470 Accepts data daisy chained in 1 byte blocks
     // (i.e controller1byte1,controller2byte1,...,<BREAK>,controller1byte2,controller2byte2,... etc..)
@@ -85,18 +120,33 @@ MultiDriver::SPIXfer(const std::map<int, uint32_t> &data , int bitLength)
         {
             byteSendPacket[element.first] = (element.second << (i*8)) & 0xFF;
         }
+        
+        // Debug if need be
+	if (commsDebugLevel_ == CommsDebugEverything) 
+    	{
+	    std::cout << "(CommsDebug) : SPI Transfer Packet " << i+1 <<" of " << (int)byteLength << " --> " << toLineString(byteSendPacket,motors_.size()) << std::endl;
+    	}
 
         SPI_->transfer(byteSendPacket,byteRecvPacket,motors_.size());
+
+	// Debug if need be
+	if (commsDebugLevel_ == CommsDebugEverything) 
+    	{
+	    std::cout << "(CommsDebug) : SPI Recieve Packet " << i+1 <<" of " << (int)byteLength << " --> " << toLineString(byteRecvPacket,motors_.size()) << std::endl;
+    	}
 
         for (unsigned int j=0; j < motors_.size();++j)
         {
             recvData[j] |= (byteRecvPacket[j] >> (i*8));
         }
     }
+	
+    if (commsDebugLevel_ == CommsDebugEverything) 
+    {
+	
+        std::cout << "------------------------------------------------------" << std::endl <<std::endl;
+    } 
 
-    //std::cout << "Transfer byte " << (int) sendPacket[_position] << std::endl;
-    //std::cout << "Result from transfer is " << (int) result << std::endl;
-    //std::cout << "return value is " << (int) recvPacket[_position] << std::endl;
     return recvData;
 }
 
@@ -156,6 +206,11 @@ MultiDriver::sendCommands(const std::map <int,DataCommand> &dataCommands)
 {
     checkMapIsValid<DataCommand>(dataCommands);
 
+    if (commsDebugLevel_ >= CommsDebugOnlyActions) 
+    {
+	//std::cout << "(CommsDebug) : Send CommandMap --> " <<  std::endl;
+    }
+ 
     // Send the go until commands
     std::map<int,uint32_t> commands;
     std::map<int,uint32_t> data;
@@ -178,6 +233,11 @@ MultiDriver::sendCommands(const std::map <int,DataCommand> &dataCommands)
 void
 MultiDriver::sendCommands(const std::vector<int> &motors , uint8_t commandByte)
 {    
+    if (commsDebugLevel_ >= CommsDebugOnlyActions) 
+    {
+	std::cout << "(CommsDebug) : Send Command [0x" <<std::hex << (unsigned int) commandByte << std::dec << "] to ";// << toLineString(&motors[0],motors.size()) << std::endl;
+    } 
+
     // Check validity
     for (int motor : motors)
     {
@@ -201,6 +261,11 @@ MultiDriver::sendCommand(const DataCommand &dataCommand , int motor)
     checkMotorIsValid(motor);
     std::map<int,uint32_t> commandMap;
     std::map<int,uint32_t> dataMap;
+
+    if (commsDebugLevel_ >= CommsDebugOnlyActions) 
+    {
+	std::cout << "(CommsDebug) : SendCommand [" << dataCommand.cmd << "] to motor " << motor << std::endl;
+    } 
 
     // Send the command bytes
     commandMap.insert(std::pair<int,uint32_t>(motor,dataCommand.toCommand()));

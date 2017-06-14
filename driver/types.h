@@ -2,6 +2,17 @@
 
 #include <iostream>
 #include "motor.h"
+#include <map>
+
+enum CommsDebugLevel
+{
+  CommsDebugNothing=0,
+  CommsDebugOnlyActions=1,
+  CommsDebugEverything=2
+};
+
+std::string toMapString(const std::map <int,uint32_t> &values , uint8_t bitLength);
+std::string toLineString(uint8_t *buffer , uint8_t length);
 
 // constant definitions for overcurrent thresholds. Write these values to 
 //  register OCD_TH to set the level at which an overcurrent even occurs.
@@ -349,11 +360,11 @@ enum ParamRegister
     CONFIG                = 0x18,
     STATUS                = 0x19
 };
-//std::string toString(ParamRegister paramRegister);
-//inline std::ostream& operator<<(std::ostream& os,ParamRegister x)
-//{
-//    return os << toString(x);
-//}
+std::string toString(ParamRegister paramRegister);
+inline std::ostream& operator<<(std::ostream& os,ParamRegister x)
+{
+    return os << toString(x);
+}
 int toBitLength(ParamRegister paramRegister);
 
 //dSPIN commands

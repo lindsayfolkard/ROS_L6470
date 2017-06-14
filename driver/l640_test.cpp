@@ -26,7 +26,9 @@ int main (int argc, char ** argv)
     std::vector<StepperMotor> motors = {stepper};
 
     // Instantiate the AutoDriver
-    MultiDriver driver(motors,0,0,0);
+    cout << "Try to instantiate the driver" << endl;
+    MultiDriver driver(motors,0,0,0,CommsDebugEverything);
+    cout << "Instantiated the driver!" << endl;	
 
     // Let's try to do some simple shit
     cout << "Status : " << driver.getStatus(0) << std::endl;

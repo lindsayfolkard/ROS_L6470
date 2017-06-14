@@ -3,11 +3,12 @@
 #include <mraa.hpp>
 #include <exception>
 
-MultiDriver::MultiDriver(const std::vector<StepperMotor> &motors, int chipSelectPin, int resetPin, int busyPin):
+MultiDriver::MultiDriver(const std::vector<StepperMotor> &motors, int chipSelectPin, int resetPin, int busyPin, CommsDebugLevel commsDebugLevel):
     motors_(motors),
     chipSelectPin_(chipSelectPin),
     resetPin_(resetPin),
-    busyPin_(busyPin)
+    busyPin_(busyPin),
+    commsDebugLevel_(commsDebugLevel)
 {
 
   // Try to initialise the mraa::SPI port
@@ -29,8 +30,9 @@ MultiDriver::MultiDriver(const std::vector<StepperMotor> &motors,
                          const std::vector<Config>       &configs,
                          int                              chipSelectPin,
                          int                              resetPin,
-                         int                              busyPin):
-    MultiDriver(motors,chipSelectPin,resetPin,busyPin)
+                         int                              busyPin,
+                         CommsDebugLevel                  commsDebugLevel):
+    MultiDriver(motors,chipSelectPin,resetPin,busyPin,commsDebugLevel)
 {
     int motor=0;
     for (const Config &cfg : configs)
@@ -50,6 +52,11 @@ MultiDriver::MultiDriver(const std::vector<StepperMotor> &motors,
 std::vector<Status>
 MultiDriver::getStatus()
 {
+    if (commsDebugLevel_ >= CommsDebugOnlyActions) 
+    {
+	std::cout << "++++++++++++++++ (CommsDebug) : Get Status ++++++++++++++++++++++" << std::endl << std::endl;
+    }
+
     // Send the request
     SPIXfer(GET_STATUS);
 
@@ -62,6 +69,11 @@ MultiDriver::getStatus()
     for (auto state : states)
     {
         statusVector.push_back(parseStatus(state));
+    }
+
+    if (commsDebugLevel_ >= CommsDebugOnlyActions) 
+    {
+	std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl << std::endl;
     }
 
     return statusVector;

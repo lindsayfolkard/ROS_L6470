@@ -25,13 +25,14 @@ class MultiDriver
     /// Constructors
     /////////////////////////
 
-    MultiDriver(const std::vector<StepperMotor> &motors, int chipSelectPin, int resetPin, int busyPin = -1);
+    MultiDriver(const std::vector<StepperMotor> &motors, int chipSelectPin, int resetPin, int busyPin = -1 ,CommsDebugLevel commsDebugLevel = CommsDebugNothing);
 
     MultiDriver(const std::vector<StepperMotor> &motors,
                 const std::vector<Config> &configs,
                 int chipSelectPin,
                 int resetPin,
-                int busyPin = -1);
+                int busyPin = -1,
+                CommsDebugLevel commsDebugLevel = CommsDebugNothing);
     
     /////////////////////////
     /// Status Commands
@@ -235,6 +236,7 @@ class MultiDriver
     int chipSelectPin_;
     int resetPin_;
     int busyPin_;
+    CommsDebugLevel commsDebugLevel_;
     std::unique_ptr<mraa::Spi> SPI_;
 
 };

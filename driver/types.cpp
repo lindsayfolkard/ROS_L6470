@@ -11,6 +11,33 @@ uint32_t capMaxValue (uint32_t value , uint8_t bitLength)
     return ((value > maxValue) ? maxValue : value);
 }
 
+std::string toMapString(const std::map <int,uint32_t> &values , uint8_t bitLength)
+{
+     // TODO - trim the value to bitLength
+     std::stringstream ss;
+     for (const auto element : values)
+     {
+         ss << "Motor " << element.first << " --> " << (unsigned int) element.second 
+            << " (0x" << std::hex << (unsigned int) element.second << ")" << std::endl;
+     }
+
+     return ss.str();
+}
+
+std::string toLineString(uint8_t *buffer , uint8_t length)
+{
+    std::stringstream ss;
+    ss << "[" << std::hex;
+
+    for (int i=0 ; i < length ; ++i)
+    {
+       if (i!=0) ss << ",";
+       ss << "0x" << (int)buffer[i];
+    }
+    ss << "]" << std::dec;
+    
+    return ss.str();
+}
 
 std::string toString(CurrentThreshold currentThreshold)
 {
@@ -287,6 +314,39 @@ std::string toString(Command command)
     case HARD_HIZ              : return "HARD_HIZ";
     case GET_STATUS            : return "GET_STATUS";
     default: assert(!"Invalid argument");
+    }
+};
+
+std::string toString(ParamRegister paramRegister)
+{
+    switch (paramRegister)
+    {
+    case ABS_POS    : return "ABS_POS";
+    case EL_POS     : return "EL_POS";
+    case MARK       : return "MARK";
+    case SPEED      : return "SPEED";
+    case ACC        : return "ACC";
+    case DECEL      : return "DECEL";
+    case MAX_SPEED  : return "MAX_SPEED";
+    case MIN_SPEED  : return "MIN_SPEED";
+    case FS_SPD     : return "FS_SPD";
+    case KVAL_HOLD  : return "KVAL_HOLD";
+    case KVAL_RUN   : return "KVAL_RUN";
+    case KVAL_ACC   : return "KVAL_ACC";
+    case KVAL_DEC   : return "KVAL_DEC";
+    case INT_SPD    : return "INT_SPD";
+    case ST_SLP     : return "ST_SLP";
+    case FN_SLP_ACC : return "FN_SLP_ACC";
+    case FN_SLP_DEC : return "FN_SLP_DEC";
+    case K_THERM    : return "K_THERM";
+    case ADC_OUT    : return "ADC_OUT";
+    case OCD_TH     : return "OCD_TH";
+    case STALL_TH   : return "STALL_TH";
+    case STEP_MODE  : return "STEP_MODE";
+    case ALARM_EN   : return "ALARM_EN";
+    case CONFIG     : return "CONFIG";
+    case STATUS     : return "STATUS";
+    default : return "Unknown paramRgister (" + std::to_string((int) paramRegister)+")";
     }
 };
 
