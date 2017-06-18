@@ -111,6 +111,9 @@ MultiDriver::SPIXfer(const std::map<int, uint32_t> &data , int bitLength)
     uint8_t byteLength = bitLength/8;   // How many BYTES do we have?
     if (bitLength%8 > 0) byteLength++;  // Make sure not to lose any partial uint8_t values.
 
+    // Send the data to the boards one byte at a time
+    // The L6470 expects numbers in big-endian format (because it is fucking annoying like that), however this
+    // is running on a linux which is little-endian. Hence we need to reverse the order in which we send bytes
     for (int i=0; i < byteLength ; ++i)
     {
         uint8_t byteSendPacket [motors_.size()]={NOP};
@@ -118,10 +121,10 @@ MultiDriver::SPIXfer(const std::map<int, uint32_t> &data , int bitLength)
 
         for (const auto element : data)
         {
-            byteSendPacket[element.first] = (element.second << (i*8)) & 0xFF;
+            byteSendPacket[element.first] = (element.second >> ((byteLength-i-1)*8));// & 0xFF;
         }
         
-        // Debug if need be
+        // Debug if needed
 	if (commsDebugLevel_ == CommsDebugEverything) 
     	{
 	    std::cout << "(CommsDebug) : SPI Transfer Packet " << i+1 <<" of " << (int)byteLength << " --> " << toLineString(byteSendPacket,motors_.size()) << std::endl;
@@ -129,15 +132,18 @@ MultiDriver::SPIXfer(const std::map<int, uint32_t> &data , int bitLength)
 
         SPI_->transfer(byteSendPacket,byteRecvPacket,motors_.size());
 
-	// Debug if need be
+        // Debug if needed
 	if (commsDebugLevel_ == CommsDebugEverything) 
     	{
 	    std::cout << "(CommsDebug) : SPI Recieve Packet " << i+1 <<" of " << (int)byteLength << " --> " << toLineString(byteRecvPacket,motors_.size()) << std::endl;
     	}
 
+        // I presume the L6470 also responds in big-endian format
         for (unsigned int j=0; j < motors_.size();++j)
         {
-            recvData[j] |= (byteRecvPacket[j] >> (i*8));
+            recvData[j] = recvData[j] << 8;
+            recvData[j] |= byteRecvPacket[j];
+            //recvData[j] |= (byteRecvPacket[j] >> (i*8));
         }
     }
 	
@@ -190,9 +196,8 @@ MultiDriver::xferParam(const std::map<int,uint32_t> &parameters, uint8_t bitLeng
     // Send and recieve the response
     std::vector<uint32_t> response = SPIXfer(parameters,bitLength);
 
-    // Trim the response ???
-    /// TODO - ????
-    unsigned long mask = 0xffffffff >> (32-bitLength);
+    // Trim the response
+    uint32_t mask = 0xffffffff >> (32-bitLength);
     for (auto element : response)
     {
         element = element & mask;

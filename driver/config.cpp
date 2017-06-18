@@ -105,7 +105,7 @@ MultiDriver::getProfileCfg(int motor)
 //  disable acceleration, putting the chip in "infinite" acceleration mode.
 void MultiDriver::setAcc(float stepsPerSecondPerSecond , int motor)
 {
-  unsigned long integerAcc = accCalc(stepsPerSecondPerSecond);
+  uint32_t integerAcc = accCalc(stepsPerSecondPerSecond);
   setParam(ACC, integerAcc, motor);
 }
 
@@ -129,7 +129,7 @@ float MultiDriver::getAcc(int motor)
 // Same rules as setAcc().
 void MultiDriver::setDec(float stepsPerSecondPerSecond, int motor)
 {
-  unsigned long integerDec = decCalc(stepsPerSecondPerSecond);
+  uint32_t integerDec = decCalc(stepsPerSecondPerSecond);
   setParam(DECEL, integerDec, motor);
 }
 
@@ -167,7 +167,7 @@ void MultiDriver::setMaxSpeed(float stepsPerSecond , int motor)
 {
   // We need to convert the floating point stepsPerSecond into a value that
   //  the dSPIN can understand. Fortunately, we have a function to do that.
-  unsigned long integerSpeed = maxSpdCalc(stepsPerSecond);
+ uint32_t integerSpeed = maxSpdCalc(stepsPerSecond);
 
   // Now, we can set that paramter.
   setParam(MAX_SPEED, integerSpeed, motor);
@@ -180,7 +180,7 @@ MultiDriver::setMinSpeed(const std::map <int,float> &minSpeeds)
     for (const auto element : minSpeeds)
     {
         // MIN_SPEED also contains the LSPD_OPT flag, so we need to protect that.
-        unsigned long temp = getParam(MIN_SPEED,element.first) & 0x00001000;
+        uint32_t temp = getParam(MIN_SPEED,element.first) & 0x00001000;
 
         intMinSpeeds.insert(std::pair<int,uint32_t>(element.first,minSpdCalc(element.second)|temp));
     }
@@ -195,10 +195,10 @@ void MultiDriver::setMinSpeed(float stepsPerSecond, int motor)
 {
   // We need to convert the floating point stepsPerSecond into a value that
   //  the dSPIN can understand. Fortunately, we have a function to do that.
-  unsigned long integerSpeed = minSpdCalc(stepsPerSecond);
+  uint32_t integerSpeed = minSpdCalc(stepsPerSecond);
 
   // MIN_SPEED also contains the LSPD_OPT flag, so we need to protect that.
-  unsigned long temp = getParam(MIN_SPEED,motor) & 0x00001000;
+  uint32_t temp = getParam(MIN_SPEED,motor) & 0x00001000;
 
   // Now, we can set that paramter.
   setParam(MIN_SPEED, integerSpeed | temp , motor);
@@ -233,7 +233,7 @@ void MultiDriver::setSyncSelect( SyncSelect syncSelect , bool syncEnable , int m
 
   // Now we should be able to send that uint8_t right back to the dSPIN- it
   //  won't corrupt the other bits, and the changes are made.
-  setParam(STEP_MODE, (unsigned long)syncPinConfig , motor);
+  setParam(STEP_MODE, (uint32_t)syncPinConfig , motor);
 }
 
 void
@@ -298,7 +298,7 @@ void MultiDriver::setStepMode(StepMode stepMode,int motor)
   stepModeConfig |= (stepMode&STEP_MODE_STEP_SEL);
 
   // Now push the change to the chip.
-  setParam(STEP_MODE, (unsigned long)stepModeConfig , motor);
+  setParam(STEP_MODE, (uint32_t)stepModeConfig , motor);
 }
 
 StepMode MultiDriver::getStepMode(int motor) {
@@ -309,7 +309,7 @@ StepMode MultiDriver::getStepMode(int motor) {
 //  mode.
 void MultiDriver::setFullSpeed(float stepsPerSecond, int motor)
 {
-  unsigned long integerSpeed = FSCalc(stepsPerSecond);
+  uint32_t integerSpeed = FSCalc(stepsPerSecond);
   setParam(FS_SPD, integerSpeed, motor);
 }
 
@@ -337,7 +337,7 @@ MultiDriver::setStallThreshold(CurrentThreshold stallCurrent, int motor)
 CurrentThreshold
 MultiDriver::getStallThreshold(int motor)
 {
-    const long stallThresholdMask=0xFF; // TODO - fix!!
+    const uint32_t stallThresholdMask=0xFF; // TODO - fix!!
     return static_cast<CurrentThreshold> (getParam(STALL_TH, motor) & stallThresholdMask);
 }
 
@@ -351,7 +351,7 @@ MultiDriver::getStallThreshold(int motor)
 //  multiplied/divided here is, but it is clearly *not* the actual clock freq.
 void MultiDriver::setPWMFreq(PwmFrequencyDivider divider, PwmFrequencyMultiplier multiplier, int motor)
 {
-  unsigned long configVal = getParam(CONFIG, motor);
+  uint32_t configVal = getParam(CONFIG, motor);
 
   // The divisor is set by config 15:13, so mask 0xE000 to clear them.
   configVal &= ~(CONFIG_F_PWM_INT);
@@ -375,7 +375,7 @@ PwmFrequencyMultiplier MultiDriver::getPWMFreqMultiplier(int motor)
 // Slew rate of the output in V/us. Can be 180, 290, or 530.
 void MultiDriver::setSlewRate(SlewRate slewRate, int motor)
 {
-  unsigned long configVal = getParam(CONFIG, motor);
+  uint32_t configVal = getParam(CONFIG, motor);
 
   // These bits live in CONFIG 9:8, so the mask is 0x0300.
   configVal &= ~(CONFIG_SLEW_RATE_MASK);
@@ -392,7 +392,7 @@ SlewRate MultiDriver::getSlewRate(int motor)
 // Single bit- do we shutdown the drivers on overcurrent or not?
 void MultiDriver::setOCShutdown(OverCurrentDetection overCurrentDetection, int motor)
 {
-  unsigned long configVal = getParam(CONFIG, motor);
+  uint32_t configVal = getParam(CONFIG, motor);
   // This bit is CONFIG 7, mask is 0x0080
   configVal &= ~(CONFIG_OC_DETECTION_MASK);
   //Now, OR in the masked incoming value.
@@ -409,7 +409,7 @@ OverCurrentDetection MultiDriver::getOCShutdown(int motor)
 //  p34 of the datasheet.
 void MultiDriver::setVoltageComp(VoltageCompensation vsCompMode, int motor)
 {
-  unsigned long configVal = getParam(CONFIG, motor);
+  uint32_t configVal = getParam(CONFIG, motor);
   // This bit is CONFIG 5, mask is 0x0020
   configVal &= ~(CONFIG_EN_VSCOMP_MASK);
   //Now, OR in the masked incoming value.
@@ -426,7 +426,7 @@ VoltageCompensation MultiDriver::getVoltageComp(int motor)
 //  This bit allows you to select what it does.
 void MultiDriver::setSwitchMode(SwitchConfiguration switchMode, int motor)
 {
-  unsigned long configVal = getParam(CONFIG, motor);
+  uint32_t configVal = getParam(CONFIG, motor);
   // This bit is CONFIG 4, mask is 0x0010
   configVal &= ~(CONFIG_SW_MODE_MASK);
   //Now, OR in the masked incoming value.
@@ -447,7 +447,7 @@ SwitchConfiguration MultiDriver::getSwitchMode(int motor)
 //  math used to figure out steps per second and stuff like that.
 void MultiDriver::setOscMode(OscillatorSelect oscillatorMode, int motor)
 {
-  unsigned long configVal = getParam(CONFIG , motor);
+  uint32_t configVal = getParam(CONFIG , motor);
   // These bits are CONFIG 3:0, mask is 0x000F
   configVal &= ~(CONFIG_OSC_SEL_MASK);
   //Now, OR in the masked incoming value.
@@ -546,7 +546,7 @@ MultiDriver::getBackEmfConfig(int motor)
 //  the driving sine wave prettier than normal until MIN_SPEED is reached.
 void MultiDriver::setLoSpdOpt(bool enable, int motor)
 {
-  unsigned long temp = getParam(MIN_SPEED, motor);
+  uint32_t temp = getParam(MIN_SPEED, motor);
   if (enable) temp |= 0x00001000; // Set the LSPD_OPT bit
   else        temp &= 0xffffefff; // Clear the LSPD_OPT bit
   setParam(MIN_SPEED, temp, motor);

@@ -320,8 +320,8 @@ struct Status
     MotorStatus        motorStatus;
 
     // Speed and Position
-    long position; // steps from home
-    long speed; // steps/s
+    int32_t position; // steps from home
+    uint32_t speed; // steps/s
 };
 std::string toString (Status &status);
 inline std::ostream& operator<<(std::ostream& os,Status x)

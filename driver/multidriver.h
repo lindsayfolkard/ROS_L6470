@@ -47,14 +47,14 @@ class MultiDriver
     std::vector<bool> isBusy();
     bool isBusy(int motor);
 
-    std::vector<long> getPos();   // steps
-    long getPos(int motor);
+    std::vector<int32_t> getPos();   // steps
+    int32_t getPos(int motor);
 
-    std::vector<long> getSpeed(); // steps/s
-    long getSpeed(int motor);
+    std::vector<uint32_t> getSpeed(); // steps/s
+    uint32_t getSpeed(int motor);
 
-    std::vector<long> getMark();  // steps?
-    long getMark(int motor);
+    std::vector<int32_t> getMark();  // steps?
+    int32_t getMark(int motor);
 
     /////////////////////////
     /// Configuration Commands
@@ -139,7 +139,7 @@ class MultiDriver
     // Set Commands
     //void setMark(const std::map<int, long> &marks);
     //void setPos(const std::map<int,long> &newPositions);
-    void setPos(long pos , int motor);
+    void setPos(int32_t pos , int motor);
     void resetPos(const std::vector <int> &motors);
     void resetPos(int motor);
     void resetDev(const std::vector <int> &motors);

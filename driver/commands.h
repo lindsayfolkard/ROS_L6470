@@ -13,9 +13,13 @@
 ///
 
 // Conversion Functions
-uint32_t toBigEndian (uint32_t value);
 uint32_t capMaxValue(uint32_t value , int bitLength);
 int toBitLength(ParamRegister paramRegister);
+
+// Convert signed int32_t to an appropriately signed two's complement value
+// and back again.
+uint32_t toTwosComplementUint(int32_t value , int bitLength);
+int32_t toSignedInt(uint32_t value , int bitLength);
 
 struct DataCommand
 {
@@ -43,7 +47,7 @@ struct RunCommand : public DataCommand
         DataCommand(
             RUN,
             _direction,
-            toBigEndian(capMaxValue(spdCalc(_stepsPerSec),toBitLength(SPEED))),
+            capMaxValue(spdCalc(_stepsPerSec),toBitLength(SPEED)),
             toBitLength(SPEED)
         ),
         direction(_direction),
@@ -73,7 +77,7 @@ struct GoUntilCommand : public DataCommand
         DataCommand(
             GO_UNTIL,
             direction|_action,
-            toBigEndian(capMaxValue(spdCalc(stepsPerSec),toBitLength(SPEED))),
+            capMaxValue(spdCalc(_stepsPerSec),toBitLength(SPEED)),
             toBitLength(SPEED)
         ),
         direction(_direction),
@@ -95,18 +99,18 @@ inline std::ostream& operator<<(std::ostream& os,const GoUntilCommand &x)
 
 struct MoveCommand : public DataCommand
 {
-    MoveCommand(MotorSpinDirection _direction , unsigned long _numSteps):
+    MoveCommand(MotorSpinDirection _direction , uint32_t _numSteps):
         DataCommand(
             MOVE,
             _direction,
-            toBigEndian(capMaxValue(numSteps,toBitLength(ABS_POS))),
+            capMaxValue(_numSteps,toBitLength(ABS_POS)),
             toBitLength(ABS_POS)
         ),
         direction(_direction),
         numSteps(_numSteps){}
 
     MotorSpinDirection direction;
-    unsigned long numSteps;
+    uint32_t numSteps;
 };
 
 std::string toString(const MoveCommand &x);
@@ -118,25 +122,25 @@ inline std::ostream& operator<<(std::ostream& os,const MoveCommand &x)
 // Making this a struct so that it makes sense w.r.t everything else sending a command
 struct GoToCommand : public DataCommand
 {
-    GoToCommand(long _pos):
+    GoToCommand(int32_t _pos):
         DataCommand(
             GOTO,
             0x00,
-            toBigEndian(capMaxValue(pos,toBitLength(ABS_POS))),
+            toTwosComplementUint(_pos,toBitLength(ABS_POS)),
             toBitLength(ABS_POS)
         ),
         pos(_pos){}
 
-    long pos;
+    uint32_t pos;
 };
 
 struct GoToDirCommand : public DataCommand
 {
-    GoToDirCommand(MotorSpinDirection _direction , long _pos):
+    GoToDirCommand(MotorSpinDirection _direction , int32_t _pos):
         DataCommand(
             GOTO_DIR,
             _direction,
-            toBigEndian(capMaxValue(pos,toBitLength(ABS_POS))),
+            toTwosComplementUint(_pos,toBitLength(ABS_POS)),
             toBitLength(ABS_POS)
         ),
         direction(_direction),
@@ -144,7 +148,7 @@ struct GoToDirCommand : public DataCommand
         {}
 
     MotorSpinDirection direction;
-    long pos;
+    int32_t pos;
 };
 
 std::string toString(const GoToDirCommand &x);

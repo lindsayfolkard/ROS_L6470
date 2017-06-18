@@ -109,70 +109,66 @@ MultiDriver::isBusy(int motor)
     return busyVector[motor];
 }
 
-std::vector<long>
-MultiDriver::getPos()
+std::vector<int32_t> MultiDriver::getPos()
 {
     std::vector <uint32_t> positions = getParam(ABS_POS);
-    std::vector <long> convertedPositions;
+    std::vector <int32_t> convertedPositions;
     for (auto element : positions)
     {
         // Since ABS_POS is a 22-bit 2's comp value, we need to check bit 21 and, if
         //  it's set, set all the bits ABOVE 21 in order for the value to maintain
         //  its appropriate sign.
-        if (element & 0x00200000) element |= 0xffc00000;
-        convertedPositions.push_back(element);
+        //if (element & 0x00200000) element |= 0xffc00000;
+        convertedPositions.push_back(toSignedInt(element,toBitLength(ABS_POS)));
     }
     return convertedPositions;
 }
 
-long
-MultiDriver::getPos(int motor)
+int32_t MultiDriver::getPos(int motor)
 {
     checkMotorIsValid(motor);
     return getPos()[motor];
 }
 
-std::vector<long>
+std::vector<uint32_t>
 MultiDriver::getSpeed()
 {
     std::vector <uint32_t> speeds = getParam(SPEED);
-    std::vector <long> convertedSpeeds;
-    for (auto element : speeds)
+
+    for (auto &element : speeds)
     {
-        convertedSpeeds.push_back(spdCalc(element));
+        element = spdCalc(element);
     }
-    return convertedSpeeds;
+    return speeds;
 }
 
-long
+uint32_t
 MultiDriver::getSpeed(int motor)
 {
     checkMotorIsValid(motor);
-    std::vector<long> speeds = getSpeed();
+    std::vector<uint32_t> speeds = getSpeed();
     return speeds[motor];
 }
 
-std::vector<long>
-MultiDriver::getMark()
+std::vector<int32_t> MultiDriver::getMark()
 {
     std::vector <uint32_t> marks = getParam(MARK);
-    std::vector <long> convertedMarks;
+    std::vector <int32_t> convertedMarks;
     for (auto element : marks)
     {
         // Since ABS_POS is a 22-bit 2's comp value, we need to check bit 21 and, if
         //  it's set, set all the bits ABOVE 21 in order for the value to maintain
         //  its appropriate sign.
-        if (element & 0x00200000) element |= 0xffC00000;
-        convertedMarks.push_back(element);
+        //if (element & 0x00200000) element |= 0xffC00000;
+        convertedMarks.push_back(toSignedInt(element,toBitLength(MARK)));
     }
     return convertedMarks;
 }
 
-long
-MultiDriver::getMark(int motor)
+int32_t MultiDriver::getMark(int motor)
 {
     checkMotorIsValid(motor);
-    std::vector<long> marks = getMark();
+    std::vector<int32_t> marks = getMark();
     return marks[motor];
 }
 
@@ -323,10 +319,9 @@ MultiDriver::goMark(int motor)
 //}
 
 void
-MultiDriver::setPos(long pos , int motor)
+MultiDriver::setPos(int32_t pos , int motor)
 {
-    /// TODO - handle the 2-s complement bigEndian transformation ???
-    setParam(ABS_POS , (uint32_t)pos , motor);
+    setParam(ABS_POS , toTwosComplementUint(pos,toBitLength(ABS_POS)) , motor);
 }
 
 void

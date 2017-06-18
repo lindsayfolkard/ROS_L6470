@@ -20,10 +20,10 @@ struct BackEmfConfig
     uint8_t accelStartingKVal;
     uint8_t decelStartingKVal;
 
-    long intersectSpeed;
-    long startSlope;
-    long accelFinalSlope;
-    long decelFinalSlope;
+    uint32_t intersectSpeed;
+    uint32_t startSlope;
+    uint32_t accelFinalSlope;
+    uint32_t decelFinalSlope;
 };
 std::string toString(const BackEmfConfig &backEmfConfig);
 inline std::ostream& operator<<(std::ostream& os,const BackEmfConfig &x)
