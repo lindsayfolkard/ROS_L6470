@@ -137,7 +137,7 @@ MultiDriver::getSpeed()
 
     for (auto &element : speeds)
     {
-        element = spdCalc(element);
+        element = spdParse(element);
     }
     return speeds;
 }

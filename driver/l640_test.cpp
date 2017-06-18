@@ -6,6 +6,7 @@
 #include <string>
 #include <regex>
 #include <assert.h>
+#include <chrono>
 
 /// @author      : Lindsay Folkard
 /// @date        : TODO
@@ -22,16 +23,21 @@ std::vector<long> getArguments(const std::string &input,int argCount);
 int main (int argc, char ** argv)
 {
     // Create the stepper motor
-    Stepper_42BYGHW811 stepper;
+    Stepper_57BYGH51 stepper;
     std::vector<StepperMotor> motors = {stepper};
 
     // Instantiate the AutoDriver
     cout << "Try to instantiate the driver" << endl;
-    MultiDriver driver(motors,0,0,0,CommsDebugEverything);
+    //MultiDriver driver(motors,0,0,0,CommsDebugEverything); CommsDebugNothing
+    MultiDriver driver(motors,0,0,0,CommsDebugNothing); 
     cout << "Instantiated the driver!" << endl;	
 
-    // Let's try to do some simple shit
-    cout << "Status : " << driver.getStatus(0) << std::endl;
+    // Let's try to do some simple shit 
+    const auto start = std::chrono::steady_clock::now();
+    Status status = driver.getStatus(0);
+    const auto end = std::chrono::steady_clock::now();
+    std::chrono::duration<double> diff = end-start;
+    cout << "Status : " << status << " , time = " << diff.count()*1000000 << " microseconds" <<  std::endl;
     driver.softHiZ(0);
     cout << "Status : " << driver.getStatus(0) << std::endl;
 
@@ -42,14 +48,16 @@ int main (int argc, char ** argv)
     cout << "Position : " << driver.getPos(0) << std::endl;
 
     // Lets set the config
-    Stepper_42BYGHW811 nema17BackEmfConfig;
-    BackEmfConfig backEmfConfig = BackEmfConfigFromStepper(nema17BackEmfConfig,24,2.5);
+    cout << "Original Config is " << driver.getConfig(0);
+    Stepper_57BYGH51 nema23BackEmfConfig;
+    BackEmfConfig backEmfConfig = BackEmfConfigFromStepper(nema23BackEmfConfig,24,2.5);
     Config driverConfig;
     driverConfig.backEmfConfig = backEmfConfig;
-
+    driverConfig.overCurrentThreshold = OCD_TH_3750m;
     driver.setConfig(driverConfig,0);
+    cout << "Updated Config is " << driver.getConfig(0);
     
-    // LEts set a profile config
+    // Lets set a profile config
     ProfileCfg profileCfg = driver.getProfileCfg(0);
     cout << "ProfileCfg" << profileCfg << std::endl;
     profileCfg.maxSpeed=650;
@@ -65,16 +73,32 @@ int main (int argc, char ** argv)
     RunCommand runCommand(Forward,400);
     driver.run(runCommand,0);
 
-    int count =0;
-    const int threshold = 200;
-    while (++count < threshold)
+    const int timeThreshold = 6;
+    double tLive = 0.0;
+    while (tLive < timeThreshold)
     {
+      const auto end = std::chrono::steady_clock::now();
+      std::chrono::duration<double> diff = end-start;
+      tLive = diff.count();
+      cout << "............ T + " << tLive << " s ..............." << std::endl;
       cout << "Position = " << driver.getPos(0) << std::endl;
+      cout << "Speed = " << driver.getSpeed(0) << std::endl;
       cout << "Status = " << driver.getStatus(0) << std::endl;
-      usleep(50000);
+      std::chrono::duration<double> diff2 = std::chrono::steady_clock::now()-end;
+      cout << "Data Acquisition time : " << diff2.count()*1000.0 << " ms" << std::endl;
+      cout << "......................................" << std::endl << std::endl;
+
+      usleep(20000);
+
+      if (tLive > 3.0)
+      {
+         driver.hardStop(0);
+	 //driver.softHiZ(0);
+      }
     }
 
     driver.softStop(0);
+
     //    // Read the config back
 
     //    printMenu();
