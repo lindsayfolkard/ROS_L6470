@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>rosl6470</name>
+  <name>ros_l6470</name>
   <version>0.0.0</version>
   <description>Package containing examples of how to use the rcl API.</description>
   <maintainer email="lindsayfolkard@gmail.com">LindsayFolkard</maintainer>

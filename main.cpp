@@ -1,7 +1,7 @@
 #include <iostream>
-#include "driver/multidriver.h"
-#include "driver/types.h"
-#include "driver/commands.h"
+#include "l6470_driver/multidriver.h"
+#include "l6470_driver/types.h"
+#include "l6470_driver/commands.h"
 #include <stdexcept>
 #include <string>
 #include <regex>

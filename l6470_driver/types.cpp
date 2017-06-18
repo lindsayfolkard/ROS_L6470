@@ -17,8 +17,8 @@ std::string toMapString(const std::map <int,uint32_t> &values , uint8_t bitLengt
      std::stringstream ss;
      for (const auto element : values)
      {
-         ss << "Motor " << element.first << " --> " << (unsigned int) element.second 
-            << " (0x" << std::hex << (unsigned int) element.second << ")" << std::endl;
+         ss << "Motor " << element.first << " --> " << (unsigned int) (element.second & (0xFFFFFFFF >> (32-bitLength)))
+            << " (0x" << std::hex << (unsigned int) (element.second & (0xFFFFFFFF >> (32-bitLength))) << ")" << std::endl;
      }
 
      return ss.str();
@@ -61,7 +61,7 @@ std::string toString(CurrentThreshold currentThreshold)
     case OCD_TH_6000m : return "6000 ma";
     default : assert(!"Invalid overCurrentThreshold");
     }
-};
+}
 
 std::string toString(StepMode stepMode)
 {
@@ -77,7 +77,7 @@ std::string toString(StepMode stepMode)
     case STEP_SEL_1_128: return "1/128 microstep";
     default: assert(!"Invalid stepMode");
     }
-};
+}
 
 std::string toString(SyncSelect syncSelect)
 {
@@ -93,7 +93,7 @@ std::string toString(SyncSelect syncSelect)
     case SYNC_SEL_64  : return "SYNC_SEL_64";
     default: assert(!"Invalid argument");
     }
-};
+}
 
 AlarmState::AlarmState()
 {
@@ -119,7 +119,7 @@ std::string toString(AlarmState alarmState)
     ss << "switchTurnOnEnabled    : " << (alarmState.switchTurnOnEnabled ? "Yes" : "No") << std::endl;
     ss << "badCommandEnabled      : " << (alarmState.badCommandEnabled ? "Yes" : "No") << std::endl;
     return ss.str();
-};
+}
 
 std::string toString(OscillatorSelect oscillatorSelect)
 {
@@ -140,7 +140,7 @@ std::string toString(OscillatorSelect oscillatorSelect)
     case CONFIG_EXT_32MHZ_OSCOUT_INVERT  : return "32MHZ_OSCOUT_INVERT";
     default: assert(!"Invalid argument");
     }
-};
+}
 
 std::string toString(SwitchConfiguration switchConfiguration)
 {
@@ -150,8 +150,7 @@ std::string toString(SwitchConfiguration switchConfiguration)
     case CONFIG_SW_USER : return "User Stop";
     default: assert(!"Invalid argument");
     }
-
-};
+}
 
 std::string toString(VoltageCompensation voltageCompensation)
 {
@@ -161,7 +160,7 @@ std::string toString(VoltageCompensation voltageCompensation)
     case CONFIG_VS_COMP_ENABLE  : return "VS_COMP_ENABLE";
     default: assert(!"Invalid argument");
     }
-};
+}
 
 std::string toString(OverCurrentDetection overCurrentDetection)
 {
@@ -171,7 +170,7 @@ std::string toString(OverCurrentDetection overCurrentDetection)
     case CONFIG_OC_SD_ENABLE  : return "OC_SD_ENABLE";
     default: assert(!"Invalid argument");
     }
-};
+}
 
 std::string toString(SlewRate slewRate)
 {
@@ -182,7 +181,7 @@ std::string toString(SlewRate slewRate)
     case CONFIG_SR_530V_us : return "530V/us";
     default: assert(!"Invalid argument");
     }
-};
+}
 
 std::string toString(PwmFrequencyMultiplier pwmFrequencyMultiplier)
 {
@@ -198,7 +197,7 @@ std::string toString(PwmFrequencyMultiplier pwmFrequencyMultiplier)
     case CONFIG_PWM_MUL_2                : return "PWM_MUL_2";
     default: assert(!"Invalid argument");
     }
-};
+}
 
 std::string toString (PwmFrequencyDivider pwmFrequency)
 {
@@ -213,7 +212,7 @@ std::string toString (PwmFrequencyDivider pwmFrequency)
     case CONFIG_PWM_DIV_7                : return "PWM_DIV_7";
     default: assert(!"Invalid argument");
     }
-};
+}
 
 std::string toString (MotorSpinDirection motorSpinDirection)
 {
@@ -224,7 +223,7 @@ std::string toString (MotorSpinDirection motorSpinDirection)
     default	      : return "";
         //default: assert(!"Invalid argument");
     }
-};
+}
 
 std::string toString (MotorStatus motorStatus)
 {
@@ -236,7 +235,7 @@ std::string toString (MotorStatus motorStatus)
     case STATUS_MOT_STATUS_CONST_SPD      : return "Motor at constant speed";
     default: assert(!"Invalid argument");
     }
-};
+}
 
 std::string toString (Status &status)
 {
@@ -264,7 +263,7 @@ std::string toString (Status &status)
     //ss << "MotorStatus          : " << toString(status.motorStatus) << std::end;
     return ss.str();
 
-};
+}
 
 // Parse the status
 Status
@@ -315,7 +314,7 @@ std::string toString(Command command)
     case GET_STATUS            : return "GET_STATUS";
     default: assert(!"Invalid argument");
     }
-};
+}
 
 std::string toString(ParamRegister paramRegister)
 {
@@ -348,7 +347,7 @@ std::string toString(ParamRegister paramRegister)
     case STATUS     : return "STATUS";
     default : return "Unknown paramRgister (" + std::to_string((int) paramRegister)+")";
     }
-};
+}
 
 std::string toString(const Config &cfg)
 {
@@ -377,7 +376,7 @@ std::string toString(const Config &cfg)
     ss << "pwmFrequencyDivider     : " << cfg.pwmFrequencyDivider << std::endl;
 
     return ss.str();
-};
+}
 
 std::string toString(const ProfileCfg &profileCfg)
 {
@@ -387,4 +386,4 @@ std::string toString(const ProfileCfg &profileCfg)
     ss << "maxSpeed     = " << profileCfg.maxSpeed     << " steps/s"   << std::endl;
     ss << "minSpeed     = " << profileCfg.minSpeed     << " steps/s"   << std::endl;
     return ss.str();
-};
+}

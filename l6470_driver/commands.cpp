@@ -12,7 +12,7 @@ uint32_t capMaxValue(uint32_t value , int bitLength)
 uint32_t toTwosComplementUint(int32_t value , int bitLength)
 {
     uint32_t result = 0;
-    result = ((~value)+1);//&(0xFFFFFFFF>>32-bitLength);
+    result = ((~value)+1) & (0xFFFFFFFF >> (32-bitLength));
     return result;
 }
 
