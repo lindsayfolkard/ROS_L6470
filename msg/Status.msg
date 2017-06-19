@@ -1,0 +1,17 @@
+bool is_high_z
+bool is_busy
+bool is_switch_closed
+bool switch_event_detected
+bool step_clock_active
+
+bool performed_last_command
+bool last_command_invalid
+
+bool has_thermal_warning
+bool is_in_thermal_shutdown
+bool over_current_detected
+bool stall_detected_phase_a
+bool stall_detected_phase_b
+
+bool motor_spin_fwd
+uint8 motor_state
