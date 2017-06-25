@@ -1,0 +1,31 @@
+# A simple trajectory defining message
+# Defines the position of each selected motor
+
+# Defines whether it is a position or speed trajectory
+uint8 CONTROL_MODE_POSITION_TRAJ=0
+uint8 CONTROL_MODE_SPEED_TRAJ=1
+
+# Defines whether controller will
+# a. drive continuously through a series of set points
+#    --> path is less deterministic (since we will be potentially
+#    changing motor speeds and accelerations on the fly to achieve non-stoppinh motion.
+#    The last endpoint is still very accurate (although the time at which we reach this point is less
+#    deterministic
+
+# b. come to a stop at each setpoint position
+#    --> Very deterministic path and high accuracy at the expense of jerky motion
+
+uint8 SET_POINT_MODE_CONTINUOUS=0
+uint8 SET_POINT_MODE_STOPPING=1
+
+time start_time # desired system start time
+uint8 motors[]
+uint8 control_mode
+uint8 set_point_mode
+
+# A series of positions|speeds which
+# are to be acheived by the controller
+# In between points driver will drive the motors
+# in a linear fashion to achieve the desired set-point
+
+trajectory_msgs/JointTrajectoryPoint[] points
