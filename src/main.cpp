@@ -1,7 +1,18 @@
-#include <iostream>
+
+// L6470 Driver
 #include "l6470_driver/multidriver.h"
 #include "l6470_driver/types.h"
 #include "l6470_driver/commands.h"
+
+// Ros 2 Libraries
+#include "rclcpp/rclcpp.hpp"
+#include "rcl/rcl.h"
+
+// Msg's and interface libs
+#include "ros_l6470_msgs/msg/pose.hpp"
+
+// STL Libraries
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <regex>
@@ -10,7 +21,7 @@
 
 /// @author      : Lindsay Folkard
 /// @date        : TODO
-/// @description : A simple program to interact with the SparkFunAutodriver tweaked to user mraa.
+/// @description : A simple program to interact with the SparkFunAutodriver tweaked to use mraa.
 ///
 
 using namespace std;
@@ -22,6 +33,18 @@ std::vector<long> getArguments(const std::string &input,int argCount);
 
 int main (int argc, char ** argv)
 {
+    // Initialise ros2
+    rclcpp::init(argc,argv);
+
+    // Create the node
+    auto node = rclcpp::node::Node::make_shared("demo_l6470_publisher");
+    rmw_qos_profile_t latched_qos = rmw_qos_profile_default;
+    latched_qos.depth = 1;
+    latched_qos.durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
+    auto pose_pub = node->create_publisher<ros_l6470_msgs::msg::Pose>(
+        "pose", latched_qos);
+    rclcpp::WallRate loop_rate(1);
+
     // Create the stepper motor
     Stepper_57BYGH51 stepper;
     std::vector<StepperMotor> motors = {stepper};
@@ -75,26 +98,30 @@ int main (int argc, char ** argv)
 
     const int timeThreshold = 6;
     double tLive = 0.0;
-    while (tLive < timeThreshold)
+
+    auto msg = std::make_shared<ros_l6470_msgs::msg::Pose>();
+
+    while (rclcpp::ok())
     {
-      const auto end = std::chrono::steady_clock::now();
-      std::chrono::duration<double> diff = end-start;
-      tLive = diff.count();
-      cout << "............ T + " << tLive << " s ..............." << std::endl;
-      cout << "Position = " << driver.getPos(0) << std::endl;
-      cout << "Speed = " << driver.getSpeed(0) << std::endl;
-      cout << "Status = " << driver.getStatus(0) << std::endl;
-      std::chrono::duration<double> diff2 = std::chrono::steady_clock::now()-end;
-      cout << "Data Acquisition time : " << diff2.count()*1000.0 << " ms" << std::endl;
-      cout << "......................................" << std::endl << std::endl;
+        const auto end = std::chrono::steady_clock::now();
+        //      std::chrono::duration<double> diff = end-start;
+        //      tLive = diff.count();
+        //      cout << "............ T + " << tLive << " s ..............." << std::endl;
+        //      cout << "Position = " << driver.getPos(0) << std::endl;
+        //      cout << "Speed = " << driver.getSpeed(0) << std::endl;
+        //      cout << "Status = " << driver.getStatus(0) << std::endl;
+        //      std::chrono::duration<double> diff2 = std::chrono::steady_clock::now()-end;
+        //      cout << "Data Acquisition time : " << diff2.count()*1000.0 << " ms" << std::endl;
+        //      cout << "......................................" << std::endl << std::endl;
 
-      usleep(20000);
+        // Populate the msg struct
+        msg->speed    = driver.getSpeed()[0];
+        msg->position = driver.getPos()[0];
+        //msg->motion_handler_state
 
-      if (tLive > 3.0)
-      {
-         driver.hardStop(0);
-	 //driver.softHiZ(0);
-      }
+        pose_pub->publish(msg);
+        rclcpp::spin_some(node);
+        loop_rate.sleep();
     }
 
     driver.softStop(0);
