@@ -16,6 +16,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
+find_package(ament_index_cpp REQUIRED)
+#find_package(class_loader REQUIRED)
 find_package(example_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rcl REQUIRED)
@@ -27,10 +29,25 @@ find_package(rmw_fastrtps_cpp REQUIRED)
 find_package(ros_l6470_msgs REQUIRED)
 
 add_subdirectory(l6470_driver)
-add_executable(${PROJECT_NAME}_main main.cpp)
-target_link_libraries(${PROJECT_NAME}_main l6470_driver)
-ament_target_dependencies(${PROJECT_NAME}_main rclcpp example_interfaces ros_l6470_msgs)
-install(TARGETS ${PROJECT_NAME}_main
-        DESTINATION bin)
+
+# create ament index resource which references the libraries in the binary dir
+set(node_plugins "")
+
+add_library(l6470_node SHARED
+  l6470_node.cpp)
+target_compile_definitions(l6470_node
+  PRIVATE "COMPOSITION_BUILDING_DLL")
+ament_target_dependencies(l6470_node
+  "class_loader"
+  "rclcpp"
+  "ros_l6470_msgs")
+#rclcpp_register_node_plugins(l6470_node "l6470::L6470Node")
+#set(node_plugins "${node_plugins}l6470::L6470Node;$<TARGET_FILE:l6470_node>\n")
+
+#add_executable(${PROJECT_NAME}_main main.cpp)
+#target_link_libraries(${PROJECT_NAME}_main l6470_driver)
+#ament_target_dependencies(${PROJECT_NAME}_main rclcpp example_interfaces ros_l6470_msgs)
+#install(TARGETS ${PROJECT_NAME}_main
+#        DESTINATION bin)
 
 ament_package()
