@@ -18,8 +18,8 @@ uint8 CONTROL_MODE_SPEED_TRAJ=1
 uint8 SET_POINT_MODE_CONTINUOUS=0
 uint8 SET_POINT_MODE_STOPPING=1
 
-time start_time # desired system start time
-uint8 motors[]
+#time start_time # desired system start time
+uint8[] motors
 uint8 control_mode
 uint8 set_point_mode
 
@@ -28,4 +28,8 @@ uint8 set_point_mode
 # In between points driver will drive the motors
 # in a linear fashion to achieve the desired set-point
 
-trajectory_msgs/JointTrajectoryPoint[] points
+#trajectory_msgs/JointTrajectoryPoint[] points
+
+---
+
+uint8[] current_setpoint_index

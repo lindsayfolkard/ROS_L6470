@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(ros_l6470_msgs)
+project(ros_l6470_srvs)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -17,13 +17,10 @@ find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
-rosidl_generate_interfaces(ros_l6470_msgs
-  "msg/Pose.msg"
-  "msg/Plan.msg"
-  "msg/Planner.msg"
-  "msg/Status.msg"
-  "msg/MultiPose.msg"
-  "msg/MultiStatus.msg"
+rosidl_generate_interfaces(ros_l6470_srvs
+  "GoToPosition.srv"
+  "GoTrajectory.srv"
+  "Stop.srv"
   DEPENDENCIES builtin_interfaces
 )
 

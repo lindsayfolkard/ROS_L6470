@@ -2,5 +2,5 @@
 # and speed of motor together (so it makes sense not to split
 # this message up)
 
-Header header
+#Header header
 Pose[] motor_states

@@ -7,11 +7,11 @@ uint8 STOP_HARD=2
 uint8 STOP_HIZ=3
 
 # Can specify specific motor to stop
-uint8 motor_indice[]
-uint8 stop_type[]
+uint8[] motor_indice
+uint8[] stop_type
 
 ---
 #response
 
-float64 est_time_to_stop[]
-uint8   stop_type[]
+float64[] est_time_to_stop
+uint8[]   stop_type

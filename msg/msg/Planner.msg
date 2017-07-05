@@ -4,7 +4,7 @@
 # what the l6470 daisy chain is planning to do.
 # Intended primarily for debugging
 
-Header header
+#Header header
 
 # Plan Related Variables
 uint16 traj_id

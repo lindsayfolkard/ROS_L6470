@@ -46,60 +46,62 @@ int main (int argc, char ** argv)
     rclcpp::WallRate loop_rate(1);
 
     // Create the stepper motor
-    Stepper_57BYGH51 stepper;
-    std::vector<StepperMotor> motors = {stepper};
+    //    Stepper_57BYGH51 stepper;
+    //    std::vector<StepperMotor> motors = {stepper};
 
-    // Instantiate the AutoDriver
-    cout << "Try to instantiate the driver" << endl;
-    //MultiDriver driver(motors,0,0,0,CommsDebugEverything); CommsDebugNothing
-    MultiDriver driver(motors,0,0,0,CommsDebugNothing); 
-    cout << "Instantiated the driver!" << endl;	
+    //    // Instantiate the AutoDriver
+    //    cout << "Try to instantiate the driver" << endl;
+    //    //MultiDriver driver(motors,0,0,0,CommsDebugEverything); CommsDebugNothing
+    //    MultiDriver driver(motors,0,0,0,CommsDebugNothing);
+    //    cout << "Instantiated the driver!" << endl;
 
-    // Let's try to do some simple shit 
-    const auto start = std::chrono::steady_clock::now();
-    Status status = driver.getStatus(0);
-    const auto end = std::chrono::steady_clock::now();
-    std::chrono::duration<double> diff = end-start;
-    cout << "Status : " << status << " , time = " << diff.count()*1000000 << " microseconds" <<  std::endl;
-    driver.softHiZ(0);
-    cout << "Status : " << driver.getStatus(0) << std::endl;
+    //    // Let's try to do some simple shit
+    //    const auto start = std::chrono::steady_clock::now();
+    //    Status status = driver.getStatus(0);
+    //    const auto end = std::chrono::steady_clock::now();
+    //    std::chrono::duration<double> diff = end-start;
+    //    cout << "Status : " << status << " , time = " << diff.count()*1000000 << " microseconds" <<  std::endl;
+    //    driver.softHiZ(0);
+    //    cout << "Status : " << driver.getStatus(0) << std::endl;
 
-    // Lets get position
-    cout << "Position : " << driver.getPos(0) << std::endl;
-    cout << "Config   : " << driver.getConfig(0) << std::endl;
-    driver.resetPos(0);
-    cout << "Position : " << driver.getPos(0) << std::endl;
+    //    // Lets get position
+    //    cout << "Position : " << driver.getPos(0) << std::endl;
+    //    cout << "Config   : " << driver.getConfig(0) << std::endl;
+    //    driver.resetPos(0);
+    //    cout << "Position : " << driver.getPos(0) << std::endl;
 
-    // Lets set the config
-    cout << "Original Config is " << driver.getConfig(0);
-    Stepper_57BYGH51 nema23BackEmfConfig;
-    BackEmfConfig backEmfConfig = BackEmfConfigFromStepper(nema23BackEmfConfig,24,2.5);
-    Config driverConfig;
-    driverConfig.backEmfConfig = backEmfConfig;
-    driverConfig.overCurrentThreshold = OCD_TH_3750m;
-    driver.setConfig(driverConfig,0);
-    cout << "Updated Config is " << driver.getConfig(0);
-    
-    // Lets set a profile config
-    ProfileCfg profileCfg = driver.getProfileCfg(0);
-    cout << "ProfileCfg" << profileCfg << std::endl;
-    profileCfg.maxSpeed=650;
-    profileCfg.minSpeed=80;
-    profileCfg.acceleration=100;
-    profileCfg.deceleration=100;    
+    //    // Lets set the config
+    //    cout << "Original Config is " << driver.getConfig(0);
+    //    Stepper_57BYGH51 nema23BackEmfConfig;
+    //    BackEmfConfig backEmfConfig = BackEmfConfigFromStepper(nema23BackEmfConfig,24,2.5);
+    //    Config driverConfig;
+    //    driverConfig.backEmfConfig = backEmfConfig;
+    //    driverConfig.overCurrentThreshold = OCD_TH_3750m;
+    //    driver.setConfig(driverConfig,0);
+    //    cout << "Updated Config is " << driver.getConfig(0);
 
-    driver.setProfileCfg(profileCfg,0);
-    cout << "New profile cfg is " << profileCfg << std::endl;
+    //    // Lets set a profile config
+    //    ProfileCfg profileCfg = driver.getProfileCfg(0);
+    //    cout << "ProfileCfg" << profileCfg << std::endl;
+    //    profileCfg.maxSpeed=650;
+    //    profileCfg.minSpeed=80;
+    //    profileCfg.acceleration=100;
+    //    profileCfg.deceleration=100;
 
-    // Fuck it let's try to move
-    driver.softStop(0);
-    RunCommand runCommand(Forward,400);
-    driver.run(runCommand,0);
+    //    driver.setProfileCfg(profileCfg,0);
+    //    cout << "New profile cfg is " << profileCfg << std::endl;
+
+    //    // Fuck it let's try to move
+    //    driver.softStop(0);
+    //    RunCommand runCommand(Forward,400);
+    //    driver.run(runCommand,0);
 
     const int timeThreshold = 6;
     double tLive = 0.0;
 
     auto msg = std::make_shared<ros_l6470_msgs::msg::Pose>();
+    double s=0.0;
+    double p=0.0;
 
     while (rclcpp::ok())
     {
@@ -115,8 +117,9 @@ int main (int argc, char ** argv)
         //      cout << "......................................" << std::endl << std::endl;
 
         // Populate the msg struct
-        msg->speed    = driver.getSpeed()[0];
-        msg->position = driver.getPos()[0];
+        msg->speed    = s;//driver.getSpeed()[0];
+        msg->position = p;//driver.getPos()[0];
+
         //msg->motion_handler_state
 
         pose_pub->publish(msg);
@@ -124,7 +127,7 @@ int main (int argc, char ** argv)
         loop_rate.sleep();
     }
 
-    driver.softStop(0);
+    //driver.softStop(0);
 
     //    // Read the config back
 

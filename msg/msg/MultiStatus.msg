@@ -2,5 +2,5 @@
 # daisy chained boards together (so it makes
 # sense to bundle all together here as well)
 
-Header header
-Status[] motorStates
+#Header header
+Status[] motor_states

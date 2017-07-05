@@ -8,22 +8,22 @@
 # b. Changing the desired position (i.e ABSPOS) the driver is trying to achieve
 # c. Changing the accel and decel profiles (i.e ACCEL & DECEL)
 
-uint16_t traj_id # keep it attached with the plan we require
+uint16 traj_id # keep it attached with the plan we require
 
 # Initial conditions
-int32_t initial_speed
-int32_t initial_pos
+int32 initial_speed
+int32 initial_pos
 #ProfileCfg initial_profile
 
 # The Plan
-int32 [] pos_setpoint_changes
+int32[] pos_setpoint_changes
 uint32[] pos_change_times
 
-int32 [] speed_profile_changes
+int32[] speed_profile_changes
 uint32[] speed_change_times
 
-int32 [] accel_profile_changes
+int32[] accel_profile_changes
 uint32[] accel_change_times
 
-int32 [] decel_profile_changes
+int32[] decel_profile_changes
 uint32[] decel_change_times 
