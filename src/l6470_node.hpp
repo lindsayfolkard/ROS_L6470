@@ -11,8 +11,6 @@
 
 // L6470 Driver
 #include "l6470_driver/multidriver.h"
-//#include "l6470_driver/types.h"
-//#include "l6470_driver/commands.h"
 
 // Ros 2 Libraries
 #include "rclcpp/rclcpp.hpp"
@@ -43,8 +41,20 @@ private:
   // test variables
   int count_;
 
-  rclcpp::Publisher<ros_l6470_msgs::msg::Pose>::SharedPtr posePublisher_;
-  rclcpp::timer::TimerBase::SharedPtr timer_;
+  // Publishers
+  rclcpp::Publisher<ros_l6470_msgs::msg::MultiPose>::SharedPtr   posePublisher_;
+  rcpcpp::Publisher<ros_l6470_msgs::msg::MultiStatus>::SharedPtr statusPublisher_;
+  //rcpcpp::Publisher<ros_l6470_msgs::msg::MultiStatus>
+
+  // Subscriptions
+  rclcpp::subscription::Subscription<ros_l6470_msgs::msg::ManualSpeed>::SharedPtr speedSub_;
+
+  // Services
+  //rclcpp::service::Service<example_interfaces::srv::AddTwoInts>::SharedPtr srv_;
+
+  // Wall Timers
+  rclcpp::timer::TimerBase::SharedPtr timer_; // I prefer if there is really only one task that talks to the controller
+  //rclcpp::timer::TimerBase::SharedPtr statusTimer_;
 
   // L6470 Multi Driver
   std::unique_ptr<MultiDriver> driver_;
