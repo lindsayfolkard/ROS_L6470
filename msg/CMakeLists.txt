@@ -24,6 +24,7 @@ rosidl_generate_interfaces(ros_l6470_msgs
   "msg/Status.msg"
   "msg/MultiPose.msg"
   "msg/MultiStatus.msg"
+  "msg/ManualSpeed.msg"
   DEPENDENCIES builtin_interfaces
 )
 

@@ -16,8 +16,12 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rcl/rcl.h"
 
-// Msg's and interface libs
-#include "ros_l6470_msgs/msg/pose.hpp"
+// Interface libs
+#include "ros_l6470_msgs/msg/multi_status.hpp"
+#include "ros_l6470_msgs/msg/multi_pose.hpp"
+#include "ros_l6470_msgs/msg/manual_speed.hpp"
+#include "ros_l6470_srvs/srv/go_to_position.hpp"
+#include "ros_l6470_srvs/srv/stop.hpp"
 
 // STL Libraries
 #include <memory>
@@ -36,6 +40,13 @@ protected:
 
   void on_timer();
 
+  void manualSpeedCallback(const ros_l6470_msgs::msg::ManualSpeed::UniquePtr manualSpeed);
+
+  void goToPositionCallback(const std::shared_ptr <ros_l6470_srvs::srv::GoToPosition::Request>  request,
+                                  std::shared_ptr <ros_l6470_srvs::srv::GoToPosition::Response> response);
+  void stopCallback(const std::shared_ptr <ros_l6470_srvs::srv::Stop::Request>  request,
+                          std::shared_ptr <ros_l6470_srvs::srv::Stop::Response> response);
+
 private:
 
   // test variables
@@ -43,18 +54,17 @@ private:
 
   // Publishers
   rclcpp::Publisher<ros_l6470_msgs::msg::MultiPose>::SharedPtr   posePublisher_;
-  rcpcpp::Publisher<ros_l6470_msgs::msg::MultiStatus>::SharedPtr statusPublisher_;
-  //rcpcpp::Publisher<ros_l6470_msgs::msg::MultiStatus>
+  rclcpp::Publisher<ros_l6470_msgs::msg::MultiStatus>::SharedPtr statusPublisher_;
 
   // Subscriptions
   rclcpp::subscription::Subscription<ros_l6470_msgs::msg::ManualSpeed>::SharedPtr speedSub_;
 
   // Services
-  //rclcpp::service::Service<example_interfaces::srv::AddTwoInts>::SharedPtr srv_;
+  rclcpp::service::Service<ros_l6470_srvs::srv::GoToPosition>::SharedPtr goToPositionSrv_;
+  rclcpp::service::Service<ros_l6470_srvs::srv::Stop>::SharedPtr         stopSrv_;
 
   // Wall Timers
   rclcpp::timer::TimerBase::SharedPtr timer_; // I prefer if there is really only one task that talks to the controller
-  //rclcpp::timer::TimerBase::SharedPtr statusTimer_;
 
   // L6470 Multi Driver
   std::unique_ptr<MultiDriver> driver_;
