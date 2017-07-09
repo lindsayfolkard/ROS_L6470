@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(ros_l6470_msgs)
+project(l6470_msgs)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -17,7 +17,7 @@ find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
-rosidl_generate_interfaces(ros_l6470_msgs
+rosidl_generate_interfaces(l6470_msgs
   "msg/Pose.msg"
   "msg/Plan.msg"
   "msg/Planner.msg"

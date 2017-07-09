@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>l6470_test_client</name>
+  <version>0.0.0</version>
+  <description>Package containing examples of how to use the rclpy API.</description>
+  <maintainer email="lindsayfolkard@gmail.com">Lindsay Folkard</maintainer>
+  <license>Apache License 2.0</license>
+
+  <build_depend>ament_python</build_depend>
+
+  <exec_depend>example_interfaces</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>l6470_msgs</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>ament_pep8</test_depend>
+  <test_depend>ament_pyflakes</test_depend>
+  <test_depend>rclpy</test_depend>
+  <test_depend>std_msgs</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
