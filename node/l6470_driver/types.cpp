@@ -1,6 +1,7 @@
 #include "types.h"
 #include <assert.h>
 #include <sstream>
+#include <boost/bimap.hpp>
 
 // Local Helper Function
 
@@ -39,28 +40,50 @@ std::string toLineString(uint8_t *buffer , uint8_t length)
     return ss.str();
 }
 
+boost::bimap <CurrentThreshold,std::string> getCurrentThresholdBiMap()
+{
+    boost::bimap <CurrentThreshold,std::string> map {
+        {OCD_TH_375m  , "375 ma"},
+        {OCD_TH_750m  , "750 ma"},
+        {OCD_TH_1125m , "1125 ma"},
+        {OCD_TH_1500m , "1500 ma"},
+        {OCD_TH_1875m , "1875 ma"},
+        {OCD_TH_2250m , "2250 ma"},
+        {OCD_TH_2625m , "2625 ma"},
+        {OCD_TH_3000m , "3000 ma"},
+        {OCD_TH_3375m , "3375 ma"},
+        {OCD_TH_3750m , "3750 ma"},
+        {OCD_TH_4125m , "4125 ma"},
+        {OCD_TH_4500m , "4500 ma"},
+        {OCD_TH_4875m , "4875 ma"},
+        {OCD_TH_5250m , "5250 ma"},
+        {OCD_TH_5625m , "5625 ma"},
+        {OCD_TH_6000m , "6000 ma"}
+    };
+    return map;
+}
+
+
 std::string toString(CurrentThreshold currentThreshold)
 {
-    switch (currentThreshold)
-    {
-    case OCD_TH_375m  : return "375 ma";
-    case OCD_TH_750m  : return "750 ma";
-    case OCD_TH_1125m : return "1125 ma";
-    case OCD_TH_1500m : return "1500 ma";
-    case OCD_TH_1875m : return "1875 ma";
-    case OCD_TH_2250m : return "2250 ma";
-    case OCD_TH_2625m : return "2625 ma";
-    case OCD_TH_3000m : return "3000 ma";
-    case OCD_TH_3375m : return "3375 ma";
-    case OCD_TH_3750m : return "3750 ma";
-    case OCD_TH_4125m : return "4125 ma";
-    case OCD_TH_4500m : return "4500 ma";
-    case OCD_TH_4875m : return "4875 ma";
-    case OCD_TH_5250m : return "5250 ma";
-    case OCD_TH_5625m : return "5625 ma";
-    case OCD_TH_6000m : return "6000 ma";
-    default : assert(!"Invalid overCurrentThreshold");
-    }
+    return getCurrentThresholdBiMap().left.at(currentThreshold);
+}
+
+boost::bimap<StepMode,std::string> getStepModeBiMap()
+{
+    boost::bimap<StepMode,std::string> map {
+
+    { STEP_SEL_1    ,  "Full  step"},
+    { STEP_SEL_1_2  ,  "Half  step"},
+    { STEP_SEL_1_4  ,  "1/4   microstep"},
+    { STEP_SEL_1_8  ,  "1/8   microstep"},
+    { STEP_SEL_1_16 ,  "1/16  microstep"},
+    { STEP_SEL_1_32 ,  "1/32  microstep"},
+    { STEP_SEL_1_64 ,  "1/64  microstep"},
+    { STEP_SEL_1_128,  "1/128 microstep"}
+
+    };
+    return map;
 }
 
 std::string toString(StepMode stepMode)
@@ -77,6 +100,23 @@ std::string toString(StepMode stepMode)
     case STEP_SEL_1_128: return "1/128 microstep";
     default: assert(!"Invalid stepMode");
     }
+}
+
+boost::bimap<SyncSelect,std::string> getSyncSelectBiMap()
+{
+    boost::bimap<SyncSelect,std::string> map {
+
+    { SYNC_SEL_1_2 ,  "SYNC_SEL_1_2"},
+    { SYNC_SEL_1   ,  "SYNC_SEL_1"},
+    { SYNC_SEL_2   ,  "SYNC_SEL_2"},
+    { SYNC_SEL_4   ,  "SYNC_SEL_4"},
+    { SYNC_SEL_8   ,  "SYNC_SEL_80"},
+    { SYNC_SEL_16  ,  "SYNC_SEL_16"},
+    { SYNC_SEL_32  ,  "SYNC_SEL_32"},
+    { SYNC_SEL_64  ,  "SYNC_SEL_64"}
+
+    };
+    return map;
 }
 
 std::string toString(SyncSelect syncSelect)
@@ -121,6 +161,29 @@ std::string toString(AlarmState alarmState)
     return ss.str();
 }
 
+boost::bimap<OscillatorSelect,std::string> getOscillatorSelectBiMap()
+{
+    boost::bimap<OscillatorSelect,std::string> map
+    {
+
+    { CONFIG_INT_16MHZ                ,  "16MHz"},
+    { CONFIG_INT_16MHZ_OSCOUT_2MHZ    ,  "16MHz OSCOUT 2MHz"},
+    { CONFIG_INT_16MHZ_OSCOUT_4MHZ    ,  "16MHZ_OSCOUT_4MHZ"},
+    { CONFIG_INT_16MHZ_OSCOUT_8MHZ    ,  "16MHZ_OSCOUT_8MHZ"},
+    { CONFIG_INT_16MHZ_OSCOUT_16MHZ   ,  "16MHZ_OSCOUT_16MHZ"},
+    { CONFIG_EXT_8MHZ_XTAL_DRIVE      ,  "8MHZ_XTAL_DRIVE"},
+    { CONFIG_EXT_16MHZ_XTAL_DRIVE     ,  "16MHZ_XTAL_DRIVE"},
+    { CONFIG_EXT_24MHZ_XTAL_DRIVE     ,  "24MHZ_XTAL_DRIVE"},
+    { CONFIG_EXT_32MHZ_XTAL_DRIVE     ,  "32MHZ_XTAL_DRIVE"},
+    { CONFIG_EXT_8MHZ_OSCOUT_INVERT   ,  "8MHZ_OSCOUT_INVERT"},
+    { CONFIG_EXT_16MHZ_OSCOUT_INVERT  ,  "16MHZ_OSCOUT_INVERT"},
+    { CONFIG_EXT_24MHZ_OSCOUT_INVERT  ,  "24MHZ_OSCOUT_INVERT"},
+    { CONFIG_EXT_32MHZ_OSCOUT_INVERT  ,  "32MHZ_OSCOUT_INVERT"}
+
+    };
+    return map;
+}
+
 std::string toString(OscillatorSelect oscillatorSelect)
 {
     switch (oscillatorSelect)
@@ -142,6 +205,18 @@ std::string toString(OscillatorSelect oscillatorSelect)
     }
 }
 
+boost::bimap<SwitchConfiguration,std::string> getSwitchConfigurationBiMap()
+{
+    boost::bimap<SwitchConfiguration,std::string> map
+    {
+
+    { CONFIG_SW_HARD_STOP ,  "Hard Stop"},
+    { CONFIG_SW_USER ,  "User Stop"}
+
+    };
+    return map;
+}
+
 std::string toString(SwitchConfiguration switchConfiguration)
 {
     switch(switchConfiguration)
@@ -150,6 +225,18 @@ std::string toString(SwitchConfiguration switchConfiguration)
     case CONFIG_SW_USER : return "User Stop";
     default: assert(!"Invalid argument");
     }
+}
+
+boost::bimap<VoltageCompensation,std::string> getVoltageCompensationBiMap()
+{
+    boost::bimap<VoltageCompensation,std::string> map
+    {
+
+    { CONFIG_VS_COMP_DISABLE ,  "VS_COMP_DISABLE"},
+    { CONFIG_VS_COMP_ENABLE  ,  "VS_COMP_ENABLE"}
+
+    };
+    return map;
 }
 
 std::string toString(VoltageCompensation voltageCompensation)
@@ -162,6 +249,18 @@ std::string toString(VoltageCompensation voltageCompensation)
     }
 }
 
+boost::bimap<OverCurrentDetection,std::string> getOverCurrentDetectionBiMap()
+{
+    boost::bimap<OverCurrentDetection,std::string> map
+    {
+
+    { CONFIG_OC_SD_DISABLE ,  "OC_SD_DSIABLE"},
+    { CONFIG_OC_SD_ENABLE  ,  "OC_SD_ENABLE"}
+
+    };
+    return map;
+}
+
 std::string toString(OverCurrentDetection overCurrentDetection)
 {
     switch(overCurrentDetection)
@@ -170,6 +269,19 @@ std::string toString(OverCurrentDetection overCurrentDetection)
     case CONFIG_OC_SD_ENABLE  : return "OC_SD_ENABLE";
     default: assert(!"Invalid argument");
     }
+}
+
+boost::bimap<SlewRate,std::string> getSlewRateBiMap()
+{
+    boost::bimap<SlewRate,std::string> map
+    {
+
+    { CONFIG_SR_180V_us ,  "180V/us"},
+    { CONFIG_SR_290V_us ,  "290V/us"},
+    { CONFIG_SR_530V_us ,  "530V/us"}
+
+    };
+    return map;
 }
 
 std::string toString(SlewRate slewRate)
@@ -181,6 +293,24 @@ std::string toString(SlewRate slewRate)
     case CONFIG_SR_530V_us : return "530V/us";
     default: assert(!"Invalid argument");
     }
+}
+
+boost::bimap<PwmFrequencyMultiplier,std::string> getPwmFrequencyMultiplierBiMap()
+{
+    boost::bimap<PwmFrequencyMultiplier,std::string> map
+    {
+
+    { CONFIG_PWM_MUL_0_625            ,  "PWM_MUL_0_625"},
+    { CONFIG_PWM_MUL_0_75             ,  "PWM_MUL_0_75"},
+    { CONFIG_PWM_MUL_0_875            ,  "PWM_MUL_0_875"},
+    { CONFIG_PWM_MUL_1                ,  "PWM_MUL_1"},
+    { CONFIG_PWM_MUL_1_25             ,  "PWM_MUL_1_25"},
+    { CONFIG_PWM_MUL_1_5              ,  "PWM_MUL_1_5"},
+    { CONFIG_PWM_MUL_1_75             ,  "PWM_MUL_1_75"},
+    { CONFIG_PWM_MUL_2                ,  "PWM_MUL_2"}
+
+    };
+    return map;
 }
 
 std::string toString(PwmFrequencyMultiplier pwmFrequencyMultiplier)
@@ -197,6 +327,23 @@ std::string toString(PwmFrequencyMultiplier pwmFrequencyMultiplier)
     case CONFIG_PWM_MUL_2                : return "PWM_MUL_2";
     default: assert(!"Invalid argument");
     }
+}
+
+boost::bimap<PwmFrequencyDivider,std::string> getPwmFrequencyDividerBiMap()
+{
+    boost::bimap<PwmFrequencyDivider,std::string> map
+    {
+
+    { CONFIG_PWM_DIV_1                ,  "PWM_DIV_1"},
+    { CONFIG_PWM_DIV_2                ,  "PWM_DIV_2"},
+    { CONFIG_PWM_DIV_3                ,  "PWM_DIV_3"},
+    { CONFIG_PWM_DIV_4                ,  "PWM_DIV_4"},
+    { CONFIG_PWM_DIV_5                ,  "PWM_DIV_5"},
+    { CONFIG_PWM_DIV_6                ,  "PWM_DIV_6"},
+    { CONFIG_PWM_DIV_7                ,  "PWM_DIV_7"}
+
+    };
+    return map;
 }
 
 std::string toString (PwmFrequencyDivider pwmFrequency)
@@ -353,29 +500,53 @@ std::string toString(const Config &cfg)
 {
     std::stringstream ss;
 
-    ss << "BackEmfConfig : " << std::endl << cfg.backEmfConfig << std::endl;
-    ss << "fullStepThresholdSpeed  : " << cfg.fullStepThresholdSpeed << " steps/s" << std::endl;
-
-    //ss << "thermalDriftCoefficient : " << cfg.thermalDriftCoefficient << std::endl;
-
-    ss << "overCurrentThreshold    : " << cfg.overCurrentThreshold << std::endl;
-    //ss << "stallThreshold          : " << cfg.stallThreshold << std::endl;
-
-    ss << "stepMode                : " << cfg.stepMode << std::endl;
-    //ss << "syncSelect              : " << cfg.syncSelect << std::endl;
-    //ss << "syncEnable              : " << (cfg.syncEnable ? "Yes" : "No") << std::endl;
-
-    //ss << "alarmState              : " << cfg.alarmState << std::endl;
-
-    ss << "oscillatorSelect        : " << cfg.oscillatorSelect << std::endl;
-    ss << "switchConfiguration     :"  << cfg.switchConfiguration << std::endl;
-    ss << "overCurrentDetection    : " << cfg.overCurrentDetection << std::endl;
-    ss << "slewRate                : " << cfg.slewRate << std::endl;
-    ss << "voltageCompensation     : " << cfg.voltageCompensation << std::endl;
-    ss << "pwmFrequencyMultiplier  : " << cfg.pwmFrequencyMultiplier << std::endl;
-    ss << "pwmFrequencyDivider     : " << cfg.pwmFrequencyDivider << std::endl;
+    ss << "BackEmfConfig           : " << std::endl << cfg.backEmfConfig << std::endl;
+    ss << "FullStepThresholdSpeed  : " << cfg.fullStepThresholdSpeed << " steps/s" << std::endl;
+    ss << "ThermalDriftCoefficient : " << cfg.thermalDriftCoefficient << std::endl;
+    ss << "OverCurrentThreshold    : " << cfg.overCurrentThreshold << std::endl;
+    ss << "StallThreshold          : " << cfg.stallThreshold << std::endl;
+    ss << "StepMode                : " << cfg.stepMode << std::endl;
+    ss << "SyncSelect              : " << cfg.syncSelect << std::endl;
+    ss << "SyncEnable              : " << (cfg.syncEnable ? "Yes" : "No") << std::endl;
+    ss << "OscillatorSelect        : " << cfg.oscillatorSelect << std::endl;
+    ss << "SwitchConfiguration     : " << cfg.switchConfiguration << std::endl;
+    ss << "OverCurrentDetection    : " << cfg.overCurrentDetection << std::endl;
+    ss << "SlewRate                : " << cfg.slewRate << std::endl;
+    ss << "VoltageCompensation     : " << cfg.voltageCompensation << std::endl;
+    ss << "PwmFrequencyMultiplier  : " << cfg.pwmFrequencyMultiplier << std::endl;
+    ss << "PwmFrequencyDivider     : " << cfg.pwmFrequencyDivider << std::endl;
+    ss << "AlarmState              : " << (int)cfg.alarmState << std::endl;
 
     return ss.str();
+}
+
+void tryReadAndSetWithDefault(const std::string &marker , T &vvariable ,
+
+Config cfgFromString(const std::string &str)
+{
+    // Create a default config
+    Config cfg;
+
+    // TODO - parse backEmfConfig
+
+    // Handle standard configuration parameters
+    if (str.find("BackEmfConfig           : " ) != std::string::npos) std::endl ) != std::string::npos) cfg.backEmfConfig ) != std::string::npos) std::endl;
+    if (str.find("FullStepThresholdSpeed  : " ) != std::string::npos) cfg.fullStepThresholdSpeed ) != std::string::npos) " steps/s" ) != std::string::npos) std::endl;
+    if (str.find("ThermalDriftCoefficient : " ) != std::string::npos) cfg.thermalDriftCoefficient ) != std::string::npos) std::endl;
+    if (str.find("OverCurrentThreshold    : " ) != std::string::npos) cfg.overCurrentThreshold ) != std::string::npos) std::endl;
+    if (str.find("StallThreshold          : " ) != std::string::npos) cfg.stallThreshold ) != std::string::npos) std::endl;
+    if (str.find("StepMode                : " ) != std::string::npos) cfg.stepMode ) != std::string::npos) std::endl;
+    if (str.find("SyncSelect              : " ) != std::string::npos) cfg.syncSelect ) != std::string::npos) std::endl;
+    if (str.find("SyncEnable              : " ) != std::string::npos) (cfg.syncEnable ? "Yes" : "No") ) != std::string::npos) std::endl;
+    if (str.find("OscillatorSelect        : " ) != std::string::npos) cfg.oscillatorSelect ) != std::string::npos) std::endl;
+    if (str.find("SwitchConfiguration     : " ) != std::string::npos) cfg.switchConfiguration ) != std::string::npos) std::endl;
+    if (str.find("OverCurrentDetection    : " ) != std::string::npos) cfg.overCurrentDetection ) != std::string::npos) std::endl;
+    if (str.find("SlewRate                : " ) != std::string::npos) cfg.slewRate ) != std::string::npos) std::endl;
+    if (str.find("VoltageCompensation     : " ) != std::string::npos) cfg.voltageCompensation ) != std::string::npos) std::endl;
+    if (str.find("PwmFrequencyMultiplier  : " ) != std::string::npos) cfg.pwmFrequencyMultiplier ) != std::string::npos) std::endl;
+    if (str.find("PwmFrequencyDivider     : " ) != std::string::npos) cfg.pwmFrequencyDivider ) != std::string::npos) std::endl;
+    if (str.find("AlarmState              : " ) != std::string::npos) (int)cfg.alarmState ) != std::string::npos) std::endl;
+
 }
 
 std::string toString(const ProfileCfg &profileCfg)

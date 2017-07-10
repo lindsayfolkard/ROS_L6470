@@ -19,7 +19,7 @@ L6470Node::L6470Node():
     Node("l6470node"),
     count_(0)
 {
-    // TODO - instantiate the driver ?? (or leave this for the init stage --> yes , this should be in the init stage)
+    // ??? leave this for the init stage --> yes , this should be in the init stage)
     std::cout << "Creating L6470 Node!"<<std::endl;
 
     // Create a publisher of l6470_msgs::msg::Pose msgs

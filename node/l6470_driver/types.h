@@ -401,7 +401,7 @@ inline std::ostream& operator<<(std::ostream& os,Command x)
 struct Config
 {
     // Default constructor with known good values
-    //Config();
+    // TODO // Config();
 
     // Very Important w.r.t smooth motor driving
     // See motor.h for more information
