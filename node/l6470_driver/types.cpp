@@ -139,9 +139,52 @@ std::string toString(AlarmState alarmState)
     return ss.str();
 }
 
+std::string getArgument(const std::string &cfg , const std::string &marker)
+{
+    // Try to find the marker in the cfg
+    size_t markerPosition = cfg.find(marker);
+
+    if (markerPosition == std::string::npos) return "";
+
+    size_t colonPosition = cfg.find(':',markerPosition);
+
+    if (colonPosition == std::string::npos) return "";
+
+    size_t endLinePosition = cfg.find('\n',colonPosition+1);
+
+    if (endLinePosition == std::string::npos) return "";
+
+    // Get the string (skip initial whitespace)
+    std::string element = cfg.substr(colonPosition+1,endLinePosition);
+    // trim trailing whitespace .... TODO
+
+    return element;
+}
+
+void tryExtractAlarmStateFromElement(const std::string &cfg, const std::string &marker , bool &cfgValue)
+{
+    std::string argument = getArgument(cfg,marker);
+
+    if (argument == "") return;
+
+    if (argument.find("No")!=std::string::npos)
+        cfgValue = false;
+    else
+        cfgValue = true;
+}
+
 AlarmState alarmStateFromString(const std::String &str)
 {
-
+    AlarmState alarmState;
+    tryExtractAlarmStateFromElement(str,"OverCurrentEnabled",alarmState.overCurrentEnabled);
+    tryExtractAlarmStateFromElement(str,"ThermalShutdownEnabled",alarmState.thermalShutdownEnabled);
+    tryExtractAlarmStateFromElement(str,"ThermalWarningEnabled",alarmState.thermalWarningEnabled);
+    tryExtractAlarmStateFromElement(str,"UnderVoltageEnabled",alarmState.underVoltageEnabled);
+    tryExtractAlarmStateFromElement(str,"StallDetectionAEnabled",alarmState.stallDetectionAEnabled);
+    tryExtractAlarmStateFromElement(str,"StallDetectionBEnabled",alarmState.stallDetectionBEnabled);
+    tryExtractAlarmStateFromElement(str,"SwitchTurnOnEnabled",alarmState.switchTurnOnEnabled);
+    tryExtractAlarmStateFromElement(str,"BadCommandEnabled",alarmState.badCommandEnabled);
+    return alarmState;
 }
 
 boost::bimap<OscillatorSelect,std::string> getOscillatorSelectBiMap()
@@ -425,7 +468,6 @@ std::string toString(const Config &cfg)
 {
     std::stringstream ss;
 
-    ss << "BackEmfConfig           : " << std::endl << cfg.backEmfConfig << std::endl;
     ss << "FullStepThresholdSpeed  : " << cfg.fullStepThresholdSpeed << " steps/s" << std::endl;
     ss << "ThermalDriftCoefficient : " << cfg.thermalDriftCoefficient << std::endl;
     ss << "OverCurrentThreshold    : " << cfg.overCurrentThreshold << std::endl;
@@ -440,7 +482,14 @@ std::string toString(const Config &cfg)
     ss << "VoltageCompensation     : " << cfg.voltageCompensation << std::endl;
     ss << "PwmFrequencyMultiplier  : " << cfg.pwmFrequencyMultiplier << std::endl;
     ss << "PwmFrequencyDivider     : " << cfg.pwmFrequencyDivider << std::endl;
-    ss << "AlarmState              : " << (int)cfg.alarmState << std::endl;
+
+    ss << "-------------------------------------" << std::endl;
+    ss << "BackEmfConfig" << std::endl << cfg.backEmfConfig << std::endl;
+    ss << "-------------------------------------" << std::endl;
+
+    ss << "-------------------------------------" << std::endl;
+    ss << "AlarmState" << (int)cfg.alarmState << std::endl;
+    ss << "-------------------------------------" << std::endl;
 
     return ss.str();
 }
@@ -450,30 +499,26 @@ Config cfgFromString(const std::string &str)
     // Create a default config
     Config cfg;
 
-    // TODO - parse backEmfConfig
-    try
-    {
-
-    }
-    catch (
-
     // Handle standard configuration parameters
-    if (str.find("BackEmfConfig           : " ) != std::string::npos) std::endl ) != std::string::npos) cfg.backEmfConfig ) != std::string::npos) std::endl;
-    if (str.find("FullStepThresholdSpeed  : " ) != std::string::npos) cfg.fullStepThresholdSpeed ) != std::string::npos) " steps/s" ) != std::string::npos) std::endl;
-    if (str.find("ThermalDriftCoefficient : " ) != std::string::npos) cfg.thermalDriftCoefficient ) != std::string::npos) std::endl;
-    if (str.find("OverCurrentThreshold    : " ) != std::string::npos) cfg.overCurrentThreshold ) != std::string::npos) std::endl;
-    if (str.find("StallThreshold          : " ) != std::string::npos) cfg.stallThreshold ) != std::string::npos) std::endl;
-    if (str.find("StepMode                : " ) != std::string::npos) cfg.stepMode ) != std::string::npos) std::endl;
-    if (str.find("SyncSelect              : " ) != std::string::npos) cfg.syncSelect ) != std::string::npos) std::endl;
-    if (str.find("SyncEnable              : " ) != std::string::npos) (cfg.syncEnable ? "Yes" : "No") ) != std::string::npos) std::endl;
-    if (str.find("OscillatorSelect        : " ) != std::string::npos) cfg.oscillatorSelect ) != std::string::npos) std::endl;
-    if (str.find("SwitchConfiguration     : " ) != std::string::npos) cfg.switchConfiguration ) != std::string::npos) std::endl;
-    if (str.find("OverCurrentDetection    : " ) != std::string::npos) cfg.overCurrentDetection ) != std::string::npos) std::endl;
-    if (str.find("SlewRate                : " ) != std::string::npos) cfg.slewRate ) != std::string::npos) std::endl;
-    if (str.find("VoltageCompensation     : " ) != std::string::npos) cfg.voltageCompensation ) != std::string::npos) std::endl;
-    if (str.find("PwmFrequencyMultiplier  : " ) != std::string::npos) cfg.pwmFrequencyMultiplier ) != std::string::npos) std::endl;
-    if (str.find("PwmFrequencyDivider     : " ) != std::string::npos) cfg.pwmFrequencyDivider ) != std::string::npos) std::endl;
-    if (str.find("AlarmState              : " ) != std::string::npos) (int)cfg.alarmState ) != std::string::npos) std::endl;
+    //tryReadConfig<FullStepThresholdSpeed>(str , "FullStepThresholdSpeed" ,map, cfg.fullStepThresholdSpeed);
+    //tryReadConfig<ThermalDri>(str , "ThermalDriftCoefficient" ,map, cfg.thermalDriftCoefficient);
+    tryReadConfig<OverCurrentDetection>(str , "OverCurrentThreshold" ,getOverCurrentDetectionBiMap(), cfg.overCurrentThreshold);
+    tryReadConfig<OverCurrentDetection>(str , "StallThreshold" ,getOverCurrentDetectionBiMap(), cfg.stallThreshold);
+    tryReadConfig<StepMode>(str , "StepMode" ,getStepModeBiMap(), cfg.stepMode);
+    tryReadConfig<SyncSelect>(str , "SyncSelect" ,getSyncSelectBiMap(), cfg.syncSelect);
+    //tryReadConfig<Syn>(str , "SyncEnable" ,map, (cfg.syncEnable);
+    tryReadConfig<OscillatorSelect>(str , "OscillatorSelect" ,getOscillatorSelectBiMap(), cfg.oscillatorSelect);
+    tryReadConfig<SwitchConfiguration>(str , "SwitchConfiguration" ,getSwitchConfigurationBiMap(), cfg.switchConfiguration);
+    tryReadConfig<OverCurrentDetection>(str , "OverCurrentDetection" ,getOverCurrentDetectionBiMap(), cfg.overCurrentDetection);
+    tryReadConfig<SlewRate>(str , "SlewRate" ,getSlewRateBiMap(), cfg.slewRate);
+    tryReadConfig<VoltageCompensation>(str , "VoltageCompensation" ,getVoltageCompensationBiMap(), cfg.voltageCompensation);
+    tryReadConfig<PwmFrequencyMultiplier>(str , "PwmFrequencyMultiplier" ,getPwmFrequencyMultiplierBiMap(), cfg.pwmFrequencyMultiplier);
+    tryReadConfig<PwmFrequencyDivider>(str , "PwmFrequencyDivider" ,getPwmFrequencyDividerBiMap(), cfg.pwmFrequencyDivider);
+
+    // Parse BackEmf Config (if it exists)
+
+    // Parse Alarm State Config (if it exists)
+    cfg.alarmState = alarmStateFromString(str);
 
 }
 

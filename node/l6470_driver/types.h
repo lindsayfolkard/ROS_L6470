@@ -3,6 +3,7 @@
 #include <iostream>
 #include "motor.h"
 #include <map>
+#include <boost/bimap.hpp>
 
 enum CommsDebugLevel
 {
@@ -436,7 +437,24 @@ inline std::ostream& operator<<(std::ostream& os,const Config &x)
     return os << toString(x);
 }
 
-bool tryReadConfig(const std::string &cfg , const std::map<T,std::String> , T &value);
+std::string getArgument(const std::string &cfg , const std::string &marker);
+
+template <typename T> bool tryReadConfig(const std::string &cfg , const std::string &marker, const boost::bimap<T,std::String> &mapping, T &value)
+{
+    std::string argument = getArgument(cfg,marker);
+
+    // Try and find a matching element
+    if (argument != "")
+    {
+        value = mapping.right.at(element);
+        return true;
+    }
+    else
+    {
+        std::cout << "No valid cfg entry for marker --> " << marker << std::endl;
+        return false;
+    }
+}
 
 // It is expected during normal operation that these configs will be
 // changed several times on the fly
