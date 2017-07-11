@@ -128,7 +128,7 @@ AlarmState::AlarmState()
 std::string toString(AlarmState alarmState)
 {
     std::stringstream ss;
-    ss << "OverCurrentEnabled     : "     << (alarmState.overCurrentEnabled ? "Yes" : "No") << std::endl;
+    ss << "OverCurrentEnabled     : " << (alarmState.overCurrentEnabled ? "Yes" : "No") << std::endl;
     ss << "ThermalShutdownEnabled : " << (alarmState.thermalShutdownEnabled ? "Yes" : "No") << std::endl;
     ss << "ThermalWarningEnabled  : " << (alarmState.thermalWarningEnabled ? "Yes" : "No") << std::endl;
     ss << "UnderVoltageEnabled    : " << (alarmState.underVoltageEnabled ? "Yes" : "No") << std::endl;
@@ -141,7 +141,7 @@ std::string toString(AlarmState alarmState)
 
 AlarmState alarmStateFromString(const std::String &str)
 {
-    // TODO
+
 }
 
 boost::bimap<OscillatorSelect,std::string> getOscillatorSelectBiMap()

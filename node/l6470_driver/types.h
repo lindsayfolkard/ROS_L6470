@@ -436,6 +436,8 @@ inline std::ostream& operator<<(std::ostream& os,const Config &x)
     return os << toString(x);
 }
 
+bool tryReadConfig(const std::string &cfg , const std::map<T,std::String> , T &value);
+
 // It is expected during normal operation that these configs will be
 // changed several times on the fly
 struct ProfileCfg
