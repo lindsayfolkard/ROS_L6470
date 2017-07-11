@@ -88,18 +88,7 @@ boost::bimap<StepMode,std::string> getStepModeBiMap()
 
 std::string toString(StepMode stepMode)
 {
-    switch (stepMode)
-    {
-    case STEP_SEL_1    : return "Full  step";
-    case STEP_SEL_1_2  : return "Half  step";
-    case STEP_SEL_1_4  : return "1/4   microstep";
-    case STEP_SEL_1_8  : return "1/8   microstep";
-    case STEP_SEL_1_16 : return "1/16  microstep";
-    case STEP_SEL_1_32 : return "1/32  microstep";
-    case STEP_SEL_1_64 : return "1/64  microstep";
-    case STEP_SEL_1_128: return "1/128 microstep";
-    default: assert(!"Invalid stepMode");
-    }
+    return getStepModeBiMap().left.at(stepMode);
 }
 
 boost::bimap<SyncSelect,std::string> getSyncSelectBiMap()
@@ -121,18 +110,7 @@ boost::bimap<SyncSelect,std::string> getSyncSelectBiMap()
 
 std::string toString(SyncSelect syncSelect)
 {
-    switch(syncSelect)
-    {
-    case SYNC_SEL_1_2 : return "SYNC_SEL_1_2";
-    case SYNC_SEL_1   : return "SYNC_SEL_1";
-    case SYNC_SEL_2   : return "SYNC_SEL_2";
-    case SYNC_SEL_4   : return "SYNC_SEL_4";
-    case SYNC_SEL_8   : return "SYNC_SEL_80";
-    case SYNC_SEL_16  : return "SYNC_SEL_16";
-    case SYNC_SEL_32  : return "SYNC_SEL_32";
-    case SYNC_SEL_64  : return "SYNC_SEL_64";
-    default: assert(!"Invalid argument");
-    }
+    return getSyncSelectBiMap().left.at(syncSelect);
 }
 
 AlarmState::AlarmState()
@@ -150,15 +128,20 @@ AlarmState::AlarmState()
 std::string toString(AlarmState alarmState)
 {
     std::stringstream ss;
-    ss << "overCurrentEnabled : "     << (alarmState.overCurrentEnabled ? "Yes" : "No") << std::endl;
-    ss << "thermalShutdownEnabled : " << (alarmState.thermalShutdownEnabled ? "Yes" : "No") << std::endl;
-    ss << "thermalWarningEnabled  : " << (alarmState.thermalWarningEnabled ? "Yes" : "No") << std::endl;
-    ss << "underVoltageEnabled    : " << (alarmState.underVoltageEnabled ? "Yes" : "No") << std::endl;
-    ss << "stallDetectionAEnabled : " << (alarmState.stallDetectionAEnabled ? "Yes" : "No") << std::endl;
-    ss << "stallDetectionBEnabled : " << (alarmState.stallDetectionBEnabled ? "Yes" : "No") << std::endl;
-    ss << "switchTurnOnEnabled    : " << (alarmState.switchTurnOnEnabled ? "Yes" : "No") << std::endl;
-    ss << "badCommandEnabled      : " << (alarmState.badCommandEnabled ? "Yes" : "No") << std::endl;
+    ss << "OverCurrentEnabled     : "     << (alarmState.overCurrentEnabled ? "Yes" : "No") << std::endl;
+    ss << "ThermalShutdownEnabled : " << (alarmState.thermalShutdownEnabled ? "Yes" : "No") << std::endl;
+    ss << "ThermalWarningEnabled  : " << (alarmState.thermalWarningEnabled ? "Yes" : "No") << std::endl;
+    ss << "UnderVoltageEnabled    : " << (alarmState.underVoltageEnabled ? "Yes" : "No") << std::endl;
+    ss << "StallDetectionAEnabled : " << (alarmState.stallDetectionAEnabled ? "Yes" : "No") << std::endl;
+    ss << "StallDetectionBEnabled : " << (alarmState.stallDetectionBEnabled ? "Yes" : "No") << std::endl;
+    ss << "SwitchTurnOnEnabled    : " << (alarmState.switchTurnOnEnabled ? "Yes" : "No") << std::endl;
+    ss << "BadCommandEnabled      : " << (alarmState.badCommandEnabled ? "Yes" : "No") << std::endl;
     return ss.str();
+}
+
+AlarmState alarmStateFromString(const std::String &str)
+{
+    // TODO
 }
 
 boost::bimap<OscillatorSelect,std::string> getOscillatorSelectBiMap()
@@ -186,23 +169,7 @@ boost::bimap<OscillatorSelect,std::string> getOscillatorSelectBiMap()
 
 std::string toString(OscillatorSelect oscillatorSelect)
 {
-    switch (oscillatorSelect)
-    {
-    case CONFIG_INT_16MHZ                : return "16MHz";
-    case CONFIG_INT_16MHZ_OSCOUT_2MHZ    : return "16MHz OSCOUT 2MHz";
-    case CONFIG_INT_16MHZ_OSCOUT_4MHZ    : return "16MHZ_OSCOUT_4MHZ";
-    case CONFIG_INT_16MHZ_OSCOUT_8MHZ    : return "16MHZ_OSCOUT_8MHZ";
-    case CONFIG_INT_16MHZ_OSCOUT_16MHZ   : return "16MHZ_OSCOUT_16MHZ";
-    case CONFIG_EXT_8MHZ_XTAL_DRIVE      : return "8MHZ_XTAL_DRIVE";
-    case CONFIG_EXT_16MHZ_XTAL_DRIVE     : return "16MHZ_XTAL_DRIVE";
-    case CONFIG_EXT_24MHZ_XTAL_DRIVE     : return "24MHZ_XTAL_DRIVE";
-    case CONFIG_EXT_32MHZ_XTAL_DRIVE     : return "32MHZ_XTAL_DRIVE";
-    case CONFIG_EXT_8MHZ_OSCOUT_INVERT   : return "8MHZ_OSCOUT_INVERT";
-    case CONFIG_EXT_16MHZ_OSCOUT_INVERT  : return "16MHZ_OSCOUT_INVERT";
-    case CONFIG_EXT_24MHZ_OSCOUT_INVERT  : return "24MHZ_OSCOUT_INVERT";
-    case CONFIG_EXT_32MHZ_OSCOUT_INVERT  : return "32MHZ_OSCOUT_INVERT";
-    default: assert(!"Invalid argument");
-    }
+    return getOscillatorSelectBiMap().left.at(oscillatorSelect);
 }
 
 boost::bimap<SwitchConfiguration,std::string> getSwitchConfigurationBiMap()
@@ -219,12 +186,7 @@ boost::bimap<SwitchConfiguration,std::string> getSwitchConfigurationBiMap()
 
 std::string toString(SwitchConfiguration switchConfiguration)
 {
-    switch(switchConfiguration)
-    {
-    case CONFIG_SW_HARD_STOP : return "Hard Stop";
-    case CONFIG_SW_USER : return "User Stop";
-    default: assert(!"Invalid argument");
-    }
+    return getSwitchConfigurationBiMap().left.at(switchConfiguration);
 }
 
 boost::bimap<VoltageCompensation,std::string> getVoltageCompensationBiMap()
@@ -241,12 +203,7 @@ boost::bimap<VoltageCompensation,std::string> getVoltageCompensationBiMap()
 
 std::string toString(VoltageCompensation voltageCompensation)
 {
-    switch(voltageCompensation)
-    {
-    case CONFIG_VS_COMP_DISABLE : return "VS_COMP_DISABLE";
-    case CONFIG_VS_COMP_ENABLE  : return "VS_COMP_ENABLE";
-    default: assert(!"Invalid argument");
-    }
+    return getVoltageCompensationBiMap().left.at(voltageCompensation);
 }
 
 boost::bimap<OverCurrentDetection,std::string> getOverCurrentDetectionBiMap()
@@ -254,7 +211,7 @@ boost::bimap<OverCurrentDetection,std::string> getOverCurrentDetectionBiMap()
     boost::bimap<OverCurrentDetection,std::string> map
     {
 
-    { CONFIG_OC_SD_DISABLE ,  "OC_SD_DSIABLE"},
+    { CONFIG_OC_SD_DISABLE ,  "OC_SD_DISABLE"},
     { CONFIG_OC_SD_ENABLE  ,  "OC_SD_ENABLE"}
 
     };
@@ -263,12 +220,7 @@ boost::bimap<OverCurrentDetection,std::string> getOverCurrentDetectionBiMap()
 
 std::string toString(OverCurrentDetection overCurrentDetection)
 {
-    switch(overCurrentDetection)
-    {
-    case CONFIG_OC_SD_DISABLE : return "OC_SD_DSIABLE";
-    case CONFIG_OC_SD_ENABLE  : return "OC_SD_ENABLE";
-    default: assert(!"Invalid argument");
-    }
+    return getOverCurrentDetectionBiMap().left.at(overCurrentDetection);
 }
 
 boost::bimap<SlewRate,std::string> getSlewRateBiMap()
@@ -286,13 +238,7 @@ boost::bimap<SlewRate,std::string> getSlewRateBiMap()
 
 std::string toString(SlewRate slewRate)
 {
-    switch(slewRate)
-    {
-    case CONFIG_SR_180V_us : return "180V/us";
-    case CONFIG_SR_290V_us : return "290V/us";
-    case CONFIG_SR_530V_us : return "530V/us";
-    default: assert(!"Invalid argument");
-    }
+    return getSlewRateBiMap().left.at(slewRate);
 }
 
 boost::bimap<PwmFrequencyMultiplier,std::string> getPwmFrequencyMultiplierBiMap()
@@ -315,18 +261,7 @@ boost::bimap<PwmFrequencyMultiplier,std::string> getPwmFrequencyMultiplierBiMap(
 
 std::string toString(PwmFrequencyMultiplier pwmFrequencyMultiplier)
 {
-    switch(pwmFrequencyMultiplier)
-    {
-    case CONFIG_PWM_MUL_0_625            : return "PWM_MUL_0_625";
-    case CONFIG_PWM_MUL_0_75             : return "PWM_MUL_0_75";
-    case CONFIG_PWM_MUL_0_875            : return "PWM_MUL_0_875";
-    case CONFIG_PWM_MUL_1                : return "PWM_MUL_1";
-    case CONFIG_PWM_MUL_1_25             : return "PWM_MUL_1_25";
-    case CONFIG_PWM_MUL_1_5              : return "PWM_MUL_1_5";
-    case CONFIG_PWM_MUL_1_75             : return "PWM_MUL_1_75;";
-    case CONFIG_PWM_MUL_2                : return "PWM_MUL_2";
-    default: assert(!"Invalid argument");
-    }
+    return getPwmFrequencyMultiplierBiMap().left.at(pwmFrequencyMultiplier);
 }
 
 boost::bimap<PwmFrequencyDivider,std::string> getPwmFrequencyDividerBiMap()
@@ -348,17 +283,7 @@ boost::bimap<PwmFrequencyDivider,std::string> getPwmFrequencyDividerBiMap()
 
 std::string toString (PwmFrequencyDivider pwmFrequency)
 {
-    switch(pwmFrequency)
-    {
-    case CONFIG_PWM_DIV_1                : return "PWM_DIV_1";
-    case CONFIG_PWM_DIV_2                : return "PWM_DIV_2";
-    case CONFIG_PWM_DIV_3                : return "PWM_DIV_3";
-    case CONFIG_PWM_DIV_4                : return "PWM_DIV_4";
-    case CONFIG_PWM_DIV_5                : return "PWM_DIV_5";
-    case CONFIG_PWM_DIV_6                : return "PWM_DIV_6";
-    case CONFIG_PWM_DIV_7                : return "PWM_DIV_7";
-    default: assert(!"Invalid argument");
-    }
+    return getPwmFrequencyDividerBiMap().left.at(pwmFrequency);
 }
 
 std::string toString (MotorSpinDirection motorSpinDirection)
@@ -520,14 +445,17 @@ std::string toString(const Config &cfg)
     return ss.str();
 }
 
-void tryReadAndSetWithDefault(const std::string &marker , T &vvariable ,
-
 Config cfgFromString(const std::string &str)
 {
     // Create a default config
     Config cfg;
 
     // TODO - parse backEmfConfig
+    try
+    {
+
+    }
+    catch (
 
     // Handle standard configuration parameters
     if (str.find("BackEmfConfig           : " ) != std::string::npos) std::endl ) != std::string::npos) cfg.backEmfConfig ) != std::string::npos) std::endl;
