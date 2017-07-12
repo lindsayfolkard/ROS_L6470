@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include "motor.h"
 #include <map>
 #include <boost/bimap.hpp>
 
@@ -397,6 +396,31 @@ inline std::ostream& operator<<(std::ostream& os,Command x)
     return os << toString(x);
 }
 
+///
+/// \brief The BackEmfConfig struct
+/// contains all information that is needed to
+/// configure a motor to be used with a controller
+///
+struct BackEmfConfig
+{
+    uint8_t holdingKVal;
+    uint8_t constantSpeedKVal;
+    uint8_t accelStartingKVal;
+    uint8_t decelStartingKVal;
+
+    uint32_t intersectSpeed;
+    uint32_t startSlope;
+    uint32_t accelFinalSlope;
+    uint32_t decelFinalSlope;
+};
+std::string toString(const BackEmfConfig &backEmfConfig);
+inline std::ostream& operator<<(std::ostream& os,const BackEmfConfig &x)
+{
+    return os << toString(x);
+}
+
+void getBackEmfConfigFromString(const std::string &cfg, BackEmfConfig &backEmfCfg);
+
 // General Static Config (meant to be set once at the start and then not really again)
 // NB: valid parameters are always positive. A negative parameter is interpreted as do not set/read.
 struct Config
@@ -438,15 +462,16 @@ inline std::ostream& operator<<(std::ostream& os,const Config &x)
 }
 
 std::string getArgument(const std::string &cfg , const std::string &marker);
+void tryGetArgumentAsInt(const std::string &cfg, const std::string &marker, int &value);
 
-template <typename T> bool tryReadConfig(const std::string &cfg , const std::string &marker, const boost::bimap<T,std::String> &mapping, T &value)
+template <typename T> bool tryReadConfig(const std::string &cfg , const std::string &marker, const boost::bimap<T,std::string> &mapping, T &value)
 {
     std::string argument = getArgument(cfg,marker);
 
     // Try and find a matching element
     if (argument != "")
     {
-        value = mapping.right.at(element);
+        value = mapping.left.at(argument);
         return true;
     }
     else

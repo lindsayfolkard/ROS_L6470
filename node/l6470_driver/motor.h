@@ -3,64 +3,34 @@
 #include <stdint.h>
 #include <string.h>
 #include <iostream>
+#include "types.h"
+#include <boost/bimap.hpp>
 
 // General Information regarding motor tuning can be found here :
 // http://www.st.com/content/ccc/resource/technical/document/application_note/ad/fc/fb/f0/f7/c7/4c/48/DM00061093.pdf/files/DM00061093.pdf/jcr:content/translations/en.DM00061093.pdf
 // (page 15 lists recommended values)
-
-///
-/// \brief The BackEmfConfig struct
-/// contains all information that is needed to
-/// configure a motor to be used with a controller
-///
-struct BackEmfConfig
-{
-    uint8_t holdingKVal;
-    uint8_t constantSpeedKVal;
-    uint8_t accelStartingKVal;
-    uint8_t decelStartingKVal;
-
-    uint32_t intersectSpeed;
-    uint32_t startSlope;
-    uint32_t accelFinalSlope;
-    uint32_t decelFinalSlope;
-};
-std::string toString(const BackEmfConfig &backEmfConfig);
-inline std::ostream& operator<<(std::ostream& os,const BackEmfConfig &x)
-{
-    return os << toString(x);
-}
 
 enum StepperMotorSize
 {
     NEMA11,
     NEMA14,
     NEMA17,
-    NEMA23
+    NEMA23,
+    NEMA34
 };
 std::string toString(StepperMotorSize motorType);
 inline std::ostream& operator<<(std::ostream& os,StepperMotorSize x)
 {
     return os << toString(x);
 }
-
-enum StepperMotorModel
-{
-    StepperModel_Nema23_57H703,
-    StepperModel_Nema23_57BYGH51,
-    StepperModel_Nema17_42BYGHW811
-};
-std::string toString(StepperMotorModel stepperModel);
-inline std::ostream& operator<<(std::ostream& os,StepperMotorModel x)
-{
-    return os << toString(x);
-}
+boost::bimap <StepperMotorSize,std::string> getStepperMotorSizeBiMap();
 
 struct StepperMotor
 {
     // Constructor
-    StepperMotor(StepperMotorSize _motorSize,
-                 StepperMotorModel _motorModel,
+    StepperMotor(){} // TODO remove me!
+    StepperMotor(StepperMotorSize  _motorSize,
+                 std::string       _motorModel,
                  double            _stepAngle,
                  double            _ratedCurrent,
                  double            _phaseResistance,
@@ -69,20 +39,20 @@ struct StepperMotor
                  double            _ke);
 
     // Motor Type information
-    const StepperMotorSize  motorSize;
-    const StepperMotorModel motorModel;
+    StepperMotorSize  motorSize;
+    std::string motorModel;
 
     // Motor Information
-    const double stepAngle; // degrees
-    const double ratedCurrent; // Amps
-    const double phaseResistance; // ohms
-    const double phaseInductance; // mH
+    double stepAngle; // degrees
+    double ratedCurrent; // Amps
+    double phaseResistance; // ohms
+    double phaseInductance; // mH
 
     // General info
-    const double holdingTorque;// NM
+    double holdingTorque;// NM
 
     // Motor Back EMF constant
-    const double Ke; // V/Hz --> see http://www.st.com/content/ccc/resource/technical/document/application_note/e8/ca/05/a0/9e/ff/4e/69/DM00039787.pdf/files/DM00039787.pdf/jcr:content/translations/en.DM00039787.pdf
+    double Ke; // V/Hz --> see http://www.st.com/content/ccc/resource/technical/document/application_note/e8/ca/05/a0/9e/ff/4e/69/DM00039787.pdf/files/DM00039787.pdf/jcr:content/translations/en.DM00039787.pdf
 		     // for instructions on how to calculate for a given motor.
 };
 std::string toString(const StepperMotor &x);
@@ -90,6 +60,8 @@ inline std::ostream& operator<<(std::ostream& os,const StepperMotor &x)
 {
     return os << toString(x);
 }
+
+StepperMotor stepperFromString(const std::string &cfg);
 
 // Converts the motor parameters from a given stepper motor to a compatible
 // backemf config to be used by the L6470 Driver
@@ -111,7 +83,7 @@ struct Stepper_57H703 : public StepperMotor
 {
     Stepper_57H703() : StepperMotor(
         NEMA23,
-        StepperModel_Nema23_57H703,
+        "Nema23_57H703",
         1.8,
         3.0,
         0.9,
@@ -127,7 +99,7 @@ struct Stepper_42BYGHW811 : public StepperMotor
 {
     Stepper_42BYGHW811() : StepperMotor(
        NEMA17,
-       StepperModel_Nema17_42BYGHW811,
+       "Nema17_42BYGHW811",
        1.8,
        2.5,
        1.25,
@@ -143,7 +115,7 @@ struct Stepper_57BYGH51 : public StepperMotor
 {
     Stepper_57BYGH51() : StepperMotor(
         NEMA23,
-        StepperModel_Nema23_57BYGH51,
+        "Nema23_57BYGH51",
         1.8,
         1.5,
         3.5,

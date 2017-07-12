@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <sstream>
 #include <boost/bimap.hpp>
+#include "motor.h"
 
 // Local Helper Function
 
@@ -40,9 +41,16 @@ std::string toLineString(uint8_t *buffer , uint8_t length)
     return ss.str();
 }
 
+template <typename L, typename R>
+boost::bimap<L, R>
+makeBiMap(std::initializer_list<typename boost::bimap<L, R>::value_type> list)
+{
+    return boost::bimap<L, R>(list.begin(), list.end());
+}
+
 boost::bimap <CurrentThreshold,std::string> getCurrentThresholdBiMap()
 {
-    boost::bimap <CurrentThreshold,std::string> map {
+    boost::bimap <CurrentThreshold,std::string> map  = makeBiMap<CurrentThreshold,std::string>({
         {OCD_TH_375m  , "375 ma"},
         {OCD_TH_750m  , "750 ma"},
         {OCD_TH_1125m , "1125 ma"},
@@ -59,7 +67,7 @@ boost::bimap <CurrentThreshold,std::string> getCurrentThresholdBiMap()
         {OCD_TH_5250m , "5250 ma"},
         {OCD_TH_5625m , "5625 ma"},
         {OCD_TH_6000m , "6000 ma"}
-    };
+    });
     return map;
 }
 
@@ -71,7 +79,7 @@ std::string toString(CurrentThreshold currentThreshold)
 
 boost::bimap<StepMode,std::string> getStepModeBiMap()
 {
-    boost::bimap<StepMode,std::string> map {
+    boost::bimap<StepMode,std::string> map  = makeBiMap<StepMode,std::string>({
 
     { STEP_SEL_1    ,  "Full  step"},
     { STEP_SEL_1_2  ,  "Half  step"},
@@ -82,7 +90,7 @@ boost::bimap<StepMode,std::string> getStepModeBiMap()
     { STEP_SEL_1_64 ,  "1/64  microstep"},
     { STEP_SEL_1_128,  "1/128 microstep"}
 
-    };
+    });
     return map;
 }
 
@@ -93,7 +101,7 @@ std::string toString(StepMode stepMode)
 
 boost::bimap<SyncSelect,std::string> getSyncSelectBiMap()
 {
-    boost::bimap<SyncSelect,std::string> map {
+    boost::bimap<SyncSelect,std::string> map = makeBiMap<SyncSelect,std::string>({
 
     { SYNC_SEL_1_2 ,  "SYNC_SEL_1_2"},
     { SYNC_SEL_1   ,  "SYNC_SEL_1"},
@@ -104,7 +112,7 @@ boost::bimap<SyncSelect,std::string> getSyncSelectBiMap()
     { SYNC_SEL_32  ,  "SYNC_SEL_32"},
     { SYNC_SEL_64  ,  "SYNC_SEL_64"}
 
-    };
+    });
     return map;
 }
 
@@ -161,6 +169,16 @@ std::string getArgument(const std::string &cfg , const std::string &marker)
     return element;
 }
 
+void tryGetArgumentAsInt(const std::string &cfg, const std::string &marker, int &value)
+{
+    std::string argument = getArgument(cfg,marker);
+    if (argument != "") value = std::stoi(argument);
+    else
+    {
+        std::cout << "No value found for marker "<< marker;
+    }
+}
+
 void tryExtractAlarmStateFromElement(const std::string &cfg, const std::string &marker , bool &cfgValue)
 {
     std::string argument = getArgument(cfg,marker);
@@ -173,7 +191,7 @@ void tryExtractAlarmStateFromElement(const std::string &cfg, const std::string &
         cfgValue = true;
 }
 
-AlarmState alarmStateFromString(const std::String &str)
+AlarmState getAlarmStateFromString(const std::string &str)
 {
     AlarmState alarmState;
     tryExtractAlarmStateFromElement(str,"OverCurrentEnabled",alarmState.overCurrentEnabled);
@@ -189,8 +207,8 @@ AlarmState alarmStateFromString(const std::String &str)
 
 boost::bimap<OscillatorSelect,std::string> getOscillatorSelectBiMap()
 {
-    boost::bimap<OscillatorSelect,std::string> map
-    {
+    boost::bimap<OscillatorSelect,std::string> map = makeBiMap<OscillatorSelect,std::string>
+    ({
 
     { CONFIG_INT_16MHZ                ,  "16MHz"},
     { CONFIG_INT_16MHZ_OSCOUT_2MHZ    ,  "16MHz OSCOUT 2MHz"},
@@ -206,7 +224,7 @@ boost::bimap<OscillatorSelect,std::string> getOscillatorSelectBiMap()
     { CONFIG_EXT_24MHZ_OSCOUT_INVERT  ,  "24MHZ_OSCOUT_INVERT"},
     { CONFIG_EXT_32MHZ_OSCOUT_INVERT  ,  "32MHZ_OSCOUT_INVERT"}
 
-    };
+    });
     return map;
 }
 
@@ -217,13 +235,13 @@ std::string toString(OscillatorSelect oscillatorSelect)
 
 boost::bimap<SwitchConfiguration,std::string> getSwitchConfigurationBiMap()
 {
-    boost::bimap<SwitchConfiguration,std::string> map
-    {
+    boost::bimap<SwitchConfiguration,std::string> map = makeBiMap <SwitchConfiguration,std::string>
+    ({
 
     { CONFIG_SW_HARD_STOP ,  "Hard Stop"},
     { CONFIG_SW_USER ,  "User Stop"}
 
-    };
+    });
     return map;
 }
 
@@ -234,13 +252,13 @@ std::string toString(SwitchConfiguration switchConfiguration)
 
 boost::bimap<VoltageCompensation,std::string> getVoltageCompensationBiMap()
 {
-    boost::bimap<VoltageCompensation,std::string> map
-    {
+    boost::bimap<VoltageCompensation,std::string> map = makeBiMap<VoltageCompensation,std::string>
+    ({
 
     { CONFIG_VS_COMP_DISABLE ,  "VS_COMP_DISABLE"},
     { CONFIG_VS_COMP_ENABLE  ,  "VS_COMP_ENABLE"}
 
-    };
+    });
     return map;
 }
 
@@ -251,13 +269,13 @@ std::string toString(VoltageCompensation voltageCompensation)
 
 boost::bimap<OverCurrentDetection,std::string> getOverCurrentDetectionBiMap()
 {
-    boost::bimap<OverCurrentDetection,std::string> map
-    {
+    boost::bimap<OverCurrentDetection,std::string> map = makeBiMap<OverCurrentDetection,std::string>
+    ({
 
     { CONFIG_OC_SD_DISABLE ,  "OC_SD_DISABLE"},
     { CONFIG_OC_SD_ENABLE  ,  "OC_SD_ENABLE"}
 
-    };
+    });
     return map;
 }
 
@@ -268,14 +286,14 @@ std::string toString(OverCurrentDetection overCurrentDetection)
 
 boost::bimap<SlewRate,std::string> getSlewRateBiMap()
 {
-    boost::bimap<SlewRate,std::string> map
-    {
+    boost::bimap<SlewRate,std::string> map = makeBiMap<SlewRate,std::string>
+    ({
 
     { CONFIG_SR_180V_us ,  "180V/us"},
     { CONFIG_SR_290V_us ,  "290V/us"},
     { CONFIG_SR_530V_us ,  "530V/us"}
 
-    };
+    });
     return map;
 }
 
@@ -286,8 +304,8 @@ std::string toString(SlewRate slewRate)
 
 boost::bimap<PwmFrequencyMultiplier,std::string> getPwmFrequencyMultiplierBiMap()
 {
-    boost::bimap<PwmFrequencyMultiplier,std::string> map
-    {
+    boost::bimap<PwmFrequencyMultiplier,std::string> map = makeBiMap<PwmFrequencyMultiplier,std::string>
+    ({
 
     { CONFIG_PWM_MUL_0_625            ,  "PWM_MUL_0_625"},
     { CONFIG_PWM_MUL_0_75             ,  "PWM_MUL_0_75"},
@@ -298,7 +316,7 @@ boost::bimap<PwmFrequencyMultiplier,std::string> getPwmFrequencyMultiplierBiMap(
     { CONFIG_PWM_MUL_1_75             ,  "PWM_MUL_1_75"},
     { CONFIG_PWM_MUL_2                ,  "PWM_MUL_2"}
 
-    };
+    });
     return map;
 }
 
@@ -309,8 +327,8 @@ std::string toString(PwmFrequencyMultiplier pwmFrequencyMultiplier)
 
 boost::bimap<PwmFrequencyDivider,std::string> getPwmFrequencyDividerBiMap()
 {
-    boost::bimap<PwmFrequencyDivider,std::string> map
-    {
+    boost::bimap<PwmFrequencyDivider,std::string> map = makeBiMap<PwmFrequencyDivider,std::string>
+    ({
 
     { CONFIG_PWM_DIV_1                ,  "PWM_DIV_1"},
     { CONFIG_PWM_DIV_2                ,  "PWM_DIV_2"},
@@ -320,7 +338,7 @@ boost::bimap<PwmFrequencyDivider,std::string> getPwmFrequencyDividerBiMap()
     { CONFIG_PWM_DIV_6                ,  "PWM_DIV_6"},
     { CONFIG_PWM_DIV_7                ,  "PWM_DIV_7"}
 
-    };
+    });
     return map;
 }
 
@@ -488,10 +506,36 @@ std::string toString(const Config &cfg)
     ss << "-------------------------------------" << std::endl;
 
     ss << "-------------------------------------" << std::endl;
-    ss << "AlarmState" << (int)cfg.alarmState << std::endl;
+    ss << "AlarmState" << cfg.alarmState << std::endl;
     ss << "-------------------------------------" << std::endl;
 
     return ss.str();
+}
+
+std::string toString(const BackEmfConfig &backEmfConfig)
+{
+    std::stringstream ss;
+    ss << "KVAL_HOLD  : " << (int) backEmfConfig.holdingKVal	     << std::endl;
+    ss << "KVAL_RUN   : " << (int) backEmfConfig.constantSpeedKVal << std::endl;
+    ss << "KVAL_ACC   : " << (int) backEmfConfig.accelStartingKVal << std::endl;
+    ss << "KVAL_DEC   : " << (int) backEmfConfig.decelStartingKVal << std::endl;
+    ss << "INT_SPEED  : " << backEmfConfig.intersectSpeed    << std::endl;
+    ss << "ST_SLP     : " << backEmfConfig.startSlope        << std::endl;
+    ss << "FN_SLP_ACC : " << backEmfConfig.accelFinalSlope   << std::endl;
+    ss << "FN_SLP_DEC : " << backEmfConfig.decelFinalSlope   << std::endl;
+    return ss.str();
+}
+
+void getBackEmfConfigFromString(const std::string &cfg, BackEmfConfig &backEmfCfg)
+{
+    tryGetArgumentAsInt(cfg,"KVAL_HOLD",backEmfCfg.holdingKVal);
+    tryGetArgumentAsInt(cfg,"KVAL_RUN",backEmfCfg.constantSpeedKVal);
+    tryGetArgumentAsInt(cfg,"KVAL_ACC",backEmfCfg.accelStartingKVal);
+    tryGetArgumentAsInt(cfg,"KVAL_DEC",backEmfCfg.decelStartingKVal);
+    tryGetArgumentAsInt(cfg,"INT_SPEED",backEmfCfg.intersectSpeed);
+    tryGetArgumentAsInt(cfg,"ST_SLP",backEmfCfg.startSlope);
+    tryGetArgumentAsInt(cfg,"FN_SLP_ACC",backEmfCfg.accelFinalSlope);
+    tryGetArgumentAsInt(cfg,"FN_SLP_DEC",backEmfCfg.decelFinalSlope);
 }
 
 Config cfgFromString(const std::string &str)
@@ -500,25 +544,31 @@ Config cfgFromString(const std::string &str)
     Config cfg;
 
     // Handle standard configuration parameters
-    //tryReadConfig<FullStepThresholdSpeed>(str , "FullStepThresholdSpeed" ,map, cfg.fullStepThresholdSpeed);
-    //tryReadConfig<ThermalDri>(str , "ThermalDriftCoefficient" ,map, cfg.thermalDriftCoefficient);
+    tryGetArgumentAsInt(str,"FullStepThresholdSpeed",cfg.fullStepThresholdSpeed);
+    tryGetArgumentAsInt(str,"ThermalDriftCoefficient",cfg.thermalDriftCoefficient);
+
     tryReadConfig<OverCurrentDetection>(str , "OverCurrentThreshold" ,getOverCurrentDetectionBiMap(), cfg.overCurrentThreshold);
     tryReadConfig<OverCurrentDetection>(str , "StallThreshold" ,getOverCurrentDetectionBiMap(), cfg.stallThreshold);
-    tryReadConfig<StepMode>(str , "StepMode" ,getStepModeBiMap(), cfg.stepMode);
-    tryReadConfig<SyncSelect>(str , "SyncSelect" ,getSyncSelectBiMap(), cfg.syncSelect);
-    //tryReadConfig<Syn>(str , "SyncEnable" ,map, (cfg.syncEnable);
-    tryReadConfig<OscillatorSelect>(str , "OscillatorSelect" ,getOscillatorSelectBiMap(), cfg.oscillatorSelect);
-    tryReadConfig<SwitchConfiguration>(str , "SwitchConfiguration" ,getSwitchConfigurationBiMap(), cfg.switchConfiguration);
-    tryReadConfig<OverCurrentDetection>(str , "OverCurrentDetection" ,getOverCurrentDetectionBiMap(), cfg.overCurrentDetection);
+    tryReadConfig<StepMode>(str ,"StepMode" ,getStepModeBiMap(), cfg.stepMode);
+    tryReadConfig<SyncSelect>(str ,"SyncSelect" ,getSyncSelectBiMap(), cfg.syncSelect);
+    tryReadConfig<OscillatorSelect>(str ,"OscillatorSelect" ,getOscillatorSelectBiMap(), cfg.oscillatorSelect);
+    tryReadConfig<SwitchConfiguration>(str ,"SwitchConfiguration" ,getSwitchConfigurationBiMap(), cfg.switchConfiguration);
+    tryReadConfig<OverCurrentDetection>(str ,"OverCurrentDetection" ,getOverCurrentDetectionBiMap(), cfg.overCurrentDetection);
     tryReadConfig<SlewRate>(str , "SlewRate" ,getSlewRateBiMap(), cfg.slewRate);
     tryReadConfig<VoltageCompensation>(str , "VoltageCompensation" ,getVoltageCompensationBiMap(), cfg.voltageCompensation);
     tryReadConfig<PwmFrequencyMultiplier>(str , "PwmFrequencyMultiplier" ,getPwmFrequencyMultiplierBiMap(), cfg.pwmFrequencyMultiplier);
     tryReadConfig<PwmFrequencyDivider>(str , "PwmFrequencyDivider" ,getPwmFrequencyDividerBiMap(), cfg.pwmFrequencyDivider);
 
+    // Read Sync Enable
+    int syncEnableState = cfg.syncEnable;
+    tryGetArgumentAsInt(str , "SyncEnable" ,syncEnableState);
+    cfg.syncEnable = (bool)syncEnableState;
+
     // Parse BackEmf Config (if it exists)
+    getBackEmfConfigFromString(cfg,cfg.backEmfConfig);
 
     // Parse Alarm State Config (if it exists)
-    cfg.alarmState = alarmStateFromString(str);
+    cfg.alarmState = getAlarmStateFromString(str);
 
 }
 

@@ -29,18 +29,19 @@ L6470Node::L6470Node():
     std::chrono::milliseconds period(500);
     timer_ = create_wall_timer(std::chrono::duration_cast<std::chrono::nanoseconds>(period), std::bind(&L6470Node::on_timer, this));
 
+// Not compiling on laptop for some unknown reason
     // Handle Motor Speed Message Subscription
-    auto f = std::bind(&L6470Node::manualSpeedCallback,this,_1);
-    speedSub_ = this->create_subscription<l6470_msgs::msg::ManualSpeed> ("manual_speed",f);
+//    auto f = std::bind(&L6470Node::manualSpeedCallback,this,_1);
+//    speedSub_ = this->create_subscription<l6470_msgs::msg::ManualSpeed> ("manual_speed",f);
 
     // Handle goToPosition service
-    auto c = std::bind(&L6470Node::goToPositionCallback,this,_1,_2);
-    goToPositionSrv_ = this->create_service<l6470_srvs::srv::GoToPosition> ("go_to_position",c);
+//    auto c = std::bind(&L6470Node::goToPositionCallback,this,_1,_2);
+//    goToPositionSrv_ = this->create_service<l6470_srvs::srv::GoToPosition> ("go_to_position",c);
 
     // Handle stop service
-    auto d = std::bind(&L6470Node::stopCallback,this,_1,_2);
-    stopSrv_ = this->create_service<l6470_srvs::srv::Stop> ("stop",d);
-    std::cout << "Created L6470 Node!" << std::endl;
+//    auto d = std::bind(&L6470Node::stopCallback,this,_1,_2);
+//    stopSrv_ = this->create_service<l6470_srvs::srv::Stop> ("stop",d);
+//    std::cout << "Created L6470 Node!" << std::endl;
 }
 
 L6470Node::~L6470Node()

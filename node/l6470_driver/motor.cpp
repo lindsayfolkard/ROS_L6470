@@ -2,36 +2,31 @@
 #include <sstream>
 #include <math.h>
 #include <assert.h>
+#include "types.h"
 
-std::string toString(const BackEmfConfig &backEmfConfig)
+boost::bimap <StepperMotorSize,std::string> getStepperMotorSizeBiMap()
 {
-    std::stringstream ss;
-    ss << "KVAL_HOLD  : " << (int) backEmfConfig.holdingKVal	     << std::endl;
-    ss << "KVAL_RUN   : " << (int) backEmfConfig.constantSpeedKVal << std::endl;
-    ss << "KVAL_ACC   : " << (int) backEmfConfig.accelStartingKVal << std::endl;
-    ss << "KVAL_DEC   : " << (int) backEmfConfig.decelStartingKVal << std::endl;
-    ss << "INT_SPEED  : " << backEmfConfig.intersectSpeed    << std::endl;
-    ss << "ST_SLP     : " << backEmfConfig.startSlope        << std::endl;
-    ss << "FN_SLP_ACC : " << backEmfConfig.accelFinalSlope   << std::endl;
-    ss << "FN_SLP_DEC : " << backEmfConfig.decelFinalSlope   << std::endl;
-    return ss.str();
+    typedef boost::bimap<StepperMotorSize,std::string> MotorSizeMap;  
+    typedef MotorSizeMap::value_type element;
+
+    MotorSizeMap newMap;
+    
+    newMap.insert(element (NEMA11,"NEMA11"));
+    newMap.insert(element (NEMA14,"NEMA14"));
+    newMap.insert(element (NEMA17,"NEMA17"));
+    newMap.insert(element (NEMA23,"NEMA23"));
+
+    return newMap;
 }
 
 std::string toString(StepperMotorSize motorType)
 {
-    switch (motorType)
-    {
-    case NEMA11 : return "NEMA11";
-    case NEMA14 : return "NEMA14";
-    case NEMA17 : return "NEMA17";
-    case NEMA23 : return "NEMA23";
-    default : assert (!"Invalid motorType");
-    }
+    return getStepperMotorSizeBiMap().left.at(motorType);
 }
 
 // Constructor
 StepperMotor::StepperMotor(StepperMotorSize  _motorSize,
-                           StepperMotorModel _motorModel,
+                           std::string       _motorModel,
                            double            _stepAngle,
                            double            _ratedCurrent,
                            double            _phaseResistance,
@@ -47,30 +42,53 @@ StepperMotor::StepperMotor(StepperMotorSize  _motorSize,
     holdingTorque(_holdingTorque),
     Ke(_ke){}
 
-
-std::string toString(StepperMotorModel stepperModel)
-{
-    switch (stepperModel)
-    {
-    case StepperModel_Nema23_57H703 : return "NEMA23_57H703";
-    case StepperModel_Nema23_57BYGH51 : return "NEMA23_57BYGH51";
-    default : assert (!"Invalid Model");
-    }
-}
-
 std::string toString(const StepperMotor &x)
 {
     std::stringstream ss;
-    ss << "Motor Type          : " << x.motorSize  << std::endl;
-    ss << "Motor Model         : " << x.motorModel << std::endl;
-    ss << "Step Angle          : " << x.stepAngle  << " deg" << std::endl;
-    ss << "Rated Current       : " << x.ratedCurrent << " A" << std::endl;
-    ss << "Phase Resistance    : " << x.phaseResistance << " ohms" << std::endl;
-    ss << "Phase Inductance    : " << x.phaseInductance << " mH" << std::endl;
-    ss << "Back Emf Const (Ke) : " << x.Ke << " V/Hz" << std::endl;
-    ss << "Holding Torque      : " << x.holdingTorque << "Nm" << std::endl;
+    ss << "Motor Size       : " << x.motorSize  << std::endl;
+    ss << "Motor Model      : " << x.motorModel << std::endl;
+    ss << "Step Angle       : " << x.stepAngle  << " deg" << std::endl;
+    ss << "Rated Current    : " << x.ratedCurrent << " A" << std::endl;
+    ss << "Phase Resistance : " << x.phaseResistance << " ohms" << std::endl;
+    ss << "Phase Inductance : " << x.phaseInductance << " mH" << std::endl;
+    ss << "BackEmf Constant : " << x.Ke << " V/Hz" << std::endl;
+    ss << "Holding Torque   : " << x.holdingTorque << "Nm" << std::endl;
     return ss.str();
 }
+
+void tryReadDoubleFromCfg(const std::string &cfg, const std::string &marker , double &value)
+{
+   std::string argument = getArgument(cfg,marker);
+   
+   if (argument != "")
+	value=std::stod(argument);
+   else
+	std::cout << "Unable to read marker --> " << marker;
+
+}
+
+StepperMotor stepperFromString(const std::string &cfg)
+{
+    StepperMotor motor;
+    
+    std::string argument = getArgument(cfg,"Motor Size");
+    if (argument != "")
+	motor.motorSize = getStepperMotorSizeBiMap().left.at(argument);
+
+    argument = getArgument(cfg,"Motor Model")
+    if (argument != "") 
+	motor.motorModel = argument;
+
+    tryReadDoubleFromCfg(cfg,"Step Angle",motor.stepAngle);
+    tryReadDoubleFromCfg(cfg,"Rated Current",motor.ratedCurrent);
+    tryReadDoubleFromCfg(cfg,"Phase Resistance",motor.phaseResistance);
+    tryReadDoubleFromCfg(cfg,"Phase Inductance",motor.phaseInductance);
+    tryReadDoubleFromCfg(cfg,"BackEmf Constant",motor.Ke);
+    tryReadDoubleFromCfg(cfg,"Holding Torque",motor.holdingTorque);
+    
+    return motor;
+}
+
 
 BackEmfConfig BackEmfConfigFromStepper(const StepperMotor & stepperMotor , double vbus , double phaseCurrent )
 {
