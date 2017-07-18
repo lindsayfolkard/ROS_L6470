@@ -526,16 +526,43 @@ std::string toString(const BackEmfConfig &backEmfConfig)
     return ss.str();
 }
 
-void getBackEmfConfigFromString(const std::string &cfg, BackEmfConfig &backEmfCfg)
+BackEmfConfig getBackEmfConfigFromString(const std::string &cfg)
 {
-    tryGetArgumentAsInt(cfg,"KVAL_HOLD",backEmfCfg.holdingKVal);
-    tryGetArgumentAsInt(cfg,"KVAL_RUN",backEmfCfg.constantSpeedKVal);
-    tryGetArgumentAsInt(cfg,"KVAL_ACC",backEmfCfg.accelStartingKVal);
-    tryGetArgumentAsInt(cfg,"KVAL_DEC",backEmfCfg.decelStartingKVal);
-    tryGetArgumentAsInt(cfg,"INT_SPEED",backEmfCfg.intersectSpeed);
-    tryGetArgumentAsInt(cfg,"ST_SLP",backEmfCfg.startSlope);
-    tryGetArgumentAsInt(cfg,"FN_SLP_ACC",backEmfCfg.accelFinalSlope);
-    tryGetArgumentAsInt(cfg,"FN_SLP_DEC",backEmfCfg.decelFinalSlope);
+    BackEmfConfig backEmfCfg;
+
+    int helper = backEmfCfg.holdingKVal;
+    tryGetArgumentAsInt(cfg,"KVAL_HOLD",helper);
+    backEmfCfg.holdingKVal = helper;
+
+    helper = backEmfCfg.constantSpeedKVal;
+    tryGetArgumentAsInt(cfg,"KVAL_RUN",helper);
+    backEmfCfg.constantSpeedKVal = helper;
+
+    helper = backEmfCfg.accelStartingKVal;
+    tryGetArgumentAsInt(cfg,"KVAL_ACC",helper);
+    backEmfCfg.accelStartingKVal = helper;
+
+    helper = backEmfCfg.decelStartingKVal;
+    tryGetArgumentAsInt(cfg,"KVAL_DEC",helper);
+    backEmfCfg.decelStartingKVal = helper;
+
+    helper = backEmfCfg.intersectSpeed;
+    tryGetArgumentAsInt(cfg,"INT_SPEED",helper);
+    backEmfCfg.intersectSpeed = helper;
+
+    helper = backEmfCfg.startSlope;
+    tryGetArgumentAsInt(cfg,"ST_SLP",helper);
+    backEmfCfg.startSlope = helper;
+
+    helper = backEmfCfg.accelFinalSlope;
+    tryGetArgumentAsInt(cfg,"FN_SLP_ACC",helper);
+    backEmfCfg.accelFinalSlope = helper;
+
+    helper = backEmfCfg.decelFinalSlope;
+    tryGetArgumentAsInt(cfg,"FN_SLP_DEC",helper);
+    backEmfCfg.decelFinalSlope = helper;
+
+    return backEmfCfg;
 }
 
 Config cfgFromString(const std::string &str)
@@ -547,8 +574,8 @@ Config cfgFromString(const std::string &str)
     tryGetArgumentAsInt(str,"FullStepThresholdSpeed",cfg.fullStepThresholdSpeed);
     tryGetArgumentAsInt(str,"ThermalDriftCoefficient",cfg.thermalDriftCoefficient);
 
-    tryReadConfig<OverCurrentDetection>(str , "OverCurrentThreshold" ,getOverCurrentDetectionBiMap(), cfg.overCurrentThreshold);
-    tryReadConfig<OverCurrentDetection>(str , "StallThreshold" ,getOverCurrentDetectionBiMap(), cfg.stallThreshold);
+    tryReadConfig<CurrentThreshold>(str , "OverCurrentThreshold" ,getCurrentThresholdBiMap(), cfg.overCurrentThreshold);
+    tryReadConfig<CurrentThreshold>(str , "StallThreshold" ,getCurrentThresholdBiMap(), cfg.stallThreshold);
     tryReadConfig<StepMode>(str ,"StepMode" ,getStepModeBiMap(), cfg.stepMode);
     tryReadConfig<SyncSelect>(str ,"SyncSelect" ,getSyncSelectBiMap(), cfg.syncSelect);
     tryReadConfig<OscillatorSelect>(str ,"OscillatorSelect" ,getOscillatorSelectBiMap(), cfg.oscillatorSelect);
@@ -565,10 +592,13 @@ Config cfgFromString(const std::string &str)
     cfg.syncEnable = (bool)syncEnableState;
 
     // Parse BackEmf Config (if it exists)
-    getBackEmfConfigFromString(cfg,cfg.backEmfConfig);
+    //getBackEmfConfigFromString(cfg,cfg.backEmfConfig);
+    cfg.backEmfConfig = getBackEmfConfigFromString(str);
 
     // Parse Alarm State Config (if it exists)
     cfg.alarmState = getAlarmStateFromString(str);
+
+    return cfg;
 
 }
 

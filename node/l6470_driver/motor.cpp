@@ -73,11 +73,11 @@ StepperMotor stepperFromString(const std::string &cfg)
     
     std::string argument = getArgument(cfg,"Motor Size");
     if (argument != "")
-	motor.motorSize = getStepperMotorSizeBiMap().left.at(argument);
+    motor.motorSize = getStepperMotorSizeBiMap().right.at(argument);
 
-    argument = getArgument(cfg,"Motor Model")
+    argument = getArgument(cfg,"Motor Model");
     if (argument != "") 
-	motor.motorModel = argument;
+        motor.motorModel = argument;
 
     tryReadDoubleFromCfg(cfg,"Step Angle",motor.stepAngle);
     tryReadDoubleFromCfg(cfg,"Rated Current",motor.ratedCurrent);

@@ -419,7 +419,7 @@ inline std::ostream& operator<<(std::ostream& os,const BackEmfConfig &x)
     return os << toString(x);
 }
 
-void getBackEmfConfigFromString(const std::string &cfg, BackEmfConfig &backEmfCfg);
+BackEmfConfig getBackEmfConfigFromString(const std::string &cfg);
 
 // General Static Config (meant to be set once at the start and then not really again)
 // NB: valid parameters are always positive. A negative parameter is interpreted as do not set/read.
@@ -471,7 +471,7 @@ template <typename T> bool tryReadConfig(const std::string &cfg , const std::str
     // Try and find a matching element
     if (argument != "")
     {
-        value = mapping.left.at(argument);
+        value = mapping.right.at(argument);
         return true;
     }
     else
