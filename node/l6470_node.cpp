@@ -1,4 +1,3 @@
-
 #include "l6470_node.hpp"
 #include "l6470_driver/types.h"
 #include "l6470_driver/commands.h"
@@ -8,6 +7,8 @@
 #include <assert.h>
 #include <chrono>
 #include <functional>
+#include <fstream>
+#include <fstreambuf>
 
 using namespace std::chrono_literals;
 using namespace std::placeholders;
@@ -41,6 +42,43 @@ L6470Node::L6470Node():
     auto d = std::bind(&L6470Node::stopCallback,this,std::placeholders::_1,std::placeholders::_2);
     stopSrv_ = this->create_service<l6470_srvs::srv::Stop> ("stop",d);
     std::cout << "Created L6470 Node!" << std::endl;
+
+    // Fuck it Im lazy and don't want to think too hard about how to configure the boards
+    //const std::string masterConfig = "/home/lindsay/stepper_config";
+    const std::vector <std::string>stepperConfigs = {"motor1.cfg","motor2.cfg","motor3.cfg"};
+    const std::string filePath = "~/";
+
+    // Create the config vector
+    const int vBus = 24;
+    const double ratedCurrent=3.75;
+    
+    std::vector<StepperMotor> motors;
+    std::vector<Config>       cfgs;    
+
+    for (const auto &cfgFile : stepperConfigs)
+    {
+        // Open the Config
+        std::ifstream inFile(cfgFile);
+        std::string str((std::istreambuf_iterator<char>(inFile)),
+                         std::istreambuf_iterator<char>());
+
+	// Try to parse the Config
+	Config config = cfgFromString(const std::string &str);
+        
+	// Parse the motor config
+        StepperMotor motorCfg = stepperFromString(str);
+        BackEmfConfig backEmfCfg = BackEmfConfigFromStepper(motor,vBus,ratedCurrent);
+	config.backEmfCfg = backEmfCfg;
+
+        // Add to the vector
+        motors.push_back(motorCfg);
+        cfgs.push_back(config);
+    }
+    
+    // Let's instantiate the driver
+    const int chipSelectPin = 0; // huh
+    const int resetPin = 0; // Is it even needed
+    driver_.reset(new MultiDriver(motors,configs,chipSelectPin,resetPin));
 }
 
 L6470Node::~L6470Node()

@@ -455,6 +455,8 @@ struct Config
     // Alarm Register Settings
     AlarmState alarmState;
 };
+
+Config cfgFromString(const std::string &str);
 std::string toString(const Config &cfg);
 inline std::ostream& operator<<(std::ostream& os,const Config &x)
 {
