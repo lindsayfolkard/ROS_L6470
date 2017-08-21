@@ -1,18 +1,7 @@
-
-// L6470 Driver
-#include "l6470_driver/multidriver.h"
-#include "l6470_driver/types.h"
-#include "l6470_driver/commands.h"
-
-// Ros 2 Libraries
-#include "rclcpp/rclcpp.hpp"
-#include "rcl/rcl.h"
-
-// Msg's and interface libs
-#include "ros_l6470_msgs/msg/pose.hpp"
-
-// STL Libraries
 #include <iostream>
+#include "../multidriver.h"
+#include "../types.h"
+#include "../commands.h"
 #include <stdexcept>
 #include <string>
 #include <regex>
@@ -21,7 +10,7 @@
 
 /// @author      : Lindsay Folkard
 /// @date        : TODO
-/// @description : A simple program to interact with the SparkFunAutodriver tweaked to use mraa.
+/// @description : A simple program to interact with the SparkFunAutodriver tweaked to user mraa.
 ///
 
 using namespace std;
@@ -33,102 +22,90 @@ std::vector<long> getArguments(const std::string &input,int argCount);
 
 int main (int argc, char ** argv)
 {
-    // Initialise ros2
-    rclcpp::init(argc,argv);
-
-    // Create the node
-    auto node = rclcpp::node::Node::make_shared("demo_l6470_publisher");
-    rmw_qos_profile_t latched_qos = rmw_qos_profile_default;
-    latched_qos.depth = 1;
-    latched_qos.durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
-    auto pose_pub = node->create_publisher<ros_l6470_msgs::msg::Pose>(
-        "pose", latched_qos);
-    rclcpp::WallRate loop_rate(1);
-
     // Create the stepper motor
-    //    Stepper_57BYGH51 stepper;
-    //    std::vector<StepperMotor> motors = {stepper};
+    Stepper_57BYGH51 stepper;
+    std::vector<StepperMotor> motors = {stepper,stepper,stepper};
 
-    //    // Instantiate the AutoDriver
-    //    cout << "Try to instantiate the driver" << endl;
-    //    //MultiDriver driver(motors,0,0,0,CommsDebugEverything); CommsDebugNothing
-    //    MultiDriver driver(motors,0,0,0,CommsDebugNothing);
-    //    cout << "Instantiated the driver!" << endl;
+    // Instantiate the AutoDriver
+    cout << "Try to instantiate the driver" << endl;
+    //MultiDriver driver(motors,0,0,0,CommsDebugEverything); CommsDebugNothing
+    MultiDriver driver(motors,0,0,0,CommsDebugNothing); 
+    cout << "Instantiated the driver!" << endl;	
 
-    //    // Let's try to do some simple shit
-    //    const auto start = std::chrono::steady_clock::now();
-    //    Status status = driver.getStatus(0);
-    //    const auto end = std::chrono::steady_clock::now();
-    //    std::chrono::duration<double> diff = end-start;
-    //    cout << "Status : " << status << " , time = " << diff.count()*1000000 << " microseconds" <<  std::endl;
-    //    driver.softHiZ(0);
-    //    cout << "Status : " << driver.getStatus(0) << std::endl;
+    // Let's try to do some simple shit 
+    const auto start = std::chrono::steady_clock::now();
+    std::vector<Status> statusVector = driver.getStatus();
+    const auto end = std::chrono::steady_clock::now();
+    std::chrono::duration<double> diff = end-start;
+    int count=1;
+    for (const Status &status : statusVector)
+    {
+	cout << "Status for motor" << count++ << " is " << status << std::endl << std::endl; 
+    } 
+    
+    cout << "Test setting the first motor to highZ" << std::endl; 
+    cout << "Status : " << driver.getStatus(0) << " , time = " << diff.count()*1000000 << " microseconds" <<  std::endl;
+    driver.softHiZ(0);
+    cout << "Status : " << driver.getStatus(0) << std::endl;
 
-    //    // Lets get position
-    //    cout << "Position : " << driver.getPos(0) << std::endl;
-    //    cout << "Config   : " << driver.getConfig(0) << std::endl;
-    //    driver.resetPos(0);
-    //    cout << "Position : " << driver.getPos(0) << std::endl;
+    // Lets get position
+    cout << "Position : " << driver.getPos(0) << std::endl;
+    cout << "Config   : " << driver.getConfig(0) << std::endl;
+    driver.resetPos(0);
+    cout << "Position : " << driver.getPos(0) << std::endl;
 
-    //    // Lets set the config
-    //    cout << "Original Config is " << driver.getConfig(0);
-    //    Stepper_57BYGH51 nema23BackEmfConfig;
-    //    BackEmfConfig backEmfConfig = BackEmfConfigFromStepper(nema23BackEmfConfig,24,2.5);
-    //    Config driverConfig;
-    //    driverConfig.backEmfConfig = backEmfConfig;
-    //    driverConfig.overCurrentThreshold = OCD_TH_3750m;
-    //    driver.setConfig(driverConfig,0);
-    //    cout << "Updated Config is " << driver.getConfig(0);
+    // Lets set the config
+    cout << "Original Config is " << driver.getConfig(0);
+    Stepper_57BYGH51 nema23BackEmfConfig;
+    BackEmfConfig backEmfConfig = BackEmfConfigFromStepper(nema23BackEmfConfig,24,2.5);
+    Config driverConfig;
+    driverConfig.backEmfConfig = backEmfConfig;
+    driverConfig.overCurrentThreshold = OCD_TH_3750m;
+    driver.setConfig(driverConfig,0);
+    cout << "Updated Config is " << driver.getConfig(0);
+    
+    // Lets set a profile config
+    ProfileCfg profileCfg = driver.getProfileCfg(0);
+    cout << "ProfileCfg" << profileCfg << std::endl;
+    profileCfg.maxSpeed=650;
+    profileCfg.minSpeed=80;
+    profileCfg.acceleration=100;
+    profileCfg.deceleration=100;    
 
-    //    // Lets set a profile config
-    //    ProfileCfg profileCfg = driver.getProfileCfg(0);
-    //    cout << "ProfileCfg" << profileCfg << std::endl;
-    //    profileCfg.maxSpeed=650;
-    //    profileCfg.minSpeed=80;
-    //    profileCfg.acceleration=100;
-    //    profileCfg.deceleration=100;
+    driver.setProfileCfg(profileCfg,0);
+    cout << "New profile cfg is " << profileCfg << std::endl;
 
-    //    driver.setProfileCfg(profileCfg,0);
-    //    cout << "New profile cfg is " << profileCfg << std::endl;
-
-    //    // Fuck it let's try to move
-    //    driver.softStop(0);
-    //    RunCommand runCommand(Forward,400);
-    //    driver.run(runCommand,0);
+    // Fuck it let's try to move
+    /*driver.softStop(0);
+    RunCommand runCommand(Forward,400);
+    driver.run(runCommand,0);
 
     const int timeThreshold = 6;
     double tLive = 0.0;
-
-    auto msg = std::make_shared<ros_l6470_msgs::msg::Pose>();
-    double s=0.0;
-    double p=0.0;
-
-    while (rclcpp::ok())
+    while (tLive < timeThreshold)
     {
-        const auto end = std::chrono::steady_clock::now();
-        //      std::chrono::duration<double> diff = end-start;
-        //      tLive = diff.count();
-        //      cout << "............ T + " << tLive << " s ..............." << std::endl;
-        //      cout << "Position = " << driver.getPos(0) << std::endl;
-        //      cout << "Speed = " << driver.getSpeed(0) << std::endl;
-        //      cout << "Status = " << driver.getStatus(0) << std::endl;
-        //      std::chrono::duration<double> diff2 = std::chrono::steady_clock::now()-end;
-        //      cout << "Data Acquisition time : " << diff2.count()*1000.0 << " ms" << std::endl;
-        //      cout << "......................................" << std::endl << std::endl;
+      const auto end = std::chrono::steady_clock::now();
+      std::chrono::duration<double> diff = end-start;
+      tLive = diff.count();
+      cout << "............ T + " << tLive << " s ..............." << std::endl;
+      cout << "Position = " << driver.getPos(0) << std::endl;
+      cout << "Speed = " << driver.getSpeed(0) << std::endl;
+      cout << "Status = " << driver.getStatus(0) << std::endl;
+      std::chrono::duration<double> diff2 = std::chrono::steady_clock::now()-end;
+      cout << "Data Acquisition time : " << diff2.count()*1000.0 << " ms" << std::endl;
+      cout << "......................................" << std::endl << std::endl;
 
-        // Populate the msg struct
-        msg->speed    = s;//driver.getSpeed()[0];
-        msg->position = p;//driver.getPos()[0];
+      usleep(20000);
 
-        //msg->motion_handler_state
-
-        pose_pub->publish(msg);
-        rclcpp::spin_some(node);
-        loop_rate.sleep();
+      if (tLive > 3.0)
+      {
+         driver.hardStop(0);
+	 //driver.softHiZ(0);
+      }
     }
 
-    //driver.softStop(0);
-
+    driver.softStop(0);
+    */
     //    // Read the config back
 
     //    printMenu();
