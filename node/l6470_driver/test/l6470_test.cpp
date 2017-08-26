@@ -29,7 +29,7 @@ int main (int argc, char ** argv)
     // Instantiate the AutoDriver
     cout << "Try to instantiate the driver" << endl;
     //MultiDriver driver(motors,0,0,0,CommsDebugEverything); CommsDebugNothing
-    MultiDriver driver(motors,0,0,0,CommsDebugNothing); 
+    MultiDriver driver(motors,0,0,0,CommsDebugEverything);
     cout << "Instantiated the driver!" << endl;	
 
     // Let's try to do some simple shit 
@@ -43,10 +43,16 @@ int main (int argc, char ** argv)
 	cout << "Status for motor" << count++ << " is " << status << std::endl << std::endl; 
     } 
     
-    cout << "Test setting the first motor to highZ" << std::endl; 
+    cout << "Test setting the motors to softStop" << std::endl;
     cout << "Status : " << driver.getStatus(0) << " , time = " << diff.count()*1000000 << " microseconds" <<  std::endl;
-    driver.softHiZ(0);
+    driver.softStop(0);
+    driver.softStop(1);
+    driver.softStop(2);
     cout << "Status : " << driver.getStatus(0) << std::endl;
+
+    usleep(3e6);
+
+    driver.softStop({0,1,2});
 
     // Lets get position
     cout << "Position : " << driver.getPos(0) << std::endl;
