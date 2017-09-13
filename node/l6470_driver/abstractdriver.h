@@ -23,105 +23,105 @@ class AbstractDriver
 
     // Contains all data in status command
     // and also the current position and speed
-    std::vector<Status> getStatus();
-    Status getStatus(int motor);
+    virtual std::vector<Status> getStatus() = 0;
+    virtual Status getStatus(int motor) = 0;
 
     // Individual get functions if only very specific data needed
-    std::vector<bool> isBusy();
-    bool isBusy(int motor);
+    virtual std::vector<bool> isBusy() = 0;
+    virtual bool isBusy(int motor) = 0;
 
-    std::vector<int32_t> getPos();   // steps
-    int32_t getPos(int motor);
+    virtual std::vector<int32_t> getPos() = 0;   // steps
+    virtual int32_t getPos(int motor) = 0;
 
-    std::vector<uint32_t> getSpeed(); // steps/s
-    uint32_t getSpeed(int motor);
+    virtual std::vector<uint32_t> getSpeed() = 0; // steps/s
+    virtual uint32_t getSpeed(int motor) = 0;
 
-    std::vector<int32_t> getMark();  // steps?
-    int32_t getMark(int motor);
+    virtual std::vector<int32_t> getMark() = 0;  // steps?
+    virtual int32_t getMark(int motor) = 0;
 
     ////////////////////////////////////////
     /// Profile Configuration Commands
     ////////////////////////////////////////
 
     // Profile is different, this we want to set efficiently since it is real-time critical
-    void setProfileCfg(const std::map<int,ProfileCfg> &cfgs);
-    void setProfileCfg(const ProfileCfg &cfg , int motor);
+    virtual void setProfileCfg(const std::map<int,ProfileCfg> &cfgs) = 0;
+    virtual void setProfileCfg(const ProfileCfg &cfg , int motor) = 0;
 
     //Profile Raw parameters
-    void setAcc(std::map<int,float> &accelerations);
-    void setAcc(float stepsPerSecondPerSecond , int motor );
+    virtual void setAcc(std::map<int,float> &accelerations) = 0;
+    virtual void setAcc(float stepsPerSecondPerSecond , int motor ) = 0;
 
-    void setDec(std::map<int,float> &decelerations);
-    void setDec(float stepsPerSecondPerSecond , int motor );
+    virtual void setDec(std::map<int,float> &decelerations) = 0;
+    virtual void setDec(float stepsPerSecondPerSecond , int motor ) = 0;
 
-    void setMaxSpeed(const std::map <int,float> &maxSpeeds);
-    void setMaxSpeed(float stepsPerSecond , int motor);
+    virtual void setMaxSpeed(const std::map <int,float> &maxSpeeds) = 0;
+    virtual void setMaxSpeed(float stepsPerSecond , int motor) = 0;
 
-    void setMinSpeed(const std::map <int,float> &minSpeeds);
-    void setMinSpeed(float stepsPerSecond , int motor);
+    virtual void setMinSpeed(const std::map <int,float> &minSpeeds) = 0;
+    virtual void setMinSpeed(float stepsPerSecond , int motor) = 0;
 
-    ProfileCfg getProfileCfg(int motor);
+    virtual ProfileCfg getProfileCfg(int motor) = 0;
 
-    // void setFullSpeed(float stepsPerSecond);
+    // void setFullSpeed(float stepsPerSecond) = 0;
 
     //////////////////////////////
     /// Operational Commands
     /////////////////////////////
 
     // Speed Commands
-    void run(const std::map<int, DataCommand> &runCommands);
-    void run(const RunCommand &runCommand , int motor);
+    virtual void run(const std::map<int, DataCommand> &runCommands) = 0;
+    virtual void run(const RunCommand &runCommand , int motor) = 0;
 
-    void goUntil(const std::map<int, DataCommand> &goUntilCommands);
-    void goUntil(const GoUntilCommand &command , int motor);
+    virtual void goUntil(const std::map<int, DataCommand> &goUntilCommands) = 0;
+    virtual void goUntil(const GoUntilCommand &command , int motor) = 0;
 
-//    void releaseSw(const std::map <int,ReleaseSwCommand> &releaseSWCommands);
-//    void releaseSw(const ReleaseSwCommand &command , int motor);
+//    void releaseSw(const std::map <int,ReleaseSwCommand> &releaseSWCommands) = 0;
+//    void releaseSw(const ReleaseSwCommand &command , int motor) = 0;
 
     // Position Commands
-    void move(const std::map <int,DataCommand> &moveCommands);
-    void move(const MoveCommand &command , int motor);
+    virtual void move(const std::map <int,DataCommand> &moveCommands) = 0;
+    virtual void move(const MoveCommand &command , int motor) = 0;
 
-    void goTo(const std::map <int,DataCommand> &goToCommands);
-    void goTo(const GoToCommand &command , int motor);
+    virtual void goTo(const std::map <int,DataCommand> &goToCommands) = 0;
+    virtual void goTo(const GoToCommand &command , int motor) = 0;
 
-    void goToDir(const std::map <int,DataCommand> &goToDirCommands);
-    void goToDir(const GoToDirCommand &command , int motor);
+    virtual void goToDir(const std::map <int,DataCommand> &goToDirCommands) = 0;
+    virtual void goToDir(const GoToDirCommand &command , int motor) = 0;
 
-    void goHome(const std::vector <int> &motors);
-    void goHome(int motor);
+    virtual void goHome(const std::vector <int> &motors) = 0;
+    virtual void goHome(int motor) = 0;
 
-    void goMark(const std::vector <int> &motors);
-    void goMark(int motor);
+    virtual void goMark(const std::vector <int> &motors) = 0;
+    virtual void goMark(int motor) = 0;
 
     // Stop Commands
-    void softStop(const std::vector <int> &motors);
-    void softStop(int motor);
+    virtual void softStop(const std::vector <int> &motors) = 0;
+    virtual void softStop(int motor) = 0;
 
-    void hardStop(const std::vector <int> &motors);
-    void hardStop(int motor);
+    virtual void hardStop(const std::vector <int> &motors) = 0;
+    virtual void hardStop(int motor) = 0;
 
-    void softHiZ(const std::vector <int> &motors);
-    void softHiZ(int motor);
+    virtual void softHiZ(const std::vector <int> &motors) = 0;
+    virtual void softHiZ(int motor) = 0;
 
-    void hardHiZ(const std::vector <int> &motors);
-    void hardHiZ(int motor);
+    virtual void hardHiZ(const std::vector <int> &motors) = 0;
+    virtual void hardHiZ(int motor) = 0;
 
     // Set Commands
-    //void setMark(const std::map<int, long> &marks);
-    //void setPos(const std::map<int,long> &newPositions);
-    void setPos  (int32_t pos , int motor);
-    void resetPos(const std::vector <int> &motors);
-    void resetPos(int motor);
-    void resetDev(const std::vector <int> &motors);
+    //void setMark(const std::map<int, long> &marks) = 0;
+    //void setPos(const std::map<int,long> &newPositions) = 0;
+    virtual void setPos  (int32_t pos , int motor) = 0;
+    virtual void resetPos(const std::vector <int> &motors) = 0;
+    virtual void resetPos(int motor) = 0;
+    virtual void resetDev(const std::vector <int> &motors) = 0;
 
-    ///////////////////////////////////
-    /// Raw Access Set/Get Commands
-    ///////////////////////////////////
-    void setParam(ParamRegister param, std::map<int, uint32_t> &values);
-    void setParam(ParamRegister param , uint32_t value , int motor);
-    std::vector<uint32_t> getParam(ParamRegister param);
-    uint32_t getParam(ParamRegister param , int motor);
+    //    ///////////////////////////////////
+    //    /// Raw Access Set/Get Commands
+    //    ///////////////////////////////////
+    //    void setParam(ParamRegister param, std::map<int, uint32_t> &values) = 0;
+    //    void setParam(ParamRegister param , uint32_t value , int motor) = 0;
+    //    std::vector<uint32_t> getParam(ParamRegister param) = 0;
+    //    uint32_t getParam(ParamRegister param , int motor) = 0;
 
 };
 
