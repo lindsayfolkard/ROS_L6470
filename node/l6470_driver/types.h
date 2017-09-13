@@ -4,13 +4,6 @@
 #include <map>
 #include <boost/bimap.hpp>
 
-enum CommsDebugLevel
-{
-  CommsDebugNothing=0,
-  CommsDebugOnlyActions=1,
-  CommsDebugEverything=2
-};
-
 std::string toMapString(const std::map <int,uint32_t> &values , uint8_t bitLength);
 std::string toLineString(uint8_t *buffer , uint8_t length);
 
