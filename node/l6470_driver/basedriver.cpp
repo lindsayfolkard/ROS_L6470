@@ -3,19 +3,12 @@
 #include <mraa.hpp>
 #include <exception>
 
-//BaseDriver::BaseDriver(const std::vector<StepperMotor> &motors, int chipSelectPin, int resetPin, int busyPin, CommsDebugLevel commsDebugLevel):
-//    motors_(motors),
-//    chipSelectPin_(chipSelectPin),
-//    resetPin_(resetPin),
-//    busyPin_(busyPin),
-//    commsDebugLevel_(commsDebugLevel)
-//{
-
-//  // Try to initialise the mraa::SPI port
-//  SPI_.reset(new mraa::Spi(0));
-//  SPI_->mode(mraa::SPI_MODE3);
-//  SPI_->frequency(4000000); // Can this be a bit higher ?
-//}
+BaseDriver::BaseDriver(const std::vector<StepperMotor> &motors, int spiBus, CommsDebugLevel commsDebugLevel):
+    motors_(motors),
+    commsDebugLevel_(commsDebugLevel)
+{
+    commsDriver_.reset(new CommsDriver(motors_.size(),spiBus));
+}
 
 //void
 //BaseDriver::checkMotorIsValid(int motor)
@@ -172,9 +165,6 @@ int32_t BaseDriver::getMark(int motor)
     std::vector<int32_t> marks = getMark();
     return marks[motor];
 }
-
-
-
 
 /////////////////////////
 /// Operational Commands

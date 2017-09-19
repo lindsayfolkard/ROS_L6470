@@ -512,7 +512,7 @@ std::string toString(const Config &cfg)
     return ss.str();
 }
 
-std::string toString(const BackEmfConfig &backEmfConfig)
+std::string toString(const VoltageModeCfg &backEmfConfig)
 {
     std::stringstream ss;
     ss << "KVAL_HOLD  : " << (int) backEmfConfig.holdingKVal	     << std::endl;
@@ -526,9 +526,9 @@ std::string toString(const BackEmfConfig &backEmfConfig)
     return ss.str();
 }
 
-BackEmfConfig getBackEmfConfigFromString(const std::string &cfg)
+VoltageModeCfg getBackEmfConfigFromString(const std::string &cfg)
 {
-    BackEmfConfig backEmfCfg;
+    VoltageModeCfg backEmfCfg;
 
     int helper = backEmfCfg.holdingKVal;
     tryGetArgumentAsInt(cfg,"KVAL_HOLD",helper);

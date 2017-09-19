@@ -506,7 +506,7 @@ uint8_t MultiDriver::getHoldKVAL(int motor)
 }
 
 void
-MultiDriver::setBackEmfConfig(const BackEmfConfig &backEmfConfig, int motor)
+MultiDriver::setBackEmfConfig(const VoltageModeCfg &backEmfConfig, int motor)
 {
     // Set the K Values
     setHoldKVAL(backEmfConfig.holdingKVal,motor);
@@ -521,10 +521,10 @@ MultiDriver::setBackEmfConfig(const BackEmfConfig &backEmfConfig, int motor)
     setParam(FN_SLP_DEC,backEmfConfig.decelFinalSlope,motor);
 }
 
-BackEmfConfig
+VoltageModeCfg
 MultiDriver::getBackEmfConfig(int motor)
 {
-    BackEmfConfig backEmfConfig;
+    VoltageModeCfg backEmfConfig;
 
     // Get the K Values
     backEmfConfig.holdingKVal = getHoldKVAL(motor);

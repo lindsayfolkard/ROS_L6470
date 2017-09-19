@@ -1,7 +1,6 @@
 #pragma once
 
 #include "abstractdriver.h"
-#include <mraa.hpp>
 #include "types.h"
 #include "motor.h"
 #include "support.h"
@@ -13,11 +12,9 @@
 #include <assert.h>
 #include "commsdriver.h"
 
-// MultiDriver
-// Description : A single class which manages all daisy chained motors at once
-// Rationale   : The L6470 uses a daisy chaining approach to handle comms. This daisy chaining is a bit tricky
-//               and is hard to separate into parts without giving redundant comms.
-// FML - this is a real bitch...!!
+// BaseDriver
+// Description : A general implementation of the AbstractDriver
+//               Encompasses all common commands.
 
 class BaseDriver : public AbstractDriver
 {
@@ -28,7 +25,7 @@ public:
     /// Constructors
     /////////////////////////
 
-    //BaseDriver(const std::vector<StepperMotor> &motors, int chipSelectPin, int resetPin, int busyPin = -1 ,CommsDebugLevel commsDebugLevel = CommsDebugNothing);
+    BaseDriver(const std::vector<StepperMotor> &motors, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
     
     /////////////////////////
     /// Status Commands
@@ -130,7 +127,9 @@ public:
 
 private:
 
-    std::unique_ptr<CommsDriver> commsDriver_;
+    const std::vector<StepperMotor> motors_;
+    CommsDebugLevel                 commsDebugLevel_;
+    std::unique_ptr<CommsDriver>    commsDriver_;
 
 
 };

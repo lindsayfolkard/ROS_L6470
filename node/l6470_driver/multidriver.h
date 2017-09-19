@@ -65,8 +65,8 @@ class MultiDriver
     void setConfig(const Config &cfg , int motor);
     Config getConfig(int motor);
 
-    void setBackEmfConfig(const BackEmfConfig &backEmfConfig , int motor);
-    BackEmfConfig getBackEmfConfig(int motor);
+    void setBackEmfConfig(const VoltageModeCfg &backEmfConfig , int motor);
+    VoltageModeCfg getBackEmfConfig(int motor);
 
     ///
     /// Profile Configuration Commands

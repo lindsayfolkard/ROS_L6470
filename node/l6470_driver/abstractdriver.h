@@ -115,14 +115,6 @@ class AbstractDriver
     virtual void resetPos(int motor) = 0;
     virtual void resetDev(const std::vector <int> &motors) = 0;
 
-    //    ///////////////////////////////////
-    //    /// Raw Access Set/Get Commands
-    //    ///////////////////////////////////
-    //    void setParam(ParamRegister param, std::map<int, uint32_t> &values) = 0;
-    //    void setParam(ParamRegister param , uint32_t value , int motor) = 0;
-    //    std::vector<uint32_t> getParam(ParamRegister param) = 0;
-    //    uint32_t getParam(ParamRegister param , int motor) = 0;
-
 };
 
 

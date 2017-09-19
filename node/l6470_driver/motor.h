@@ -67,7 +67,7 @@ StepperMotor stepperFromString(const std::string &cfg);
 // backemf config to be used by the L6470 Driver
 // See : http://www.st.com/content/ccc/resource/technical/document/application_note/e8/ca/05/a0/9e/ff/4e/69/DM00039787.pdf/files/DM00039787.pdf/jcr:content/translations/en.DM00039787.pdf
 // page 15
-BackEmfConfig BackEmfConfigFromStepper(const StepperMotor & stepperMotor , double vbus , double phaseCurrent );
+VoltageModeCfg BackEmfConfigFromStepper(const StepperMotor & stepperMotor , double vbus , double phaseCurrent );
 
 ///
 /// Individual Stepper Motor Structs for specific motors.

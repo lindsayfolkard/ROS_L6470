@@ -394,7 +394,7 @@ inline std::ostream& operator<<(std::ostream& os,Command x)
 /// contains all information that is needed to
 /// configure a motor to be used with a controller
 ///
-struct BackEmfConfig
+struct VoltageModeCfg
 {
     uint8_t holdingKVal;
     uint8_t constantSpeedKVal;
@@ -405,14 +405,54 @@ struct BackEmfConfig
     uint32_t startSlope;
     uint32_t accelFinalSlope;
     uint32_t decelFinalSlope;
+
+    // Config Register
+    OscillatorSelect       oscillatorSelect;
+    SwitchConfiguration    switchConfiguration;
+    OverCurrentDetection   overCurrentDetection;
+    //SlewRate               slewRate;
+    VoltageCompensation    voltageCompensation;
+    PwmFrequencyMultiplier pwmFrequencyMultiplier;
+    PwmFrequencyDivider    pwmFrequencyDivider;
 };
-std::string toString(const BackEmfConfig &backEmfConfig);
-inline std::ostream& operator<<(std::ostream& os,const BackEmfConfig &x)
+std::string toString(const VoltageModeCfg &backEmfConfig);
+inline std::ostream& operator<<(std::ostream& os,const VoltageModeCfg &x)
 {
     return os << toString(x);
 }
 
-BackEmfConfig getBackEmfConfigFromString(const std::string &cfg);
+struct CurrentModeCfg
+{
+    uint8_t tvalHold;
+    uint8_t tvalRun;
+    uint8_t tvalAcc;
+    uint8_t tvalDec;
+    uint8_t tFast;
+    uint8_t tonMin;
+    uint8_t toffMin;
+
+    // Config Register
+    bool                  predictiveCurrentControlEnabled;
+    TargetSwitchingPeriod targetSwitchingPeriod;
+    SwitchConfiguration   switchConfiguration;
+    OverCurrentDetection  overCurrentDetection;
+    OscillatorSelect      oscillatorSelect;
+    bool                  enableTorqueRegulation;
+    bool                  externalClockEnabled;
+};
+
+enum TargetSwitchingPeriod
+{
+    SwitchingPeriod250KHz  = 0x00,
+    SwitchingPeriod125KHz  = 0x01,
+    SwitchingPeriod62_5KHz = 0x02,
+    SwitchingPeriod31KHz   = 0x03,
+    SwitchingPeriod32_     = 0x04,
+    SwitchingPeriod16KHz   = 0x0E,
+    SwitchingPeriod8KHz    = 0x0F
+};
+
+VoltageModeCfg getBackEmfConfigFromString(const std::string &cfg);
 
 // General Static Config (meant to be set once at the start and then not really again)
 // NB: valid parameters are always positive. A negative parameter is interpreted as do not set/read.
@@ -423,7 +463,7 @@ struct Config
 
     // Very Important w.r.t smooth motor driving
     // See motor.h for more information
-    BackEmfConfig backEmfConfig;
+    VoltageModeCfg backEmfConfig;
 
     int fullStepThresholdSpeed;
     int thermalDriftCoefficient;

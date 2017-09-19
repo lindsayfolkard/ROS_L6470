@@ -90,9 +90,9 @@ StepperMotor stepperFromString(const std::string &cfg)
 }
 
 
-BackEmfConfig BackEmfConfigFromStepper(const StepperMotor & stepperMotor , double vbus , double phaseCurrent )
+VoltageModeCfg BackEmfConfigFromStepper(const StepperMotor & stepperMotor , double vbus , double phaseCurrent )
 {
-    BackEmfConfig backEmfConfig;
+    VoltageModeCfg backEmfConfig;
 
     // Calculate the respective KVals
     const int kValMultiplier = 256; // 2^8

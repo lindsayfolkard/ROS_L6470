@@ -74,7 +74,7 @@ L6470Node::L6470Node():
         
         // Parse the motor config
         StepperMotor motorCfg = stepperFromString(str);
-        BackEmfConfig backEmfCfg = BackEmfConfigFromStepper(motorCfg,vBus,ratedCurrent);
+        VoltageModeCfg backEmfCfg = BackEmfConfigFromStepper(motorCfg,vBus,ratedCurrent);
         config.backEmfConfig = backEmfCfg;
 
         // Add to the vector

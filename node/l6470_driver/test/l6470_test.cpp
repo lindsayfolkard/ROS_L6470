@@ -63,7 +63,7 @@ int main (int argc, char ** argv)
     // Lets set the config
     cout << "Original Config is " << driver.getConfig(0);
     Stepper_57BYGH51 nema23BackEmfConfig;
-    BackEmfConfig backEmfConfig = BackEmfConfigFromStepper(nema23BackEmfConfig,24,2.5);
+    VoltageModeCfg backEmfConfig = BackEmfConfigFromStepper(nema23BackEmfConfig,24,2.5);
     Config driverConfig;
     driverConfig.backEmfConfig = backEmfConfig;
     driverConfig.overCurrentThreshold = OCD_TH_3750m;
