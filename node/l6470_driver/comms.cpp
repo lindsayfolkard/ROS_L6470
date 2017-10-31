@@ -116,8 +116,9 @@ MultiDriver::SPIXfer(const std::map<int, uint32_t> &data , int bitLength)
     // is running on a linux which is little-endian. Hence we need to reverse the order in which we send bytes
     for (int i=0; i < byteLength ; ++i)
     {
-        uint8_t byteSendPacket [motors_.size()]={NOP};
-        uint8_t byteRecvPacket [motors_.size()]={NOP};
+        std::vector<uint8_t> byteSendPacket(motors_.size(),NOP);//={NOP};
+        std::vector<uint8_t> byteRecvPacket(motors_.size(),NOP);//={NOP};
+        // TODO - double check that this is ok (should be)
 
         for (const auto element : data)
         {
@@ -127,15 +128,15 @@ MultiDriver::SPIXfer(const std::map<int, uint32_t> &data , int bitLength)
         // Debug if needed
 	if (commsDebugLevel_ == CommsDebugEverything) 
     	{
-	    std::cout << "(CommsDebug) : SPI Transfer Packet " << i+1 <<" of " << (int)byteLength << " --> " << toLineString(byteSendPacket,motors_.size()) << std::endl;
+        std::cout << "(CommsDebug) : SPI Transfer Packet " << i+1 <<" of " << (int)byteLength << " --> " << toLineString(byteSendPacket) << std::endl;
     	}
 
-        SPI_->transfer(byteSendPacket,byteRecvPacket,motors_.size());
+        SPI_->transfer(&byteSendPacket[0],&byteRecvPacket[0],motors_.size());
 
         // Debug if needed
 	if (commsDebugLevel_ == CommsDebugEverything) 
     	{
-	    std::cout << "(CommsDebug) : SPI Recieve Packet " << i+1 <<" of " << (int)byteLength << " --> " << toLineString(byteRecvPacket,motors_.size()) << std::endl;
+        std::cout << "(CommsDebug) : SPI Recieve Packet " << i+1 <<" of " << (int)byteLength << " --> " << toLineString(byteRecvPacket) << std::endl;
     	}
 
         // I presume the L6470 also responds in big-endian format

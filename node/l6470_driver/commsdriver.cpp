@@ -25,8 +25,8 @@ CommsDriver::setParam(uint8_t paramRegister, uint8_t bitLength, std::map<int, ui
     if (commsDebugLevel_ >= CommsDebugOnlyActions)
     {
         std::cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||" << std::endl;
-        std::cout << "(CommsDebug) : Set Param [" << param << "] with map : "
-                  << std::endl << toMapString(values,toBitLength(param)) << std::endl;
+        std::cout << "(CommsDebug) : Set Param [" << paramRegister << "] with map : "
+                  << std::endl << toMapString(values,toBitLength(paramRegister)) << std::endl;
     }
 
     // Structure the command request
@@ -82,7 +82,7 @@ CommsDriver::getParam(uint8_t paramRegister, uint8_t bitLength, int motor)
     if (commsDebugLevel_ >= CommsDebugOnlyActions)
     {
         std::cout << "___________________________________________" << std::endl;
-        std::cout << "(CommsDebug) : Get Param [" << param << "] " << std::endl << std::endl;
+        std::cout << "(CommsDebug) : Get Param [" << paramRegister << "] " << std::endl << std::endl;
     }
 
     std::vector<uint32_t> values = getParam(paramRegister,bitLength);
@@ -115,7 +115,7 @@ CommsDriver::SPIXfer(const std::map<int, uint32_t> &data , int bitLength)
     // This is kinda annoying, but fuck it also is useful in getting somewhat exact timing with control
 
     // NB: need to be careful here that we are dealing with contiguos memory ??
-    std::vector<uint32_t> recvData(motors_.size(),0); // should init to all zeroes...
+    std::vector<uint32_t> recvData(numMotors_,0); // should init to all zeroes...
 
     // Determine the number of bytes to send
     uint8_t byteLength = bitLength/8;   // How many BYTES do we have?
@@ -126,8 +126,8 @@ CommsDriver::SPIXfer(const std::map<int, uint32_t> &data , int bitLength)
     // is running on a linux which is little-endian. Hence we need to reverse the order in which we send bytes
     for (int i=0; i < byteLength ; ++i)
     {
-        uint8_t byteSendPacket [motors_.size()]={NOP};
-        uint8_t byteRecvPacket [motors_.size()]={NOP};
+        std::vector<uint8_t> byteSendPacket(numMotors_,NOP);
+        std::vector<uint8_t> byteRecvPacket(numMotors_,NOP);
 
         for (const auto element : data)
         {
@@ -137,19 +137,19 @@ CommsDriver::SPIXfer(const std::map<int, uint32_t> &data , int bitLength)
         // Debug if needed
         if (commsDebugLevel_ == CommsDebugEverything)
         {
-            std::cout << "(CommsDebug) : SPI Transfer Packet " << i+1 <<" of " << (int)byteLength << " --> " << toLineString(byteSendPacket,motors_.size()) << std::endl;
+            std::cout << "(CommsDebug) : SPI Transfer Packet " << i+1 <<" of " << (int)byteLength << " --> " << toLineString(byteSendPacket) << std::endl;
         }
 
-        SPI_->transfer(byteSendPacket,byteRecvPacket,motors_.size());
+        SPI_->transfer(&byteSendPacket[0],&byteRecvPacket[0],numMotors_);
 
         // Debug if needed
         if (commsDebugLevel_ == CommsDebugEverything)
         {
-            std::cout << "(CommsDebug) : SPI Recieve Packet " << i+1 <<" of " << (int)byteLength << " --> " << toLineString(byteRecvPacket,motors_.size()) << std::endl;
+            std::cout << "(CommsDebug) : SPI Recieve Packet " << i+1 <<" of " << (int)byteLength << " --> " << toLineString(byteRecvPacket) << std::endl;
         }
 
         // I presume the L6470 also responds in big-endian format
-        for (unsigned int j=0; j < motors_.size();++j)
+        for (unsigned int j=0; j < numMotors_;++j)
         {
             recvData[j] = recvData[j] << 8;
             recvData[j] |= byteRecvPacket[j];
@@ -172,7 +172,7 @@ CommsDriver::SPIXfer(uint8_t requestValue)
 {
     // Create an appropriate map
     std::map<int,uint32_t> requests;
-    for (unsigned int i=0 ; i < motors_.size() ; ++i)
+    for (unsigned int i=0 ; i < numMotors_ ; ++i)
     {
         requests.insert(std::pair<int,uint32_t>(i,requestValue));
     }

@@ -15,6 +15,8 @@
 // Conversion Functions
 uint32_t capMaxValue(uint32_t value , int bitLength);
 int toBitLength(ParamRegister paramRegister);
+// help everything to compile
+int toBitLength(char paramRegister) { return toBitLength(static_cast<ParamRegister>(paramRegister));}
 
 // Convert signed int32_t to an appropriately signed two's complement value
 // and back again.

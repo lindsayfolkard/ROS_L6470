@@ -26,7 +26,7 @@ std::string toMapString(const std::map <int,uint32_t> &values , uint8_t bitLengt
      return ss.str();
 }
 
-std::string toLineString(uint8_t *buffer , uint8_t length)
+std::string toLineString(const uint8_t *buffer , uint8_t length)
 {
     std::stringstream ss;
     ss << "[" << std::hex;
@@ -39,6 +39,11 @@ std::string toLineString(uint8_t *buffer , uint8_t length)
     ss << "]" << std::dec;
     
     return ss.str();
+}
+
+std::string toLineString(const std::vector<uint8_t> &data)
+{
+    return toLineString(&data[0],data.size());
 }
 
 template <typename L, typename R>

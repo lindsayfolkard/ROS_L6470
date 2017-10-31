@@ -1,6 +1,8 @@
 #pragma once
 
+#include "motor.h"
 #include "types.h"
+#include "commsdriver.h" // commsdebug level (probs put in types.h)
 
 // AbstractDriver
 // Description : The common interface used to control L647*, L648*, PowerStep01
@@ -15,8 +17,9 @@ class AbstractDriver
     /// Constructors
     /////////////////////////
 
-    AbstractDriver(const std::vector<StepperMotor> &motors, int chipSelectPin, int resetPin, int busyPin = -1 ,CommsDebugLevel commsDebugLevel = CommsDebugNothing);
+    //AbstractDriver(const std::vector<StepperMotor> &motors, int chipSelectPin, int resetPin, int busyPin = -1 ,CommsDebugLevel commsDebugLevel = CommsDebugNothing);
 
+    virtual ~AbstractDriver() = 0;
     /////////////////////////
     /// Status Commands
     /////////////////////////

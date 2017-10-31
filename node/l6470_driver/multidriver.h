@@ -5,6 +5,7 @@
 #include "motor.h"
 #include "support.h"
 #include "commands.h"
+#include "commsdriver.h"
 #include <memory>
 #include <stdint.h>
 #include <vector>

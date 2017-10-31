@@ -6,6 +6,7 @@
 
 std::string toMapString(const std::map <int,uint32_t> &values , uint8_t bitLength);
 std::string toLineString(uint8_t *buffer , uint8_t length);
+std::string toLineString(const std::vector<uint8_t> &data);
 
 // constant definitions for overcurrent thresholds. Write these values to 
 //  register OCD_TH to set the level at which an overcurrent even occurs.
@@ -421,6 +422,17 @@ inline std::ostream& operator<<(std::ostream& os,const VoltageModeCfg &x)
     return os << toString(x);
 }
 
+enum TargetSwitchingPeriod
+{
+    SwitchingPeriod250KHz  = 0x00,
+    SwitchingPeriod125KHz  = 0x01,
+    SwitchingPeriod62_5KHz = 0x02,
+    SwitchingPeriod31KHz   = 0x03,
+    SwitchingPeriod32_     = 0x04,
+    SwitchingPeriod16KHz   = 0x0E,
+    SwitchingPeriod8KHz    = 0x0F
+};
+
 struct CurrentModeCfg
 {
     uint8_t tvalHold;
@@ -439,17 +451,6 @@ struct CurrentModeCfg
     OscillatorSelect      oscillatorSelect;
     bool                  enableTorqueRegulation;
     bool                  externalClockEnabled;
-};
-
-enum TargetSwitchingPeriod
-{
-    SwitchingPeriod250KHz  = 0x00,
-    SwitchingPeriod125KHz  = 0x01,
-    SwitchingPeriod62_5KHz = 0x02,
-    SwitchingPeriod31KHz   = 0x03,
-    SwitchingPeriod32_     = 0x04,
-    SwitchingPeriod16KHz   = 0x0E,
-    SwitchingPeriod8KHz    = 0x0F
 };
 
 VoltageModeCfg getBackEmfConfigFromString(const std::string &cfg);

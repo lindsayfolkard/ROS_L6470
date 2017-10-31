@@ -52,14 +52,14 @@ private:
     // Template validity check
     template <typename T> void checkMapIsValid (const std::map <int,T> &input)
     {
-        if (input.size() > motors_.size())
+        if (input.size() > (unsigned int) numMotors_)
         {
             assert (!"Invalid map size");
         }
 
         for (const auto &element : input)
         {
-            if ((unsigned int) element.first >= motors_.size() || element.first < 0)
+            if (element.first >= numMotors_ || element.first < 0)
             {
                 assert(!"Invalid map entry");
             }

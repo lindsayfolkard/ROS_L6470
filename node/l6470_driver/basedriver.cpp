@@ -52,11 +52,11 @@ BaseDriver::getStatus()
 
     // Send the request
     // TODO - change to the command being sent (will clear any error flags)???
-    commsDriver_->(GET_STATUS);
+    commsDriver_->getParam(GET_STATUS);
 
     // Get the responses
     std::map<int,uint32_t> emptyMap;
-    std::vector<uint32_t> states = commsDriver_->(emptyMap,toBitLength(STATUS));
+    std::vector<uint32_t> states = commsDriver_->getParam(emptyMap,toBitLength(STATUS));
 
     // Parse the responses
     std::vector<Status> statusVector;
