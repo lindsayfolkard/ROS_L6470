@@ -8,7 +8,7 @@ CommsDriver::CommsDriver(int numMotors, int spiBus) :
     numMotors_(numMotors)
 {
     // Try to initialise the mraa::SPI port
-    SPI_.reset(new mraa::Spi(0));
+    SPI_.reset(new mraa::Spi(spiBus));
     SPI_->mode(mraa::SPI_MODE3);
     SPI_->frequency(4000000); // Can this be a bit higher ?
 }
@@ -16,6 +16,14 @@ CommsDriver::CommsDriver(int numMotors, int spiBus) :
 ///
 /// \brief Functions for handling comms with daisy chained L6470H boards
 ///
+
+
+void
+CommsDriver::checkMotorIsValid(int motor)
+{
+    if (motor < 0 || motor > numMotors_)
+        throw; // TODO - throw propere exception
+}
 
 void
 CommsDriver::setParam(uint8_t paramRegister, uint8_t bitLength, std::map<int, uint32_t> &values)
@@ -97,6 +105,13 @@ CommsDriver::getParam(uint8_t paramRegister, uint8_t bitLength, int motor)
 }
 
 std::vector<uint32_t>
+CommsDriver::getParam(uint8_t paramRegister)
+{
+    return getParam(paramRegister,toBitLength(paramRegister));
+}
+
+
+std::vector<uint32_t>
 CommsDriver::SPIXfer(const std::map<int, uint32_t> &data , int bitLength)
 {
     // Check map validity
@@ -149,7 +164,7 @@ CommsDriver::SPIXfer(const std::map<int, uint32_t> &data , int bitLength)
         }
 
         // I presume the L6470 also responds in big-endian format
-        for (unsigned int j=0; j < numMotors_;++j)
+        for (int j=0; j < numMotors_;++j)
         {
             recvData[j] = recvData[j] << 8;
             recvData[j] |= byteRecvPacket[j];
@@ -172,7 +187,7 @@ CommsDriver::SPIXfer(uint8_t requestValue)
 {
     // Create an appropriate map
     std::map<int,uint32_t> requests;
-    for (unsigned int i=0 ; i < numMotors_ ; ++i)
+    for (int i=0 ; i < numMotors_ ; ++i)
     {
         requests.insert(std::pair<int,uint32_t>(i,requestValue));
     }

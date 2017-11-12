@@ -58,7 +58,7 @@ std::string toString(const GoToDirCommand &x)
     return ss.str();
 }
 
-int toBitLength(ParamRegister paramRegister)
+int toBitLength(char paramRegister)
 {
     int retVal=0;
 

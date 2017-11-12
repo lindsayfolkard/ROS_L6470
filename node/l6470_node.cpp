@@ -87,8 +87,8 @@ L6470Node::L6470Node():
     }
     
     // Let's instantiate the driver
-    const int chipSelectPin = 0; // huh
-    const int resetPin = 0; // Is it even needed
+    //const int chipSelectPin = 0; // huh
+    //const int resetPin = 0; // Is it even needed
     //driver_.reset(new MultiDriver(motors,configs,chipSelectPin,resetPin));
 }
 

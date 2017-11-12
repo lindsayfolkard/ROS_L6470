@@ -127,6 +127,8 @@ public:
 
 private:
 
+    void checkMotorIsValid(int motor);
+
     const std::vector<StepperMotor> motors_;
     CommsDebugLevel                 commsDebugLevel_;
     std::unique_ptr<CommsDriver>    commsDriver_;

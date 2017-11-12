@@ -359,7 +359,6 @@ inline std::ostream& operator<<(std::ostream& os,ParamRegister x)
 {
     return os << toString(x);
 }
-int toBitLength(ParamRegister paramRegister);
 
 //dSPIN commands
 enum Command

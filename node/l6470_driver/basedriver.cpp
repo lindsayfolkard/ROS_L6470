@@ -10,14 +10,14 @@ BaseDriver::BaseDriver(const std::vector<StepperMotor> &motors, int spiBus, Comm
     commsDriver_.reset(new CommsDriver(motors_.size(),spiBus));
 }
 
-//void
-//BaseDriver::checkMotorIsValid(int motor)
-//{
-//    if (motor < 0 || (unsigned int)motor > motors_.size() )
-//    {
-//        throw; // TODO - fix which exception that is thrown
-//    }
-//}
+void
+BaseDriver::checkMotorIsValid(int motor)
+{
+    if (motor < 0 || (unsigned int)motor > motors_.size() )
+    {
+        throw; // TODO - fix which exception that is thrown
+    }
+}
 
 //BaseDriver::BaseDriver(const std::vector<StepperMotor> &motors,
 //                         const std::vector<Config>       &configs,
@@ -52,11 +52,11 @@ BaseDriver::getStatus()
 
     // Send the request
     // TODO - change to the command being sent (will clear any error flags)???
-    commsDriver_->getParam(GET_STATUS);
+    //commsDriver_->getParam(GET_STATUS);
 
     // Get the responses
-    std::map<int,uint32_t> emptyMap;
-    std::vector<uint32_t> states = commsDriver_->getParam(emptyMap,toBitLength(STATUS));
+    //std::map<int,uint32_t> emptyMap;
+    std::vector<uint32_t> states = commsDriver_->getParam(STATUS,toBitLength(STATUS));
 
     // Parse the responses
     std::vector<Status> statusVector;
@@ -312,7 +312,7 @@ BaseDriver::goMark(int motor)
 void
 BaseDriver::setPos(int32_t pos , int motor)
 {
-    setParam(ABS_POS , toTwosComplementUint(pos,toBitLength(ABS_POS)) , motor);
+   commsDriver_->setParam(ABS_POS ,toBitLength(ABS_POS), toTwosComplementUint(pos,toBitLength(ABS_POS)) , motor);
 }
 
 void
@@ -378,7 +378,7 @@ BaseDriver::softHiZ(int motor)
 void
 BaseDriver::hardHiZ(const std::vector<int> &motors)
 {
-    commsDriver_->commsDriver_->sendCommands(motors,HARD_HIZ);
+    commsDriver_->sendCommands(motors,HARD_HIZ);
 }
 
 void

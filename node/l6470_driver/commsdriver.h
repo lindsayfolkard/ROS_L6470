@@ -23,7 +23,7 @@ class CommsDriver
 {
 public:
 
-    CommsDriver(int numMotors , int spiBus);
+    CommsDriver(int numMotors , int spiBus = 0);
 
     // Sends requestValue to all motors
     std::vector<uint32_t> SPIXfer(uint8_t requestValue);
@@ -43,6 +43,7 @@ public:
     void setParam(uint8_t paramRegister, uint8_t bitLength, std::map<int, uint32_t> &values);
     void setParam(uint8_t paramRegister, uint8_t bitLength, uint32_t value , int motor);
     std::vector<uint32_t> getParam(uint8_t paramRegister, uint8_t bitLength);
+    std::vector<uint32_t> getParam(uint8_t paramRegister);
     uint32_t getParam(uint8_t paramRegister, uint8_t bitLength, int motor);
 
 private:
@@ -68,5 +69,5 @@ private:
 
     CommsDebugLevel            commsDebugLevel_;
     std::unique_ptr<mraa::Spi> SPI_;
-    int                        numMotors_;
+    const int                  numMotors_;
 };

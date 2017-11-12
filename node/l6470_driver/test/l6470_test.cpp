@@ -1,7 +1,7 @@
 #include <iostream>
-#include "../multidriver.h"
-#include "../types.h"
-#include "../commands.h"
+//#include "../multidriver.h"
+//#include "../types.h"
+//#include "../commands.h"
 #include <stdexcept>
 #include <string>
 #include <regex>
@@ -22,64 +22,64 @@ std::vector<long> getArguments(const std::string &input,int argCount);
 
 int main (int argc, char ** argv)
 {
-    // Create the stepper motor
-    Stepper_57BYGH51 stepper;
-    std::vector<StepperMotor> motors = {stepper,stepper,stepper};
+//    // Create the stepper motor
+//    Stepper_57BYGH51 stepper;
+//    std::vector<StepperMotor> motors = {stepper,stepper,stepper};
 
-    // Instantiate the AutoDriver
-    cout << "Try to instantiate the driver" << endl;
-    //MultiDriver driver(motors,0,0,0,CommsDebugEverything); CommsDebugNothing
-    MultiDriver driver(motors,0,0,0,CommsDebugEverything);
-    cout << "Instantiated the driver!" << endl;	
+//    // Instantiate the AutoDriver
+//    cout << "Try to instantiate the driver" << endl;
+//    //MultiDriver driver(motors,0,0,0,CommsDebugEverything); CommsDebugNothing
+//    MultiDriver driver(motors,0,0,0,CommsDebugEverything);
+//    cout << "Instantiated the driver!" << endl;
 
-    // Let's try to do some simple shit 
-    const auto start = std::chrono::steady_clock::now();
-    std::vector<Status> statusVector = driver.getStatus();
-    const auto end = std::chrono::steady_clock::now();
-    std::chrono::duration<double> diff = end-start;
-    int count=1;
-    for (const Status &status : statusVector)
-    {
-	cout << "Status for motor" << count++ << " is " << status << std::endl << std::endl; 
-    } 
+//    // Let's try to do some simple shit
+//    const auto start = std::chrono::steady_clock::now();
+//    std::vector<Status> statusVector = driver.getStatus();
+//    const auto end = std::chrono::steady_clock::now();
+//    std::chrono::duration<double> diff = end-start;
+//    int count=1;
+//    for (const Status &status : statusVector)
+//    {
+//	cout << "Status for motor" << count++ << " is " << status << std::endl << std::endl;
+//    }
     
-    cout << "Test setting the motors to softStop" << std::endl;
-    cout << "Status : " << driver.getStatus(0) << " , time = " << diff.count()*1000000 << " microseconds" <<  std::endl;
-    driver.softStop(0);
-    driver.softStop(1);
-    driver.softStop(2);
-    cout << "Status : " << driver.getStatus(0) << std::endl;
+//    cout << "Test setting the motors to softStop" << std::endl;
+//    cout << "Status : " << driver.getStatus(0) << " , time = " << diff.count()*1000000 << " microseconds" <<  std::endl;
+//    driver.softStop(0);
+//    driver.softStop(1);
+//    driver.softStop(2);
+//    cout << "Status : " << driver.getStatus(0) << std::endl;
 
-    usleep(3e6);
+//    usleep(3e6);
 
-    driver.softStop({0,1,2});
+//    driver.softStop({0,1,2});
 
-    // Lets get position
-    cout << "Position : " << driver.getPos(0) << std::endl;
-    cout << "Config   : " << driver.getConfig(0) << std::endl;
-    driver.resetPos(0);
-    cout << "Position : " << driver.getPos(0) << std::endl;
+//    // Lets get position
+//    cout << "Position : " << driver.getPos(0) << std::endl;
+//    cout << "Config   : " << driver.getConfig(0) << std::endl;
+//    driver.resetPos(0);
+//    cout << "Position : " << driver.getPos(0) << std::endl;
 
-    // Lets set the config
-    cout << "Original Config is " << driver.getConfig(0);
-    Stepper_57BYGH51 nema23BackEmfConfig;
-    VoltageModeCfg backEmfConfig = BackEmfConfigFromStepper(nema23BackEmfConfig,24,2.5);
-    Config driverConfig;
-    driverConfig.backEmfConfig = backEmfConfig;
-    driverConfig.overCurrentThreshold = OCD_TH_3750m;
-    driver.setConfig(driverConfig,0);
-    cout << "Updated Config is " << driver.getConfig(0);
+//    // Lets set the config
+//    cout << "Original Config is " << driver.getConfig(0);
+//    Stepper_57BYGH51 nema23BackEmfConfig;
+//    VoltageModeCfg backEmfConfig = BackEmfConfigFromStepper(nema23BackEmfConfig,24,2.5);
+//    Config driverConfig;
+//    driverConfig.backEmfConfig = backEmfConfig;
+//    driverConfig.overCurrentThreshold = OCD_TH_3750m;
+//    driver.setConfig(driverConfig,0);
+//    cout << "Updated Config is " << driver.getConfig(0);
     
-    // Lets set a profile config
-    ProfileCfg profileCfg = driver.getProfileCfg(0);
-    cout << "ProfileCfg" << profileCfg << std::endl;
-    profileCfg.maxSpeed=650;
-    profileCfg.minSpeed=80;
-    profileCfg.acceleration=100;
-    profileCfg.deceleration=100;    
+//    // Lets set a profile config
+//    ProfileCfg profileCfg = driver.getProfileCfg(0);
+//    cout << "ProfileCfg" << profileCfg << std::endl;
+//    profileCfg.maxSpeed=650;
+//    profileCfg.minSpeed=80;
+//    profileCfg.acceleration=100;
+//    profileCfg.deceleration=100;
 
-    driver.setProfileCfg(profileCfg,0);
-    cout << "New profile cfg is " << profileCfg << std::endl;
+//    driver.setProfileCfg(profileCfg,0);
+//    cout << "New profile cfg is " << profileCfg << std::endl;
 
     // Fuck it let's try to move
     /*driver.softStop(0);
