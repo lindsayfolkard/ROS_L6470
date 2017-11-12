@@ -166,6 +166,168 @@ int32_t BaseDriver::getMark(int motor)
     return marks[motor];
 }
 
+void
+BaseDriver::setProfileCfg(const std::map<int,ProfileCfg> &cfgs)
+{
+    std::map<int,float> accel;
+    std::map<int,float> decel;
+    std::map<int,float> maxVel;
+    std::map<int,float> minVel;
+
+    for (const auto motor : cfgs)
+    {
+        accel.insert(std::pair<int,float>(motor.first,motor.second.acceleration));
+        decel.insert(std::pair<int,float>(motor.first,motor.second.deceleration));
+        maxVel.insert(std::pair<int,float>(motor.first,motor.second.maxSpeed));
+        minVel.insert(std::pair<int,float>(motor.first,motor.second.minSpeed));
+    }
+
+    setAcc(accel);
+    setDec(decel);
+    setMaxSpeed(maxVel);
+    setMinSpeed(minVel);
+}
+
+void
+BaseDriver::setProfileCfg(const ProfileCfg &cfg, int motor)
+{
+    checkMotorIsValid(motor);
+    std::map<int,ProfileCfg> cfgMap = {{motor,cfg}};
+    setProfileCfg(cfgMap);
+}
+
+ProfileCfg
+BaseDriver::getProfileCfg(int motor)
+{
+    ProfileCfg profileCfg;
+    profileCfg.acceleration = getAcc(motor);
+    profileCfg.deceleration = getDec(motor);
+    profileCfg.maxSpeed     = getMaxSpeed(motor);
+    profileCfg.minSpeed     = getMinSpeed(motor);
+
+    return profileCfg;
+}
+
+// Set the acceleration rate, in steps per second per second. This value is
+//  converted to a dSPIN friendly value. Any value larger than 29802 will
+//  disable acceleration, putting the chip in "infinite" acceleration mode.
+void
+BaseDriver::setAcc(float stepsPerSecondPerSecond , int motor)
+{
+  uint32_t integerAcc = accCalc(stepsPerSecondPerSecond);
+  setParam(ACC, integerAcc, motor);
+}
+
+void
+BaseDriver::setAcc(std::map<int,float> &accelerations)
+{
+    std::map<int,uint32_t> intAccelerations;
+
+    for (const auto element : accelerations)
+    {
+        intAccelerations.insert(std::pair<int,uint32_t>(element.first,accCalc(element.second)));
+    }
+    setParam(ACC,intAccelerations);
+}
+
+float
+BaseDriver::getAcc(int motor)
+{
+  return accParse(getParam(ACC, motor));
+}
+
+// Same rules as setAcc().
+void
+BaseDriver::setDec(float stepsPerSecondPerSecond, int motor)
+{
+  uint32_t integerDec = decCalc(stepsPerSecondPerSecond);
+  setParam(DECEL, integerDec, motor);
+}
+
+void
+BaseDriver::setDec(std::map<int,float> &decelerations)
+{
+    std::map<int,uint32_t> intDecelerations;
+
+    for (const auto element : decelerations)
+    {
+        intDecelerations.insert(std::pair<int,uint32_t>(element.first,decCalc(element.second)));
+    }
+    setParam(DECEL,intDecelerations);
+}
+
+float
+BaseDriver::getDec(int motor)
+{
+  return accParse(getParam(DECEL, motor));
+}
+
+void
+BaseDriver::setMaxSpeed(const std::map <int,float> &maxSpeeds)
+{
+    std::map<int,uint32_t> intMaxSpeeds;
+    for (const auto element : maxSpeeds)
+    {
+        intMaxSpeeds.insert(std::pair<int,uint32_t>(element.first,maxSpdCalc(element.second)));
+    }
+
+    setParam(MAX_SPEED,intMaxSpeeds);
+}
+
+// This is the maximum speed the dSPIN will attempt to produce.
+void
+BaseDriver::setMaxSpeed(float stepsPerSecond , int motor)
+{
+  // We need to convert the floating point stepsPerSecond into a value that
+  //  the dSPIN can understand. Fortunately, we have a function to do that.
+ uint32_t integerSpeed = maxSpdCalc(stepsPerSecond);
+
+  // Now, we can set that paramter.
+  setParam(MAX_SPEED, integerSpeed, motor);
+}
+
+void
+BaseDriver::setMinSpeed(const std::map <int,float> &minSpeeds)
+{
+    std::map<int,uint32_t> intMinSpeeds;
+    for (const auto element : minSpeeds)
+    {
+        // MIN_SPEED also contains the LSPD_OPT flag, so we need to protect that.
+        uint32_t temp = getParam(MIN_SPEED,element.first) & 0x00001000;
+
+        intMinSpeeds.insert(std::pair<int,uint32_t>(element.first,minSpdCalc(element.second)|temp));
+    }
+
+    setParam(MIN_SPEED,intMinSpeeds);
+}
+
+// Set the minimum speed allowable in the system. This is the speed a motion
+//  starts with; it will then ramp up to the designated speed or the max
+//  speed, using the acceleration profile.
+void BaseDriver::setMinSpeed(float stepsPerSecond, int motor)
+{
+  // We need to convert the floating point stepsPerSecond into a value that
+  //  the dSPIN can understand. Fortunately, we have a function to do that.
+  uint32_t integerSpeed = minSpdCalc(stepsPerSecond);
+
+  // MIN_SPEED also contains the LSPD_OPT flag, so we need to protect that.
+  uint32_t temp = getParam(MIN_SPEED,motor) & 0x00001000;
+
+  // Now, we can set that paramter.
+  setParam(MIN_SPEED, integerSpeed | temp , motor);
+}
+
+float BaseDriver::getMaxSpeed(int motor)
+{
+  return maxSpdParse(getParam(MAX_SPEED, motor));
+}
+
+float BaseDriver::getMinSpeed(int motor)
+{
+  return minSpdParse(getParam(MIN_SPEED,motor));
+}
+
+
 /////////////////////////
 /// Operational Commands
 ////////////////////////

@@ -10,6 +10,18 @@
 // http://www.st.com/content/ccc/resource/technical/document/application_note/ad/fc/fb/f0/f7/c7/4c/48/DM00061093.pdf/files/DM00061093.pdf/jcr:content/translations/en.DM00061093.pdf
 // (page 15 lists recommended values)
 
+enum MotorDriverType
+{
+    PowerStep01,
+    L6470, // not checked as of yet
+    L6472  // not checked as of yet
+};
+std::string toString(MotorDriverType motorDriverType);
+inline std::ostream& operator<<(std::ostream& os, MotorDriverType x)
+{
+    return os << toString(x);
+}
+
 enum StepperMotorSize
 {
     NEMA11,

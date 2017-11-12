@@ -26,7 +26,15 @@ public:
     /////////////////////////
 
     BaseDriver(const std::vector<StepperMotor> &motors, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
+    //BaseDriver(const std::vector<StepperMotor> &motors, const std::vector<Config> &cfgs, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
     
+//    //////////////////////////
+//    /// Configuration Commands
+//    //////////////////////////
+
+//    void setConfig(const Config &cfg , int motor);
+//    void getConfig(Config &cfg);
+
     /////////////////////////
     /// Status Commands
     /////////////////////////
@@ -70,9 +78,13 @@ public:
     virtual void setMinSpeed(const std::map <int,float> &minSpeeds) override;
     virtual void setMinSpeed(float stepsPerSecond , int motor) override;
 
-    virtual ProfileCfg getProfileCfg(int motor) override;
+    float getMaxSpeed( int motor );
+    float getMinSpeed( int motor );
+    float getFullSpeed( int motor );
+    float getAcc( int motor );
+    float getDec( int motor );
 
-    // void setFullSpeed(float stepsPerSecond) override;
+    virtual ProfileCfg getProfileCfg(int motor) override;
 
     //////////////////////////////
     /// Operational Commands
@@ -130,6 +142,7 @@ private:
     void checkMotorIsValid(int motor);
 
     const std::vector<StepperMotor> motors_;
+    const MotorDriverType           motorDriverType;
     CommsDebugLevel                 commsDebugLevel_;
     std::unique_ptr<CommsDriver>    commsDriver_;
 

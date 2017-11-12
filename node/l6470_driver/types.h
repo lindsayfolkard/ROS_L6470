@@ -3,6 +3,7 @@
 #include <iostream>
 #include <map>
 #include <boost/bimap.hpp>
+#include <boost/optional.hpp>
 
 std::string toMapString(const std::map <int,uint32_t> &values , uint8_t bitLength);
 std::string toLineString(uint8_t *buffer , uint8_t length);
@@ -389,38 +390,6 @@ inline std::ostream& operator<<(std::ostream& os,Command x)
     return os << toString(x);
 }
 
-///
-/// \brief The BackEmfConfig struct
-/// contains all information that is needed to
-/// configure a motor to be used with a controller
-///
-struct VoltageModeCfg
-{
-    uint8_t holdingKVal;
-    uint8_t constantSpeedKVal;
-    uint8_t accelStartingKVal;
-    uint8_t decelStartingKVal;
-
-    uint32_t intersectSpeed;
-    uint32_t startSlope;
-    uint32_t accelFinalSlope;
-    uint32_t decelFinalSlope;
-
-    // Config Register
-    OscillatorSelect       oscillatorSelect;
-    SwitchConfiguration    switchConfiguration;
-    OverCurrentDetection   overCurrentDetection;
-    //SlewRate               slewRate;
-    VoltageCompensation    voltageCompensation;
-    PwmFrequencyMultiplier pwmFrequencyMultiplier;
-    PwmFrequencyDivider    pwmFrequencyDivider;
-};
-std::string toString(const VoltageModeCfg &backEmfConfig);
-inline std::ostream& operator<<(std::ostream& os,const VoltageModeCfg &x)
-{
-    return os << toString(x);
-}
-
 enum TargetSwitchingPeriod
 {
     SwitchingPeriod250KHz  = 0x00,
@@ -431,90 +400,6 @@ enum TargetSwitchingPeriod
     SwitchingPeriod16KHz   = 0x0E,
     SwitchingPeriod8KHz    = 0x0F
 };
-
-struct CurrentModeCfg
-{
-    uint8_t tvalHold;
-    uint8_t tvalRun;
-    uint8_t tvalAcc;
-    uint8_t tvalDec;
-    uint8_t tFast;
-    uint8_t tonMin;
-    uint8_t toffMin;
-
-    // Config Register
-    bool                  predictiveCurrentControlEnabled;
-    TargetSwitchingPeriod targetSwitchingPeriod;
-    SwitchConfiguration   switchConfiguration;
-    OverCurrentDetection  overCurrentDetection;
-    OscillatorSelect      oscillatorSelect;
-    bool                  enableTorqueRegulation;
-    bool                  externalClockEnabled;
-};
-
-VoltageModeCfg getBackEmfConfigFromString(const std::string &cfg);
-
-// General Static Config (meant to be set once at the start and then not really again)
-// NB: valid parameters are always positive. A negative parameter is interpreted as do not set/read.
-struct Config
-{
-    // Default constructor with known good values
-    // TODO // Config();
-
-    // Very Important w.r.t smooth motor driving
-    // See motor.h for more information
-    VoltageModeCfg backEmfConfig;
-
-    int fullStepThresholdSpeed;
-    int thermalDriftCoefficient;
-
-    CurrentThreshold overCurrentThreshold;
-    CurrentThreshold stallThreshold;
-
-    // STEP_MODE register settings
-    StepMode stepMode;
-    SyncSelect syncSelect;
-    bool syncEnable;
-
-    // CONFIG register settings
-    OscillatorSelect oscillatorSelect;
-    SwitchConfiguration switchConfiguration;
-    OverCurrentDetection overCurrentDetection;
-    SlewRate slewRate;
-    VoltageCompensation voltageCompensation;
-    PwmFrequencyMultiplier pwmFrequencyMultiplier;
-    PwmFrequencyDivider    pwmFrequencyDivider;
-
-    // Alarm Register Settings
-    AlarmState alarmState;
-};
-
-Config cfgFromString(const std::string &str);
-std::string toString(const Config &cfg);
-inline std::ostream& operator<<(std::ostream& os,const Config &x)
-{
-    return os << toString(x);
-}
-
-std::string getArgument(const std::string &cfg , const std::string &marker);
-void tryGetArgumentAsInt(const std::string &cfg, const std::string &marker, int &value);
-
-template <typename T> bool tryReadConfig(const std::string &cfg , const std::string &marker, const boost::bimap<T,std::string> &mapping, T &value)
-{
-    std::string argument = getArgument(cfg,marker);
-
-    // Try and find a matching element
-    if (argument != "")
-    {
-        value = mapping.right.at(argument);
-        return true;
-    }
-    else
-    {
-        std::cout << "No valid cfg entry for marker --> " << marker << std::endl;
-        return false;
-    }
-}
 
 // It is expected during normal operation that these configs will be
 // changed several times on the fly
