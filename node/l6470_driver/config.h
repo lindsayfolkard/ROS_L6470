@@ -1,12 +1,12 @@
 #include "types.h"
 #include "commsdriver.h"
 
-struct GeneralConfig {
+struct AbstractConfig {
     virtual void set(CommsDriver &commsDriver, int motor) = 0;
     //virtual void read(CommsDriver &commsDriver, int motor) = 0;
 };
 
-class CurrentModeCfg : public GeneralConfig
+class CurrentModeCfg : public AbstractConfig
 {
 
 public:
@@ -26,8 +26,6 @@ public:
     bool                  predictiveCurrentControlEnabled;
     TargetSwitchingPeriod targetSwitchingPeriod;
     SwitchConfiguration   switchConfiguration;
-    OverCurrentDetection  overCurrentDetection;
-    OscillatorSelect      oscillatorSelect;
     bool                  enableTorqueRegulation;
     bool                  externalClockEnabled;
 
@@ -41,7 +39,7 @@ private:
 /// contains all information that is needed to
 /// configure a motor to be used with a controller
 ///
-class VoltageModeCfg : public GeneralConfig
+class VoltageModeCfg : public AbstractConfig
 {
 public:
 
@@ -56,11 +54,6 @@ public:
     uint32_t startSlope;
     uint32_t accelFinalSlope;
     uint32_t decelFinalSlope;
-
-    // Config Register
-    OscillatorSelect       oscillatorSelect;
-    SwitchConfiguration    switchConfiguration;
-    OverCurrentDetection   overCurrentDetection;
 
     //SlewRate               slewRate;
     VoltageCompensation    voltageCompensation;
@@ -80,6 +73,13 @@ private:
     uint8_t getRunKVAL(CommsDriver &commsDriver, int motor );
     uint8_t getHoldKVAL(CommsDriver &commsDriver, int motor );
 
+    PwmFrequencyDivider	   getPWMFreqDivisor(CommsDriver &commsDriver, int motor );
+    PwmFrequencyMultiplier getPWMFreqMultiplier(CommsDriver &commsDriver, int motor );
+
+    VoltageCompensation	   getVoltageComp(CommsDriver &commsDriver, int motor );
+    void setVoltageComp(VoltageCompensation vsCompMode, CommsDriver &commsDriver, int motor );
+    void setPWMFreq(PwmFrequencyDivider divider, PwmFrequencyMultiplier multiplier,  CommsDriver &commsDriver, int motor );
+
 };
 
 std::string toString(const VoltageModeCfg &backEmfConfig);
@@ -92,7 +92,7 @@ VoltageModeCfg getBackEmfConfigFromString(const std::string &cfg);
 
 // General Static Config (meant to be set once at the start and then not really again)
 // NB: valid parameters are always positive. A negative parameter is interpreted as do not set/read.
-class CommonConfig : public GeneralConfig
+class CommonConfig : public AbstractConfig
 {
 public:
 
@@ -118,10 +118,7 @@ public:
     OscillatorSelect        oscillatorSelect;
     SwitchConfiguration     switchConfiguration;
     OverCurrentDetection    overCurrentDetection;
-    SlewRate                slewRate;
-    VoltageCompensation     voltageCompensation;
-    PwmFrequencyMultiplier  pwmFrequencyMultiplier;
-    PwmFrequencyDivider     pwmFrequencyDivider;
+    //SlewRate                slewRate;
 
     // Alarm Register Settings
     AlarmState alarmState;
@@ -141,10 +138,26 @@ private:
     SyncSelect          getSyncSelect(CommsDriver &commsDriver, int motor );
 
     void setOscMode(OscillatorSelect oscillatorMode, CommsDriver &commsDriver, int motor );
-    OscillatorSelect	   getOscMode(CommsDriver &commsDriver, int motor );
+    OscillatorSelect    getOscMode(CommsDriver &commsDriver, int motor );
 
-    SwitchConfiguration	   getSwitchMode(CommsDriver &commsDriver, int motor );
+    SwitchConfiguration getSwitchMode(CommsDriver &commsDriver, int motor );
 
+    OverCurrentDetection getOCShutdown(CommsDriver &commsDriver, int motor );
+    void setOCShutdown(OverCurrentDetection overCurrentDetection,  CommsDriver &commsDriver, int motor );
+
+    SlewRate            getSlewRate(CommsDriver &commsDriver, int motor );
+    void                setSlewRate(SlewRate slewRate,  CommsDriver &commsDriver, int motor );
+    void                setSwitchMode(SwitchConfiguration switchMode, CommsDriver &commsDriver, int motor );
+
+    void setAlarmState(AlarmState alarmState, CommsDriver &commsDriver, int motor );
+    AlarmState          getAlarmState(CommsDriver &commsDriver, int motor );
+
+    bool getSyncEnable(CommsDriver &commsDriver, int motor );
+
+    void setLoSpdOpt(bool enable , CommsDriver &commsDriver , int motor );
+    bool getLoSpdOpt( CommsDriver &commsDriver, int motor );
+
+    void setFullSpeed(float stepsPerSecond,  CommsDriver &commsDriver , int motor );
 };
 
 Config cfgFromString(const std::string &str);
@@ -174,28 +187,13 @@ template <typename T> bool tryReadConfig(const std::string &cfg , const std::str
     }
 }
 
-void setLoSpdOpt(bool enable , CommsDriver &commsDriver , int motor );
-
-void setFullSpeed(float stepsPerSecond,  CommsDriver &commsDriver , int motor );
 
 
-void setPWMFreq(PwmFrequencyDivider divider, PwmFrequencyMultiplier multiplier,  CommsDriver &commsDriver, int motor );
-void setSlewRate(SlewRate slewRate,  CommsDriver &commsDriver, int motor );
-void setOCShutdown(OverCurrentDetection overCurrentDetection,  CommsDriver &commsDriver, int motor );
-void setVoltageComp(VoltageCompensation vsCompMode, CommsDriver &commsDriver, int motor );
-void setSwitchMode(SwitchConfiguration switchMode, CommsDriver &commsDriver, int motor );
-
-void setAlarmState(AlarmState alarmState, CommsDriver &commsDriver, int motor );
-
-bool getLoSpdOpt( CommsDriver &commsDriver, int motor );
-
-bool                       getSyncEnable(CommsDriver &commsDriver, int motor );
-
-PwmFrequencyDivider	   getPWMFreqDivisor(CommsDriver &commsDriver, int motor );
-PwmFrequencyMultiplier     getPWMFreqMultiplier(CommsDriver &commsDriver, int motor );
-SlewRate		   getSlewRate(CommsDriver &commsDriver, int motor );
-OverCurrentDetection       getOCShutdown(CommsDriver &commsDriver, int motor );
-VoltageCompensation	   getVoltageComp(CommsDriver &commsDriver, int motor );
 
 
-AlarmState		   getAlarmState(CommsDriver &commsDriver, int motor );
+
+
+
+
+
+
