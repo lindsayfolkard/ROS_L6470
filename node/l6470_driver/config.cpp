@@ -1,68 +1,65 @@
-//#include "multidriver.h"
-#include "types.h"
+#include "config.h"
 
-/////////////////////////
-/// Configuration Commands
-/////////////////////////
+//////////////////////////////////
+/// Common Configuration Commands
+//////////////////////////////////
 
 void
-MultiDriver::setConfig(const Config &cfg , int motor)
+CommonConfig::setConfig(CommsDriver &commsDriver, int motor)
 {
     checkMotorIsValid(motor);
 
-    // Set BackEmf Settings
-    setBackEmfConfig(cfg.backEmfConfig,motor);
-
     // Current Thresholds
-    setOCThreshold(cfg.overCurrentThreshold , motor);
-    setStallThreshold(cfg.stallThreshold , motor);
-    setOCShutdown(cfg.overCurrentDetection , motor);
+    setOCThreshold(overCurrentThreshold, commsDriver, motor);
+    setStallThreshold(stallThreshold, commsDriver, motor);
+    setOCShutdown(overCurrentDetection, commsDriver, motor);
 
     // Step Mode
-    setStepMode(cfg.stepMode , motor);
-    setSyncSelect(cfg.syncSelect , cfg.syncEnable , motor);
+    setStepMode(stepMode, commsDriver, motor);
+    setSyncSelect(syncSelect, syncEnable, commsDriver, motor);
 
     // Set Oscillator related configs
-    setOscMode(cfg.oscillatorSelect , motor);
-    setSwitchMode(cfg.switchConfiguration , motor);
-    setSlewRate(cfg.slewRate , motor);
-    setVoltageComp(cfg.voltageCompensation , motor);
-    setPWMFreq(cfg.pwmFrequencyDivider , cfg.pwmFrequencyMultiplier , motor);
-    setAlarmState(cfg.alarmState , motor);
+    setOscMode(oscillatorSelect, commsDriver, motor);
+    setSwitchMode(switchConfiguration, commsDriver, motor);
+    setSlewRate(slewRate, commsDriver, motor);
+    setVoltageComp(voltageCompensation, commsDriver, motor);
+
+    // Set Alarm State
+    setAlarmState(alarmState, commsDriver, motor);
 }
 
-Config
-MultiDriver::getConfig(int motor)
-{
-    Config config;
+//CommonConfig
+//CommonConfig::getConfig(int motor)
+//{
+//    Config config;
 
-    config.backEmfConfig = getBackEmfConfig(motor);
+//    config.backEmfConfig = getBackEmfConfig(motor);
 
-    // config.thermalDriftCoefficient =
+//    // config.thermalDriftCoefficient =
 
-    config.overCurrentThreshold = getOCThreshold(motor);
-    config.overCurrentDetection = getOCShutdown(motor);
-    config.stallThreshold       = getStallThreshold(motor);
+//    config.overCurrentThreshold = getOCThreshold(motor);
+//    config.overCurrentDetection = getOCShutdown(motor);
+//    config.stallThreshold       = getStallThreshold(motor);
 
-    config.stepMode             = getStepMode(motor);
-    config.syncSelect           = getSyncSelect(motor);
-    config.syncEnable           = getSyncEnable(motor);
+//    config.stepMode             = getStepMode(motor);
+//    config.syncSelect           = getSyncSelect(motor);
+//    config.syncEnable           = getSyncEnable(motor);
 
-    config.oscillatorSelect         = getOscMode(motor);
-    config.switchConfiguration      = getSwitchMode(motor);
-    config.slewRate                 = getSlewRate(motor);
-    config.voltageCompensation      = getVoltageComp(motor);
-    config.pwmFrequencyDivider      = getPWMFreqDivisor(motor);
-    config.pwmFrequencyMultiplier   = getPWMFreqMultiplier(motor);
-    config.alarmState               = getAlarmState(motor);
+//    config.oscillatorSelect         = getOscMode(motor);
+//    config.switchConfiguration      = getSwitchMode(motor);
+//    config.slewRate                 = getSlewRate(motor);
+//    config.voltageCompensation      = getVoltageComp(motor);
+//    config.pwmFrequencyDivider      = getPWMFreqDivisor(motor);
+//    config.pwmFrequencyMultiplier   = getPWMFreqMultiplier(motor);
+//    config.alarmState               = getAlarmState(motor);
 
-    return config;
-}
-
+//    return config;
+//}
 
 // Setup the SYNC/BUSY pin to be either SYNC or BUSY, and to a desired
 //  ticks per step level.
-void MultiDriver::setSyncSelect( SyncSelect syncSelect , bool syncEnable , int motor)
+void
+CommonConfig::setSyncSelect( SyncSelect syncSelect, bool syncEnable, CommsDriver &commsDriver, int motor)
 {
   // Only some of the bits in this register are of interest to us; we need to
   //  clear those bits. It happens that they are the upper four.
@@ -79,11 +76,11 @@ void MultiDriver::setSyncSelect( SyncSelect syncSelect , bool syncEnable , int m
 
   // Now we should be able to send that uint8_t right back to the dSPIN- it
   //  won't corrupt the other bits, and the changes are made.
-  setParam(STEP_MODE, (uint32_t)syncPinConfig , motor);
+  commsDriver.setParam(STEP_MODE, toBitLength(STEP_MODE),(uint32_t)syncPinConfig , motor);
 }
 
 void
-MultiDriver::setAlarmState(AlarmState alarmState , int motor)
+CommonConfig::setAlarmState(AlarmState alarmState, CommsDriver &commsDriver, int motor)
 {
     uint8_t alarmStateByte=0x00;
     alarmState.overCurrentEnabled     ? alarmStateByte |= 0x01 : alarmStateByte|=0;
@@ -94,14 +91,14 @@ MultiDriver::setAlarmState(AlarmState alarmState , int motor)
     alarmState.stallDetectionBEnabled ? alarmStateByte |= 0x20 : alarmStateByte|=0;
     alarmState.switchTurnOnEnabled    ? alarmStateByte |= 0x40 : alarmStateByte|=0;
     alarmState.badCommandEnabled      ? alarmStateByte |= 0x80 : alarmStateByte|=0;
-    setParam(ALARM_EN,alarmStateByte , motor);
+    commsDriver.setParam(ALARM_EN, toBitLength(alarmStateByte),alarmStateByte, motor);
 }
 
 AlarmState
-MultiDriver::getAlarmState(int motor)
+CommonConfig::getAlarmState(CommsDriver &commsDriver, int motor)
 {
     AlarmState alarmState;
-    uint8_t alarmStateByte = getParam(ALARM_EN,motor);
+    uint8_t alarmStateByte = commsDriver.getParam(ALARM_EN, toBitLength(ALARM_EN), motor);
 
     alarmState.overCurrentEnabled     = alarmStateByte & 0x01;
     alarmState.thermalShutdownEnabled = alarmStateByte & 0x02;
@@ -116,22 +113,23 @@ MultiDriver::getAlarmState(int motor)
 }
 
 SyncSelect
-MultiDriver::getSyncSelect(int motor)
+CommonConfig::getSyncSelect(CommsDriver &commsDriver, int motor)
 {
     const uint8_t syncSelectMask = 0x70;
-    return static_cast<SyncSelect>(getParam(STEP_MODE,motor) & syncSelectMask);
+    return static_cast<SyncSelect>(commsDriver.getParam(STEP_MODE, toBitLength(STEP_MODE), motor) & syncSelectMask);
 }
 
 bool
-MultiDriver::getSyncEnable(int motor)
+CommonConfig::getSyncEnable(CommsDriver &commsDriver, int motor)
 {
     const uint8_t syncEnableMask = 0x80;
-    return (getParam(STEP_MODE,motor) & syncEnableMask);
+    return (commsDriver.getParam(STEP_MODE, toBitLength(STEP_MODE), motor) & syncEnableMask);
 }
 
 // The dSPIN chip supports microstepping for a smoother ride. This function
 //  provides an easy front end for changing the microstepping mode.
-void MultiDriver::setStepMode(StepMode stepMode,int motor)
+void
+CommonConfig::setStepMode(StepMode stepMode, CommsDriver &commsDriver, int motor)
 {
   // Only some of these bits are useful (the lower three). We'll extract the
   //  current contents, clear those three bits, then set them accordingly.
@@ -144,48 +142,124 @@ void MultiDriver::setStepMode(StepMode stepMode,int motor)
   stepModeConfig |= (stepMode&STEP_MODE_STEP_SEL);
 
   // Now push the change to the chip.
-  setParam(STEP_MODE, (uint32_t)stepModeConfig , motor);
+  commsDriver.setParam(STEP_MODE, toBitLength(STEP_MODE), (uint32_t)stepModeConfig , motor);
 }
 
-StepMode MultiDriver::getStepMode(int motor) {
-  return static_cast<StepMode>(getParam(STEP_MODE,motor) & STEP_MODE_STEP_SEL);
+StepMode
+CommonConfig::getStepMode(CommsDriver &commsDriver, int motor) {
+  return static_cast<StepMode>(commsDriver.getParam(STEP_MODE, toBitLength(STEP_MODE), motor) & STEP_MODE_STEP_SEL);
 }
 
 // Above this threshold, the dSPIN will cease microstepping and go to full-step
 //  mode.
-void MultiDriver::setFullSpeed(float stepsPerSecond, int motor)
+void
+CommonConfig::setFullSpeed(float stepsPerSecond, CommsDriver &commsDriver, int motor)
 {
   uint32_t integerSpeed = FSCalc(stepsPerSecond);
-  setParam(FS_SPD, integerSpeed, motor);
+  commsDriver.setParam(FS_SPD, toBitLength(FS_SPD), integerSpeed, motor);
 }
 
-float MultiDriver::getFullSpeed(int motor)
+float
+CommonConfig::getFullSpeed(CommsDriver &commsDriver, int motor)
 {
-  return FSParse(getParam(FS_SPD,motor));
-}
-
-void MultiDriver::setOCThreshold(CurrentThreshold ocThreshold, int motor)
-{
-  setParam(OCD_TH, 0x0F & ocThreshold, motor);
-}
-
-CurrentThreshold MultiDriver::getOCThreshold(int motor)
-{
-  return static_cast<CurrentThreshold> (getParam(OCD_TH, motor) & CONFIG_OC_THRESOLD_REG);
+  return FSParse(commsDriver.getParam(FS_SPD, toBitLength(FS_SPD), motor));
 }
 
 void
-MultiDriver::setStallThreshold(CurrentThreshold stallCurrent, int motor)
+CommonConfig::setOCThreshold(CurrentThreshold ocThreshold, CommsDriver &commsDriver, int motor)
 {
-    setParam(STALL_TH,0x0F & stallCurrent, motor);
+  commsDriver.setParam(OCD_TH, toBitLength(OCD_TH), 0x0F & ocThreshold, motor);
 }
 
 CurrentThreshold
-MultiDriver::getStallThreshold(int motor)
+CommonConfig::getOCThreshold(CommsDriver &commsDriver, int motor)
+{
+  return static_cast<CurrentThreshold> (commsDriver.getParam(OCD_TH, toBitLength(OCD_TH), motor) & CONFIG_OC_THRESOLD_REG);
+}
+
+void
+CommonConfig::setStallThreshold(CurrentThreshold stallCurrent, CommsDriver &commsDriver, int motor)
+{
+    commsDriver.setParam(STALL_TH, toBitLength(STALL_TH), 0x0F & stallCurrent, motor);
+}
+
+CurrentThreshold
+CommonConfig::getStallThreshold(CommsDriver &commsDriver, int motor)
 {
     const uint32_t stallThresholdMask=0xFF; // TODO - fix!!
-    return static_cast<CurrentThreshold> (getParam(STALL_TH, motor) & stallThresholdMask);
+    return static_cast<CurrentThreshold> (commsDriver.getParam(STALL_TH, toBitLength(STALL_TH), motor) & stallThresholdMask);
 }
+
+// Single bit- do we shutdown the drivers on overcurrent or not?
+void
+CommonConfig::setOCShutdown(OverCurrentDetection overCurrentDetection, CommsDriver &commsDriver, int motor)
+{
+  uint32_t configVal = commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor);
+  // This bit is CONFIG 7, mask is 0x0080
+  configVal &= ~(CONFIG_OC_DETECTION_MASK);
+  //Now, OR in the masked incoming value.
+  configVal |= (CONFIG_OC_DETECTION_MASK & overCurrentDetection);
+  commsDriver.setParam(CONFIG, toBitLength(CONFIG), configVal, motor);
+}
+
+OverCurrentDetection
+CommonConfig::getOCShutdown(CommsDriver &commsDriver, int motor)
+{
+  return static_cast<OverCurrentDetection> (commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor) & CONFIG_OC_DETECTION_MASK);
+}
+
+// The switch input can either hard-stop the driver _or_ activate an interrupt.
+//  This bit allows you to select what it does.
+void
+CommonConfig::setSwitchMode(SwitchConfiguration switchMode, CommsDriver &commsDriver, int motor)
+{
+  uint32_t configVal = commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor);
+  // This bit is CONFIG 4, mask is 0x0010
+  configVal &= ~(CONFIG_SW_MODE_MASK);
+  //Now, OR in the masked incoming value.
+  configVal |= (CONFIG_SW_MODE_MASK & switchMode);
+  commsDriver.setParam(CONFIG, toBitLength(CONFIG), configVal, motor);
+}
+
+SwitchConfiguration
+CommonConfig::getSwitchMode(CommsDriver &commsDriver, int motor)
+{
+  return static_cast <SwitchConfiguration> (commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor) & CONFIG_SW_MODE_MASK);
+}
+
+// There are a number of clock options for this chip- it can be configured to
+//  accept a clock, drive a crystal or resonator, and pass or not pass the
+//  clock signal downstream. Theoretically, you can use pretty much any
+//  frequency you want to drive it; practically, this library assumes it's
+//  being driven at 16MHz. Also, the device will use these bits to set the
+//  math used to figure out steps per second and stuff like that.
+void
+CommonConfig::setOscMode(OscillatorSelect oscillatorMode, CommsDriver &commsDriver, int motor)
+{
+  uint32_t configVal = commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor);
+  // These bits are CONFIG 3:0, mask is 0x000F
+  configVal &= ~(CONFIG_OSC_SEL_MASK);
+  //Now, OR in the masked incoming value.
+  configVal |= (CONFIG_OSC_SEL_MASK&oscillatorMode);
+  commsDriver.setParam(CONFIG, toBitLength(CONFIG), configVal, motor);
+}
+
+OscillatorSelect
+CommonConfig::getOscMode(CommsDriver &commsDriver, int motor)
+{
+  return static_cast <OscillatorSelect> (commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor) & CONFIG_OSC_SEL_MASK);
+}
+
+//////////////////////////////////////////////////
+//// END Common Config Functions
+//////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////
+//// Voltage Mode Config Functions
+//////////////////////////////////////////////////
+
 
 // The next few functions are all breakouts for individual options within the
 //  single register CONFIG. We'll read CONFIG, blank some bits, then OR in the
@@ -195,9 +269,10 @@ MultiDriver::getStallThreshold(int motor)
 //  Divisors of 1-7 are available; multipliers of .625-2 are available. See
 //  datasheet for more details; it's not clear what the frequency being
 //  multiplied/divided here is, but it is clearly *not* the actual clock freq.
-void MultiDriver::setPWMFreq(PwmFrequencyDivider divider, PwmFrequencyMultiplier multiplier, int motor)
+void
+VoltageModeCfg::setPWMFreq(PwmFrequencyDivider divider, PwmFrequencyMultiplier multiplier, CommsDriver &commsDriver, int motor)
 {
-  uint32_t configVal = getParam(CONFIG, motor);
+  uint32_t configVal = commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor);
 
   // The divisor is set by config 15:13, so mask 0xE000 to clear them.
   configVal &= ~(CONFIG_F_PWM_INT);
@@ -205,105 +280,57 @@ void MultiDriver::setPWMFreq(PwmFrequencyDivider divider, PwmFrequencyMultiplier
   configVal &= ~(CONFIG_F_PWM_DEC);
   // Now we can OR in the masked-out versions of the values passed in.
   configVal |= ((CONFIG_F_PWM_INT&divider)|(CONFIG_F_PWM_DEC&multiplier));
-  setParam(CONFIG, configVal , motor);
+  commsDriver.setParam(CONFIG, toBitLength(CONFIG), configVal , motor);
 }
 
-PwmFrequencyDivider MultiDriver::getPWMFreqDivisor(int motor)
+PwmFrequencyDivider
+VoltageModeCfg::getPWMFreqDivisor(CommsDriver &commsDriver, int motor)
 {
-  return static_cast<PwmFrequencyDivider> (getParam(CONFIG, motor) & CONFIG_F_PWM_INT);
+  return static_cast<PwmFrequencyDivider> (commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor) & CONFIG_F_PWM_INT);
 }
 
-PwmFrequencyMultiplier MultiDriver::getPWMFreqMultiplier(int motor)
+PwmFrequencyMultiplier
+VoltageModeCfg::getPWMFreqMultiplier(CommsDriver &commsDriver, int motor)
 {
-  return static_cast<PwmFrequencyMultiplier> (getParam(CONFIG, motor) & CONFIG_F_PWM_DEC);
+  return static_cast<PwmFrequencyMultiplier> (commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor) & CONFIG_F_PWM_DEC);
 }
 
 // Slew rate of the output in V/us. Can be 180, 290, or 530.
-void MultiDriver::setSlewRate(SlewRate slewRate, int motor)
+void
+VoltageModeCfg::setSlewRate(SlewRate slewRate, CommsDriver &commsDriver, int motor)
 {
-  uint32_t configVal = getParam(CONFIG, motor);
+  uint32_t configVal = commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor);
 
   // These bits live in CONFIG 9:8, so the mask is 0x0300.
   configVal &= ~(CONFIG_SLEW_RATE_MASK);
   //Now, OR in the masked incoming value.
   configVal |= (CONFIG_SLEW_RATE_MASK&slewRate);
-  setParam(CONFIG, configVal, motor);
+  commsDriver.setParam(CONFIG, toBitLength(CONFIG), configVal, motor);
 }
 
-SlewRate MultiDriver::getSlewRate(int motor)
+SlewRate
+VoltageModeCfg::getSlewRate(CommsDriver &commsDriver, int motor)
 {
-  return static_cast<SlewRate> (getParam(CONFIG, motor) & CONFIG_SLEW_RATE_MASK);
-}
-
-// Single bit- do we shutdown the drivers on overcurrent or not?
-void MultiDriver::setOCShutdown(OverCurrentDetection overCurrentDetection, int motor)
-{
-  uint32_t configVal = getParam(CONFIG, motor);
-  // This bit is CONFIG 7, mask is 0x0080
-  configVal &= ~(CONFIG_OC_DETECTION_MASK);
-  //Now, OR in the masked incoming value.
-  configVal |= (CONFIG_OC_DETECTION_MASK&overCurrentDetection);
-  setParam(CONFIG, configVal, motor);
-}
-
-OverCurrentDetection MultiDriver::getOCShutdown(int motor)
-{
-  return static_cast<OverCurrentDetection> (getParam(CONFIG, motor) & CONFIG_OC_DETECTION_MASK);
+  return static_cast<SlewRate> (commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor) & CONFIG_SLEW_RATE_MASK);
 }
 
 // Enable motor voltage compensation? Not at all straightforward- check out
 //  p34 of the datasheet.
-void MultiDriver::setVoltageComp(VoltageCompensation vsCompMode, int motor)
+void
+VoltageModeCfg::setVoltageComp(VoltageCompensation vsCompMode, CommsDriver &commsDriver, int motor)
 {
-  uint32_t configVal = getParam(CONFIG, motor);
+  uint32_t configVal = commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor);
   // This bit is CONFIG 5, mask is 0x0020
   configVal &= ~(CONFIG_EN_VSCOMP_MASK);
   //Now, OR in the masked incoming value.
   configVal |= (CONFIG_EN_VSCOMP_MASK&vsCompMode);
-  setParam(CONFIG, configVal, motor);
+  commsDriver.setParam(CONFIG, toBitLength(CONFIG), configVal, motor);
 }
 
-VoltageCompensation MultiDriver::getVoltageComp(int motor)
+VoltageCompensation
+VoltageModeCfg::getVoltageComp(CommsDriver &commsDriver, int motor)
 {
-  return static_cast <VoltageCompensation> (getParam(CONFIG,motor) & CONFIG_EN_VSCOMP_MASK);
-}
-
-// The switch input can either hard-stop the driver _or_ activate an interrupt.
-//  This bit allows you to select what it does.
-void MultiDriver::setSwitchMode(SwitchConfiguration switchMode, int motor)
-{
-  uint32_t configVal = getParam(CONFIG, motor);
-  // This bit is CONFIG 4, mask is 0x0010
-  configVal &= ~(CONFIG_SW_MODE_MASK);
-  //Now, OR in the masked incoming value.
-  configVal |= (CONFIG_SW_MODE_MASK & switchMode);
-  setParam(CONFIG, configVal, motor);
-}
-
-SwitchConfiguration MultiDriver::getSwitchMode(int motor)
-{
-  return static_cast <SwitchConfiguration> (getParam(CONFIG, motor) & CONFIG_SW_MODE_MASK);
-}
-
-// There are a number of clock options for this chip- it can be configured to
-//  accept a clock, drive a crystal or resonator, and pass or not pass the
-//  clock signal downstream. Theoretically, you can use pretty much any
-//  frequency you want to drive it; practically, this library assumes it's
-//  being driven at 16MHz. Also, the device will use these bits to set the
-//  math used to figure out steps per second and stuff like that.
-void MultiDriver::setOscMode(OscillatorSelect oscillatorMode, int motor)
-{
-  uint32_t configVal = getParam(CONFIG , motor);
-  // These bits are CONFIG 3:0, mask is 0x000F
-  configVal &= ~(CONFIG_OSC_SEL_MASK);
-  //Now, OR in the masked incoming value.
-  configVal |= (CONFIG_OSC_SEL_MASK&oscillatorMode);
-  setParam(CONFIG, configVal, motor);
-}
-
-OscillatorSelect MultiDriver::getOscMode(int motor)
-{
-  return static_cast <OscillatorSelect> (getParam(CONFIG,motor) & CONFIG_OSC_SEL_MASK);
+  return static_cast <VoltageCompensation> (commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor) & CONFIG_EN_VSCOMP_MASK);
 }
 
 // The KVAL registers are...weird. I don't entirely understand how they differ
@@ -311,94 +338,134 @@ OscillatorSelect MultiDriver::getOscMode(int motor)
 //  tweaking KVAL has proven effective in the past. There's a separate register
 //  for each case: running, static, accelerating, and decelerating.
 
-void MultiDriver::setAccKVAL(uint8_t kvalInput, int motor)
+void
+VoltageModeCfg::setAccKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor)
 {
-  setParam(KVAL_ACC, kvalInput, motor);
+  commsDriver.setParam(KVAL_ACC, toBitLength(KVAL_ACC), kvalInput, motor);
 }
 
-uint8_t MultiDriver::getAccKVAL(int motor)
+uint8_t
+VoltageModeCfg::getAccKVAL(CommsDriver &commsDriver, int motor)
 {
-  return (uint8_t) getParam(KVAL_ACC, motor);
-}
-
-void MultiDriver::setDecKVAL(uint8_t kvalInput, int motor)
-{
-  setParam(KVAL_DEC, kvalInput, motor);
-}
-
-uint8_t MultiDriver::getDecKVAL(int motor)
-{
-  return (uint8_t) getParam(KVAL_DEC, motor);
-}
-
-void MultiDriver::setRunKVAL(uint8_t kvalInput, int motor)
-{
-  setParam(KVAL_RUN, kvalInput, motor);
-}
-
-uint8_t MultiDriver::getRunKVAL(int motor)
-{
-  return (uint8_t) getParam(KVAL_RUN, motor);
-}
-
-void MultiDriver::setHoldKVAL(uint8_t kvalInput, int motor)
-{
-  setParam(KVAL_HOLD, kvalInput, motor);
-}
-
-uint8_t MultiDriver::getHoldKVAL(int motor)
-{
-  return (uint8_t) getParam(KVAL_HOLD,motor);
+  return (uint8_t) commsDriver.getParam(KVAL_ACC, toBitLength(KVAL_ACC), motor);
 }
 
 void
-MultiDriver::setBackEmfConfig(const VoltageModeCfg &backEmfConfig, int motor)
+VoltageModeCfg::setDecKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor)
+{
+  commsDriver.setParam(KVAL_DEC, toBitLength(KVAL_DEC), kvalInput, motor);
+}
+
+uint8_t
+VoltageModeCfg::getDecKVAL(CommsDriver &commsDriver, int motor)
+{
+  return (uint8_t) commsDriver.getParam(KVAL_DEC, toBitLength(KVAL_DEC), motor);
+}
+
+void
+VoltageModeCfg::setRunKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor)
+{
+  commsDriver.setParam(KVAL_RUN, kvalInput, toBitLength(KVAL_RUN), motor);
+}
+
+uint8_t
+VoltageModeCfg::getRunKVAL(CommsDriver &commsDriver, int motor)
+{
+  return (uint8_t) commsDriver.getParam(KVAL_RUN, toBitLength(KVAL_RUN), motor);
+}
+
+void
+VoltageModeCfg::setHoldKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor)
+{
+  setParam(KVAL_HOLD, kvalInput, toBitLength(KVAL_HOLD), motor);
+}
+
+uint8_t
+VoltageModeCfg::getHoldKVAL(CommsDriver &commsDriver, int motor)
+{
+  return (uint8_t) commsDriver.getParam(KVAL_HOLD, toBitLength(KVAL_HOLD), motor);
+}
+
+void
+VoltageModeCfg::set(CommsDriver &commsDriver, int motor)
 {
     // Set the K Values
-    setHoldKVAL(backEmfConfig.holdingKVal,motor);
-    setRunKVAL(backEmfConfig.constantSpeedKVal,motor);
-    setAccKVAL(backEmfConfig.accelStartingKVal,motor);
-    setDecKVAL(backEmfConfig.decelStartingKVal,motor);
+    setHoldKVAL(holdingKVal, commsDriver, motor);
+    setRunKVAL(constantSpeedKVal, commsDriver, motor);
+    setAccKVAL(accelStartingKVal, commsDriver, motor);
+    setDecKVAL(decelStartingKVal, commsDriver, motor);
 
     // Set the intersect speed and slope of the curve
-    setParam(INT_SPD,backEmfConfig.intersectSpeed,motor);
-    setParam(ST_SLP,backEmfConfig.startSlope,motor);
-    setParam(FN_SLP_ACC,backEmfConfig.accelFinalSlope,motor);
-    setParam(FN_SLP_DEC,backEmfConfig.decelFinalSlope,motor);
+    setParam(INT_SPD,intersectSpeed, commsDriver, motor);
+    setParam(ST_SLP,startSlope, commsDriver, motor);
+    setParam(FN_SLP_ACC,accelFinalSlope, commsDriver, motor);
+    setParam(FN_SLP_DEC,decelFinalSlope, commsDriver, motor);
+
+    // PWM Configs
+    setPWMFreq(pwmFrequencyDivider, pwmFrequencyMultiplier, commsDriver, motor);
+    setSlewRate(slewRate, commsDriver, motor);
+    setVoltageComp(voltageCompensation, commsDriver, motor);
 }
 
-VoltageModeCfg
-MultiDriver::getBackEmfConfig(int motor)
-{
-    VoltageModeCfg backEmfConfig;
+//VoltageModeCfg
+//VoltageModeCfg::getBackEmfConfig(int motor)
+//{
+//    VoltageModeCfg backEmfConfig;
 
-    // Get the K Values
-    backEmfConfig.holdingKVal = getHoldKVAL(motor);
-    backEmfConfig.constantSpeedKVal = getRunKVAL(motor);
-    backEmfConfig.accelStartingKVal = getAccKVAL(motor);
-    backEmfConfig.decelStartingKVal = getDecKVAL(motor);
+//    // Get the K Values
+//    backEmfConfig.holdingKVal = getHoldKVAL(motor);
+//    backEmfConfig.constantSpeedKVal = getRunKVAL(motor);
+//    backEmfConfig.accelStartingKVal = getAccKVAL(motor);
+//    backEmfConfig.decelStartingKVal = getDecKVAL(motor);
 
-    // Get the intersect speed and slope of the curve
-    backEmfConfig.intersectSpeed  = getParam(INT_SPD, motor);
-    backEmfConfig.startSlope      = getParam(ST_SLP, motor);
-    backEmfConfig.accelFinalSlope = getParam(FN_SLP_ACC, motor);
-    backEmfConfig.decelFinalSlope = getParam(FN_SLP_DEC, motor);
+//    // Get the intersect speed and slope of the curve
+//    backEmfConfig.intersectSpeed  = getParam(INT_SPD, motor);
+//    backEmfConfig.startSlope      = getParam(ST_SLP, motor);
+//    backEmfConfig.accelFinalSlope = getParam(FN_SLP_ACC, motor);
+//    backEmfConfig.decelFinalSlope = getParam(FN_SLP_DEC, motor);
 
-    return backEmfConfig;
-}
+//    return backEmfConfig;
+//}
 
 // Enable or disable the low-speed optimization option. With LSPD_OPT enabled,
 //  motion starts from 0 instead of MIN_SPEED and low-speed optimization keeps
 //  the driving sine wave prettier than normal until MIN_SPEED is reached.
-void MultiDriver::setLoSpdOpt(bool enable, int motor)
+void
+VoltageModeCfg::setLoSpdOpt(bool enable, CommsDriver &commsDriver, int motor)
 {
-  uint32_t temp = getParam(MIN_SPEED, motor);
+  uint32_t temp = commsDriver.getParam(MIN_SPEED, toBitLength(MIN_SPEED), motor);
   if (enable) temp |= 0x00001000; // Set the LSPD_OPT bit
   else        temp &= 0xffffefff; // Clear the LSPD_OPT bit
-  setParam(MIN_SPEED, temp, motor);
+  commsDriver.setParam(MIN_SPEED, temp, toBitLength(MIN_SPEED), motor);
 }
 
-bool MultiDriver::getLoSpdOpt(int motor)
+bool
+VoltageModeCfg::getLoSpdOpt(CommsDriver &commsDriver, int motor)
 {
-  return (bool) ((getParam(MIN_SPEED,motor) & 0x00001000) != 0);
+  return (bool) ((commsDriver.getParam(MIN_SPEED, toBitLength(MIN_SPEED), motor) & 0x00001000) != 0);
 }
+
+
+///////////////////////////////////////////////////////////////////
+/////////// END Of Voltage Mode Config ////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////
+/////////// Start of Current Mode Config //////////////////////////
+///////////////////////////////////////////////////////////////////
+
+//
+// TODO !!!
+//
+
+void
+CurrentModeCfg::set(CommsDriver &commsDriver, int motor)
+{
+    // TODO !!!
+    assert(!"set is not currently implemented for CurrentModeCfg");
+}
+
+///////////////////////////////////////////////////////////////////
+//////////// END of Current Mode Config ///////////////////////////
+///////////////////////////////////////////////////////////////////

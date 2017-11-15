@@ -570,7 +570,7 @@ VoltageModeCfg getBackEmfConfigFromString(const std::string &cfg)
     return backEmfCfg;
 }
 
-Config cfgFromString(const std::string &str)
+CommonConfig cfgFromString(const std::string &str)
 {
     // Create a default config
     Config cfg;
