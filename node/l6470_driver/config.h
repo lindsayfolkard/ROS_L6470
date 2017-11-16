@@ -1,9 +1,15 @@
 #include "types.h"
 #include "commsdriver.h"
 
-struct AbstractConfig {
+// Abstract Classes for passing configs around
+class AbstractConfig {
     virtual void set(CommsDriver &commsDriver, int motor) = 0;
-    //virtual void read(CommsDriver &commsDriver, int motor) = 0;
+    virtual void readFromFile(const std::string &file) = 0;
+};
+
+class WriteableConfig {
+
+    virtual void writeToFile(const std::string &cfgFilePath) = 0;
 };
 
 class CurrentModeCfg : public AbstractConfig
@@ -38,11 +44,14 @@ private:
 /// contains all information that is needed to
 /// configure a motor to be used with a controller
 ///
-class VoltageModeCfg : public AbstractConfig
+class VoltageModeCfg : public AbstractConfig,
+                       public WriteableConfig
 {
 public:
 
     virtual void set(CommsDriver &commsDriver, int motor) override;
+    virtual void readFromFile(const std::string &file) override;
+    virtual void writeToFile(const std::string &cfgFilePath) override;
 
     uint8_t holdingKVal;
     uint8_t constantSpeedKVal;
@@ -88,15 +97,18 @@ inline std::ostream& operator<<(std::ostream& os,const VoltageModeCfg &x)
     return os << toString(x);
 }
 
-VoltageModeCfg getBackEmfConfigFromString(const std::string &cfg);
+VoltageModeCfg getBackEmfConfigFromString(const std::string &str);
 
 // General Static Config (meant to be set once at the start and then not really again)
 // NB: valid parameters are always positive. A negative parameter is interpreted as do not set/read.
-class CommonConfig : public AbstractConfig
+class CommonConfig : public AbstractConfig,
+                     public WriteableConfig
 {
 public:
 
     virtual void set(CommsDriver &commsDriver, int motor) override;
+    virtual void readFromFile(const std::string &file) override;
+    virtual void writeToFile(const std::string &cfgFilePath) override;
 
     int fullStepThresholdSpeed;
     int thermalDriftCoefficient;
@@ -107,6 +119,7 @@ public:
     // STEP_MODE register settings
     StepMode    stepMode;
     SyncSelect  syncSelect;
+    ControlMode controlMode; // Voltage or current (NB: some chips will generally support one or the other)
     bool        syncEnable;
 
     // CONFIG register settings
@@ -143,8 +156,8 @@ private:
 
 };
 
-CommonConfig cfgFromString(const std::string &str);
-std::string toString(const Config &cfg);
+//CommonConfig commonCfgFromString(const std::string &str);
+std::string toString(const CommonConfig &cfg);
 inline std::ostream& operator<<(std::ostream& os,const Config &x)
 {
     return os << toString(x);

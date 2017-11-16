@@ -469,3 +469,126 @@ CurrentModeCfg::set(CommsDriver &commsDriver, int motor)
 ///////////////////////////////////////////////////////////////////
 //////////// END of Current Mode Config ///////////////////////////
 ///////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////
+/////////// Parsing Related Functions /////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+
+std::string toString(const CommonConfig &cfg)
+{
+    std::stringstream ss;
+
+    ss << "FullStepThresholdSpeed  : " << cfg.fullStepThresholdSpeed << " steps/s" << std::endl;
+    ss << "ThermalDriftCoefficient : " << cfg.thermalDriftCoefficient << std::endl;
+    ss << "OverCurrentThreshold    : " << cfg.overCurrentThreshold << std::endl;
+    ss << "StallThreshold          : " << cfg.stallThreshold << std::endl;
+    ss << "StepMode                : " << cfg.stepMode << std::endl;
+    ss << "SyncSelect              : " << cfg.syncSelect << std::endl;
+    ss << "SyncEnable              : " << (cfg.syncEnable ? "Yes" : "No") << std::endl;
+    ss << "ControlMode             : " << cfg.controlMode << std::endl;
+    ss << "OscillatorSelect        : " << cfg.oscillatorSelect << std::endl;
+    ss << "SwitchConfiguration     : " << cfg.switchConfiguration << std::endl;
+    ss << "OverCurrentDetection    : " << cfg.overCurrentDetection << std::endl;
+    ss << "AlarmState              : " << cfg.alarmState << std::endl;
+
+    return ss.str();
+}
+
+std::string toString(const VoltageModeCfg &backEmfConfig)
+{
+    std::stringstream ss;
+    ss << "KVAL_HOLD  : " << (int) backEmfConfig.holdingKVal	     << std::endl;
+    ss << "KVAL_RUN   : " << (int) backEmfConfig.constantSpeedKVal << std::endl;
+    ss << "KVAL_ACC   : " << (int) backEmfConfig.accelStartingKVal << std::endl;
+    ss << "KVAL_DEC   : " << (int) backEmfConfig.decelStartingKVal << std::endl;
+    ss << "INT_SPEED  : " << backEmfConfig.intersectSpeed    << std::endl;
+    ss << "ST_SLP     : " << backEmfConfig.startSlope        << std::endl;
+    ss << "FN_SLP_ACC : " << backEmfConfig.accelFinalSlope   << std::endl;
+    ss << "FN_SLP_DEC : " << backEmfConfig.decelFinalSlope   << std::endl;
+    ss << "Slew Rate  : " << backEmfConfig.slewRate << std::endl;
+    ss << "VoltageCompensation    : " << backEmfConfig.voltageCompensation << std::endl;
+    ss << "PwmFrequencyMultiplier : " << backEmfConfig.pwmFrequencyMultiplier << std::endl;
+    ss << "PwmFrequencyDivider    : " << backEmfConfig.pwmFrequencyDivider << std::endl;
+    return ss.str();
+}
+
+void
+VoltageModeCfg::readFromFile(const std::string &file)
+{
+    int helper = holdingKVal;
+    tryGetArgumentAsInt(str,"KVAL_HOLD",helper);
+    holdingKVal = helper;
+
+    helper = constantSpeedKVal;
+    tryGetArgumentAsInt(str,"KVAL_RUN",helper);
+    constantSpeedKVal = helper;
+
+    helper = accelStartingKVal;
+    tryGetArgumentAsInt(str,"KVAL_ACC",helper);
+    accelStartingKVal = helper;
+
+    helper = decelStartingKVal;
+    tryGetArgumentAsInt(str,"KVAL_DEC",helper);
+    decelStartingKVal = helper;
+
+    helper = intersectSpeed;
+    tryGetArgumentAsInt(str,"INT_SPEED",helper);
+    intersectSpeed = helper;
+
+    helper = startSlope;
+    tryGetArgumentAsInt(str,"ST_SLP",helper);
+    startSlope = helper;
+
+    helper = accelFinalSlope;
+    tryGetArgumentAsInt(str,"FN_SLP_ACC",helper);
+    accelFinalSlope = helper;
+
+    helper = decelFinalSlope;
+    tryGetArgumentAsInt(str,"FN_SLP_DEC",helper);
+    decelFinalSlope = helper;
+
+    tryReadConfig<SlewRate>(str, "SlewRate" ,getSlewRateBiMap(), slewRate);
+    tryReadConfig<VoltageCompensation>(str, "VoltageCompensation", getVoltageCompensationBiMap(), voltageCompensation);
+    tryReadConfig<PwmFrequencyMultiplier>(str, "PwmFrequencyMultiplier" ,getPwmFrequencyMultiplierBiMap(), pwmFrequencyMultiplier);
+    tryReadConfig<PwmFrequencyDivider>(str, "PwmFrequencyDivider" ,getPwmFrequencyDividerBiMap(), pwmFrequencyDivider);
+}
+
+void
+VoltageModeCfg::writeToFile(const std::string &cfgFilePath)
+{
+    assert(!"TODO - voltage mode cfg writing");
+    // TODO !
+}
+
+void
+CommonConfig::readFromFile(const std::string &file)
+{
+    // Handle standard configuration parameters
+    tryGetArgumentAsInt(str,"FullStepThresholdSpeed",fullStepThresholdSpeed);
+    tryGetArgumentAsInt(str,"ThermalDriftCoefficient",thermalDriftCoefficient);
+
+    tryReadConfig<CurrentThreshold>(str, "OverCurrentThreshold", getCurrentThresholdBiMap(), overCurrentThreshold);
+    tryReadConfig<CurrentThreshold>(str, "StallThreshold", getCurrentThresholdBiMap(),stallThreshold);
+    tryReadConfig<StepMode>(str, "StepMode", getStepModeBiMap(),stepMode);
+    tryReadConfig<SyncSelect>(str, "SyncSelect", getSyncSelectBiMap(),syncSelect);
+    tryReadConfig<ControlMode>(str, "ControlMode",getControlModeBiMap(),controlMode);
+    tryReadConfig<OscillatorSelect>(str ,"OscillatorSelect" ,getOscillatorSelectBiMap(),oscillatorSelect);
+    tryReadConfig<SwitchConfiguration>(str ,"SwitchConfiguration" ,getSwitchConfigurationBiMap(), switchConfiguration);
+    tryReadConfig<OverCurrentDetection>(str ,"OverCurrentDetection" ,getOverCurrentDetectionBiMap(), overCurrentDetection);
+
+    // Read Sync Enable
+    int syncEnableState = syncEnable;
+    tryGetArgumentAsInt(str , "SyncEnable" ,syncEnableState);
+    syncEnable = (bool)syncEnableState;
+
+    // Parse Alarm State Config (if it exists)
+    alarmState = getAlarmStateFromString(str);
+}
+
+void
+CommonConfig::writeToFile(const std::string &cfgFilePath)
+{
+    assert(!"TODO - commoncfg writing");
+}

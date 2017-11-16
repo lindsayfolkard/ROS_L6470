@@ -99,6 +99,23 @@ boost::bimap<StepMode,std::string> getStepModeBiMap()
     return map;
 }
 
+boost::bimap<ControlMode,std::string> getControlModeBiMap()
+{
+    boost::bimap<ControlMode,std::string> map = makeBiMap<ControlMode,std::string>
+    ({
+
+    { VoltageControlMode ,  "VoltageControlMode"},
+    { CONFIG_OC_SD_ENABLE  ,  "CurrentControlMode"}
+
+    });
+    return map;
+}
+
+std::string toString(ControlMode controlMode)
+{
+    return getControlModeBiMap().left.at(controlMode);
+}
+
 std::string toString(StepMode stepMode)
 {
     return getStepModeBiMap().left.at(stepMode);
@@ -485,126 +502,6 @@ std::string toString(ParamRegister paramRegister)
     case STATUS     : return "STATUS";
     default : return "Unknown paramRgister (" + std::to_string((int) paramRegister)+")";
     }
-}
-
-std::string toString(const Config &cfg)
-{
-    std::stringstream ss;
-
-    ss << "FullStepThresholdSpeed  : " << cfg.fullStepThresholdSpeed << " steps/s" << std::endl;
-    ss << "ThermalDriftCoefficient : " << cfg.thermalDriftCoefficient << std::endl;
-    ss << "OverCurrentThreshold    : " << cfg.overCurrentThreshold << std::endl;
-    ss << "StallThreshold          : " << cfg.stallThreshold << std::endl;
-    ss << "StepMode                : " << cfg.stepMode << std::endl;
-    ss << "SyncSelect              : " << cfg.syncSelect << std::endl;
-    ss << "SyncEnable              : " << (cfg.syncEnable ? "Yes" : "No") << std::endl;
-    ss << "OscillatorSelect        : " << cfg.oscillatorSelect << std::endl;
-    ss << "SwitchConfiguration     : " << cfg.switchConfiguration << std::endl;
-    ss << "OverCurrentDetection    : " << cfg.overCurrentDetection << std::endl;
-    ss << "SlewRate                : " << cfg.slewRate << std::endl;
-    ss << "VoltageCompensation     : " << cfg.voltageCompensation << std::endl;
-    ss << "PwmFrequencyMultiplier  : " << cfg.pwmFrequencyMultiplier << std::endl;
-    ss << "PwmFrequencyDivider     : " << cfg.pwmFrequencyDivider << std::endl;
-
-    ss << "-------------------------------------" << std::endl;
-    ss << "BackEmfConfig" << std::endl << cfg.backEmfConfig << std::endl;
-    ss << "-------------------------------------" << std::endl;
-
-    ss << "-------------------------------------" << std::endl;
-    ss << "AlarmState" << cfg.alarmState << std::endl;
-    ss << "-------------------------------------" << std::endl;
-
-    return ss.str();
-}
-
-std::string toString(const VoltageModeCfg &backEmfConfig)
-{
-    std::stringstream ss;
-    ss << "KVAL_HOLD  : " << (int) backEmfConfig.holdingKVal	     << std::endl;
-    ss << "KVAL_RUN   : " << (int) backEmfConfig.constantSpeedKVal << std::endl;
-    ss << "KVAL_ACC   : " << (int) backEmfConfig.accelStartingKVal << std::endl;
-    ss << "KVAL_DEC   : " << (int) backEmfConfig.decelStartingKVal << std::endl;
-    ss << "INT_SPEED  : " << backEmfConfig.intersectSpeed    << std::endl;
-    ss << "ST_SLP     : " << backEmfConfig.startSlope        << std::endl;
-    ss << "FN_SLP_ACC : " << backEmfConfig.accelFinalSlope   << std::endl;
-    ss << "FN_SLP_DEC : " << backEmfConfig.decelFinalSlope   << std::endl;
-    return ss.str();
-}
-
-VoltageModeCfg getBackEmfConfigFromString(const std::string &cfg)
-{
-    VoltageModeCfg backEmfCfg;
-
-    int helper = backEmfCfg.holdingKVal;
-    tryGetArgumentAsInt(cfg,"KVAL_HOLD",helper);
-    backEmfCfg.holdingKVal = helper;
-
-    helper = backEmfCfg.constantSpeedKVal;
-    tryGetArgumentAsInt(cfg,"KVAL_RUN",helper);
-    backEmfCfg.constantSpeedKVal = helper;
-
-    helper = backEmfCfg.accelStartingKVal;
-    tryGetArgumentAsInt(cfg,"KVAL_ACC",helper);
-    backEmfCfg.accelStartingKVal = helper;
-
-    helper = backEmfCfg.decelStartingKVal;
-    tryGetArgumentAsInt(cfg,"KVAL_DEC",helper);
-    backEmfCfg.decelStartingKVal = helper;
-
-    helper = backEmfCfg.intersectSpeed;
-    tryGetArgumentAsInt(cfg,"INT_SPEED",helper);
-    backEmfCfg.intersectSpeed = helper;
-
-    helper = backEmfCfg.startSlope;
-    tryGetArgumentAsInt(cfg,"ST_SLP",helper);
-    backEmfCfg.startSlope = helper;
-
-    helper = backEmfCfg.accelFinalSlope;
-    tryGetArgumentAsInt(cfg,"FN_SLP_ACC",helper);
-    backEmfCfg.accelFinalSlope = helper;
-
-    helper = backEmfCfg.decelFinalSlope;
-    tryGetArgumentAsInt(cfg,"FN_SLP_DEC",helper);
-    backEmfCfg.decelFinalSlope = helper;
-
-    return backEmfCfg;
-}
-
-CommonConfig cfgFromString(const std::string &str)
-{
-    // Create a default config
-    Config cfg;
-
-    // Handle standard configuration parameters
-    tryGetArgumentAsInt(str,"FullStepThresholdSpeed",cfg.fullStepThresholdSpeed);
-    tryGetArgumentAsInt(str,"ThermalDriftCoefficient",cfg.thermalDriftCoefficient);
-
-    tryReadConfig<CurrentThreshold>(str , "OverCurrentThreshold" ,getCurrentThresholdBiMap(), cfg.overCurrentThreshold);
-    tryReadConfig<CurrentThreshold>(str , "StallThreshold" ,getCurrentThresholdBiMap(), cfg.stallThreshold);
-    tryReadConfig<StepMode>(str ,"StepMode" ,getStepModeBiMap(), cfg.stepMode);
-    tryReadConfig<SyncSelect>(str ,"SyncSelect" ,getSyncSelectBiMap(), cfg.syncSelect);
-    tryReadConfig<OscillatorSelect>(str ,"OscillatorSelect" ,getOscillatorSelectBiMap(), cfg.oscillatorSelect);
-    tryReadConfig<SwitchConfiguration>(str ,"SwitchConfiguration" ,getSwitchConfigurationBiMap(), cfg.switchConfiguration);
-    tryReadConfig<OverCurrentDetection>(str ,"OverCurrentDetection" ,getOverCurrentDetectionBiMap(), cfg.overCurrentDetection);
-    tryReadConfig<SlewRate>(str , "SlewRate" ,getSlewRateBiMap(), cfg.slewRate);
-    tryReadConfig<VoltageCompensation>(str , "VoltageCompensation" ,getVoltageCompensationBiMap(), cfg.voltageCompensation);
-    tryReadConfig<PwmFrequencyMultiplier>(str , "PwmFrequencyMultiplier" ,getPwmFrequencyMultiplierBiMap(), cfg.pwmFrequencyMultiplier);
-    tryReadConfig<PwmFrequencyDivider>(str , "PwmFrequencyDivider" ,getPwmFrequencyDividerBiMap(), cfg.pwmFrequencyDivider);
-
-    // Read Sync Enable
-    int syncEnableState = cfg.syncEnable;
-    tryGetArgumentAsInt(str , "SyncEnable" ,syncEnableState);
-    cfg.syncEnable = (bool)syncEnableState;
-
-    // Parse BackEmf Config (if it exists)
-    //getBackEmfConfigFromString(cfg,cfg.backEmfConfig);
-    cfg.backEmfConfig = getBackEmfConfigFromString(str);
-
-    // Parse Alarm State Config (if it exists)
-    cfg.alarmState = getAlarmStateFromString(str);
-
-    return cfg;
-
 }
 
 std::string toString(const ProfileCfg &profileCfg)

@@ -2,6 +2,7 @@
 
 #include "motor.h"
 #include "types.h"
+#include "config.h"
 #include "commsdriver.h" // commsdebug level (probs put in types.h)
 
 // AbstractDriver
@@ -45,6 +46,8 @@ class AbstractDriver
     ////////////////////////////////////////
     /// Profile Configuration Commands
     ////////////////////////////////////////
+
+    virtual void setConfig(const AbstractConfig &config , int motor) = 0;
 
     // Profile is different, this we want to set efficiently since it is real-time critical
     virtual void setProfileCfg(const std::map<int,ProfileCfg> &cfgs) = 0;

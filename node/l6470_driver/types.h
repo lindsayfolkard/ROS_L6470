@@ -31,6 +31,8 @@ enum CurrentThreshold
     OCD_TH_5625m = 0x0E,
     OCD_TH_6000m = 0x0F
 };
+
+boost::bimap <CurrentThreshold,std::string> getCurrentThresholdBiMap();
 std::string toString(CurrentThreshold currentThreshold);
 inline std::ostream& operator<<(std::ostream& os, CurrentThreshold currentThreshold)
 {
@@ -51,8 +53,9 @@ enum StepMode
     STEP_SEL_1_32   = 0x05,
     STEP_SEL_1_64   = 0x06,
     STEP_SEL_1_128  = 0x07
-
 };
+
+boost::bimap<StepMode,std::string> getStepModeBiMap();
 std::string toString(StepMode stepMode);
 inline std::ostream& operator<<(std::ostream& os, StepMode stepMode)
 {
@@ -81,10 +84,23 @@ enum SyncSelect
     SYNC_SEL_32  = 0x60,
     SYNC_SEL_64  = 0x70
 };
+boost::bimap<SyncSelect,std::string> getSyncSelectBiMap();
 std::string toString(SyncSelect syncSelect);
 inline std::ostream& operator<<(std::ostream& os,SyncSelect syncSelect)
 {
     return os << toString(syncSelect);
+}
+
+enum ControlMode
+{
+    VoltageControlMode = 0x00,
+    CurrentControlMode = 0x01
+};
+boost::bimap<ControlMode,std::string> getControlModeBiMap();
+std::string toString(ControlMode controlMode);
+inline std::ostream& operator<<(std::ostream &os, ControlMode controlMode)
+{
+    return os << toString(controlMode);
 }
 
 // Bit names for the ALARM_EN register.
@@ -144,6 +160,8 @@ enum OscillatorSelect
     CONFIG_EXT_24MHZ_OSCOUT_INVERT  = 0x000E , // External 24MHz crystal, output inverted
     CONFIG_EXT_32MHZ_OSCOUT_INVERT  = 0x000F   // External 32MHz crystal, output inverted
 };
+
+boost::bimap<OscillatorSelect,std::string> getOscillatorSelectBiMap();
 std::string toString(OscillatorSelect oscillatorSelect);
 inline std::ostream& operator<<(std::ostream& os,OscillatorSelect oscillatorSelect)
 {
@@ -160,6 +178,8 @@ enum SwitchConfiguration
     //  commands to provide jog function.
     //  See page 25 of datasheet.
 };
+
+boost::bimap<SwitchConfiguration,std::string> getSwitchConfigurationBiMap();
 std::string toString(SwitchConfiguration switchConfiguration);
 inline std::ostream& operator<<(std::ostream& os,SwitchConfiguration switchConfiguration)
 {
@@ -173,6 +193,8 @@ enum VoltageCompensation
     CONFIG_VS_COMP_DISABLE = 0x0000,  // Disable motor voltage compensation.
     CONFIG_VS_COMP_ENABLE  = 0x0020   // Enable motor voltage compensation.
 };
+
+boost::bimap<VoltageCompensation,std::string> getVoltageCompensationBiMap();
 std::string toString(VoltageCompensation voltageCompensation);
 inline std::ostream& operator<<(std::ostream& os,VoltageCompensation voltageCompensation)
 {
@@ -186,6 +208,8 @@ enum OverCurrentDetection
     CONFIG_OC_SD_DISABLE = 0x0000,   // Bridges do NOT shutdown on OC detect
     CONFIG_OC_SD_ENABLE  = 0x0080    // Bridges shutdown on OC detect
 };
+
+boost::bimap<OverCurrentDetection,std::string> getOverCurrentDetectionBiMap();
 std::string toString(OverCurrentDetection overCurrentDetection);
 inline std::ostream& operator<<(std::ostream& os,OverCurrentDetection x)
 {
@@ -200,6 +224,8 @@ enum SlewRate
     CONFIG_SR_290V_us = 0x0200, // 290V/us
     CONFIG_SR_530V_us = 0x0300  // 530V/us
 };
+
+boost::bimap<SlewRate,std::string> getSlewRateBiMap();
 std::string toString(SlewRate slewRate);
 inline std::ostream& operator<<(std::ostream& os,SlewRate x)
 {
@@ -220,6 +246,8 @@ enum PwmFrequencyMultiplier
     CONFIG_PWM_MUL_1_75   = (0x06)<<10,
     CONFIG_PWM_MUL_2      = (0x07)<<10
 };
+
+boost::bimap<PwmFrequencyMultiplier,std::string> getPwmFrequencyMultiplierBiMap();
 std::string toString(PwmFrequencyMultiplier pwmFrequencyMultiplier);
 inline std::ostream& operator<<(std::ostream& os,PwmFrequencyMultiplier x)
 {
@@ -238,6 +266,8 @@ enum PwmFrequencyDivider
     CONFIG_PWM_DIV_6 = (0x05)<<13,
     CONFIG_PWM_DIV_7 = (0x06)<<13
 };
+
+boost::bimap<PwmFrequencyDivider,std::string> getPwmFrequencyDividerBiMap();
 std::string toString (PwmFrequencyDivider pwmFrequency);
 inline std::ostream& operator<<(std::ostream& os,PwmFrequencyDivider x)
 {
