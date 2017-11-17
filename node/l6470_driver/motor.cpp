@@ -104,7 +104,6 @@ StepperMotor stepperFromString(const std::string &cfg)
     return motor;
 }
 
-
 VoltageModeCfg BackEmfConfigFromStepper(const StepperMotor & stepperMotor , double vbus , double phaseCurrent )
 {
     VoltageModeCfg backEmfConfig;

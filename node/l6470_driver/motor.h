@@ -4,6 +4,7 @@
 #include <string.h>
 #include <iostream>
 #include "types.h"
+#include "config.h"
 #include <boost/bimap.hpp>
 
 // General Information regarding motor tuning can be found here :
