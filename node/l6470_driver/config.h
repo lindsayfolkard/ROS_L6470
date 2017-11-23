@@ -1,10 +1,12 @@
+#pragma once
+
 #include "types.h"
 #include "commsdriver.h"
 
 // Abstract Classes for passing configs around
 class AbstractConfig {
     virtual void set(CommsDriver &commsDriver, int motor) = 0;
-    virtual void readFromFile(const std::string &file) = 0;
+    virtual void readFromFile(const std::string &filePath) = 0;
 };
 
 class WriteableConfig {
@@ -12,12 +14,15 @@ class WriteableConfig {
     virtual void writeToFile(const std::string &cfgFilePath) = 0;
 };
 
-class CurrentModeCfg : public AbstractConfig
+class CurrentModeCfg : public AbstractConfig,
+                       public WriteableConfig
 {
 
 public:
 
     virtual void set(CommsDriver &commsDriver, int motor) override;
+    virtual void readFromFile(const std::string &filePath) override;
+    virtual void writeToFile(const std::string &filePath) override;
 
     uint8_t tvalHold;
     uint8_t tvalRun;
@@ -97,8 +102,6 @@ inline std::ostream& operator<<(std::ostream& os,const VoltageModeCfg &x)
     return os << toString(x);
 }
 
-VoltageModeCfg getBackEmfConfigFromString(const std::string &str);
-
 // General Static Config (meant to be set once at the start and then not really again)
 // NB: valid parameters are always positive. A negative parameter is interpreted as do not set/read.
 class CommonConfig : public AbstractConfig,
@@ -158,7 +161,7 @@ private:
 
 //CommonConfig commonCfgFromString(const std::string &str);
 std::string toString(const CommonConfig &cfg);
-inline std::ostream& operator<<(std::ostream& os,const Config &x)
+inline std::ostream& operator<<(std::ostream& os,const CommonConfig &x)
 {
     return os << toString(x);
 }

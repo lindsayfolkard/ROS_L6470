@@ -9,8 +9,16 @@ PowerStepCfg::set(CommsDriver &commsDriver, int motor)
 }
 
 void
+PowerStepCfg::readFromFile(const std::string &filePath)
+{
+    currentModeCfg_.readFromFile(filePath);
+    voltageModeCfg_.readFromFile(filePath);
+}
+
+void
 PowerStepCfg::writeToFile(const std::string &cfgFilePath)
 {
+
 }
 
 void
@@ -26,12 +34,14 @@ PowerStepCfg::setVoltageModeCfg(CommsDriver &commsDriver, int motor)
 }
 
 PowerStepDriver::PowerStepDriver(const std::vector<StepperMotor> &motors, int spiBus, CommsDebugLevel commsDebugLevel):
-    BaseDriver(motors,spiBus,commsDebugLevel)
+    BaseDriver(motors,spiBus,commsDebugLevel),
+    motorDriverType(PowerStep01)
 {
     assert(!"TODO - powerstep driver constructor");
 }
 
-PowerStepDriver::PowerStepDriver(const std::vector<StepperMotor> &motors, const std::vector <PowerStepCfg> &cfgs, int spiBus, CommsDebugLevel commsDebugLevel)
+PowerStepDriver::PowerStepDriver(const std::vector<StepperMotor> &motors, const std::vector <PowerStepCfg> &cfgs, int spiBus, CommsDebugLevel commsDebugLevel):
+    PowerStepDriver(motors,spiBus,commsDebugLevel)
 {
     assert (!"TODO - powerstep driver constructor");
 }

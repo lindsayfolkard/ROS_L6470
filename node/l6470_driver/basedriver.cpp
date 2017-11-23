@@ -7,7 +7,7 @@ BaseDriver::BaseDriver(const std::vector<StepperMotor> &motors, int spiBus, Comm
     motors_(motors),
     commsDebugLevel_(commsDebugLevel)
 {
-    commsDriver_.reset(new CommsDriver(motors_.size(),spiBus));
+    commsDriver->reset(new CommsDriver(motors_.size(),spiBus));
 }
 
 void
@@ -18,23 +18,6 @@ BaseDriver::checkMotorIsValid(int motor)
         throw; // TODO - fix which exception that is thrown
     }
 }
-
-//BaseDriver::BaseDriver(const std::vector<StepperMotor> &motors,
-//                         const std::vector<Config>       &configs,
-//                         int                              chipSelectPin,
-//                         int                              resetPin,
-//                         int                              busyPin,
-//                         CommsDebugLevel                  commsDebugLevel):
-//    BaseDriver(motors,chipSelectPin,resetPin,busyPin,commsDebugLevel)
-//{
-//    int motor=0;
-//    for (const Config &cfg : configs)
-//    {
-//        setConfig(cfg,motor);
-//        ++motor;
-//    }
-
-//}
 
 /////////////////////////
 /// Status Commands
@@ -215,7 +198,7 @@ void
 BaseDriver::setAcc(float stepsPerSecondPerSecond , int motor)
 {
   uint32_t integerAcc = accCalc(stepsPerSecondPerSecond);
-  setParam(ACC, integerAcc, motor);
+  commsDriver->setParam(ACC, toBitLength(ACC), integerAcc, motor);
 }
 
 void
@@ -227,7 +210,7 @@ BaseDriver::setAcc(std::map<int,float> &accelerations)
     {
         intAccelerations.insert(std::pair<int,uint32_t>(element.first,accCalc(element.second)));
     }
-    setParam(ACC,intAccelerations);
+    commsDriver->setParam(ACC, toBitLength(ACC),intAccelerations);
 }
 
 float
@@ -241,7 +224,7 @@ void
 BaseDriver::setDec(float stepsPerSecondPerSecond, int motor)
 {
   uint32_t integerDec = decCalc(stepsPerSecondPerSecond);
-  setParam(DECEL, integerDec, motor);
+  commsDriver->setParam(DECEL, toBitLength(DECEL), integerDec, motor);
 }
 
 void
@@ -253,13 +236,13 @@ BaseDriver::setDec(std::map<int,float> &decelerations)
     {
         intDecelerations.insert(std::pair<int,uint32_t>(element.first,decCalc(element.second)));
     }
-    setParam(DECEL,intDecelerations);
+    commsDriver->setParam(DECEL, toBitLength(DECEL),intDecelerations);
 }
 
 float
 BaseDriver::getDec(int motor)
 {
-  return accParse(getParam(DECEL, motor));
+  return accParse(commsDriver->getParam(DECEL, toBitLength(DECEL), motor));
 }
 
 void
@@ -271,7 +254,7 @@ BaseDriver::setMaxSpeed(const std::map <int,float> &maxSpeeds)
         intMaxSpeeds.insert(std::pair<int,uint32_t>(element.first,maxSpdCalc(element.second)));
     }
 
-    setParam(MAX_SPEED,intMaxSpeeds);
+    commsDriver->setParam(MAX_SPEED,toBitLength(MAX_SPEED),intMaxSpeeds);
 }
 
 // This is the maximum speed the dSPIN will attempt to produce.
@@ -283,7 +266,7 @@ BaseDriver::setMaxSpeed(float stepsPerSecond , int motor)
  uint32_t integerSpeed = maxSpdCalc(stepsPerSecond);
 
   // Now, we can set that paramter.
-  setParam(MAX_SPEED, integerSpeed, motor);
+  commsDriver->setParam(MAX_SPEED, toBitLength(MAX_SPEED), integerSpeed, motor);
 }
 
 void
@@ -293,12 +276,12 @@ BaseDriver::setMinSpeed(const std::map <int,float> &minSpeeds)
     for (const auto element : minSpeeds)
     {
         // MIN_SPEED also contains the LSPD_OPT flag, so we need to protect that.
-        uint32_t temp = getParam(MIN_SPEED,element.first) & 0x00001000;
+        uint32_t temp = commsDriver->getParam(MIN_SPEED, toBitLength(MIN_SPEED), element.first) & 0x00001000;
 
         intMinSpeeds.insert(std::pair<int,uint32_t>(element.first,minSpdCalc(element.second)|temp));
     }
 
-    setParam(MIN_SPEED,intMinSpeeds);
+    commsDriver->setParam(MIN_SPEED, toBitLength(MIN_SPEED), intMinSpeeds);
 }
 
 // Set the minimum speed allowable in the system. This is the speed a motion
@@ -311,20 +294,20 @@ void BaseDriver::setMinSpeed(float stepsPerSecond, int motor)
   uint32_t integerSpeed = minSpdCalc(stepsPerSecond);
 
   // MIN_SPEED also contains the LSPD_OPT flag, so we need to protect that.
-  uint32_t temp = getParam(MIN_SPEED,motor) & 0x00001000;
+  uint32_t temp = commsDriver->getParam(MIN_SPEED, toBitLength(MIN_SPEED), motor) & 0x00001000;
 
   // Now, we can set that paramter.
-  setParam(MIN_SPEED, integerSpeed | temp , motor);
+  commsDriver->setParam(MIN_SPEED, toBitLength(MIN_SPEED), integerSpeed | temp , motor);
 }
 
 float BaseDriver::getMaxSpeed(int motor)
 {
-  return maxSpdParse(getParam(MAX_SPEED, motor));
+  return maxSpdParse(commsDriver->getParam(MAX_SPEED, toBitLength(MAX_SPEED), motor));
 }
 
 float BaseDriver::getMinSpeed(int motor)
 {
-  return minSpdParse(getParam(MIN_SPEED,motor));
+  return minSpdParse(commsDriver->getParam(MIN_SPEED, toBitLength(MIN_SPEED), motor));
 }
 
 

@@ -5,9 +5,9 @@
 //////////////////////////////////
 
 void
-CommonConfig::setConfig(CommsDriver &commsDriver, int motor)
+CommonConfig::set(CommsDriver &commsDriver, int motor)
 {
-    checkMotorIsValid(motor);
+    //checkMotorIsValid(motor);
 
     // Current Thresholds
     setOCThreshold(overCurrentThreshold, commsDriver, motor);
@@ -21,8 +21,6 @@ CommonConfig::setConfig(CommsDriver &commsDriver, int motor)
     // Set Oscillator related configs
     setOscMode(oscillatorSelect, commsDriver, motor);
     setSwitchMode(switchConfiguration, commsDriver, motor);
-    setSlewRate(slewRate, commsDriver, motor);
-    setVoltageComp(voltageCompensation, commsDriver, motor);
 
     // Set Alarm State
     setAlarmState(alarmState, commsDriver, motor);
@@ -64,7 +62,7 @@ CommonConfig::setSyncSelect( SyncSelect syncSelect, bool syncEnable, CommsDriver
   // Only some of the bits in this register are of interest to us; we need to
   //  clear those bits. It happens that they are the upper four.
   const uint8_t syncMask = 0x0F;
-  uint8_t syncPinConfig = (uint8_t)getParam(STEP_MODE,motor);
+  uint8_t syncPinConfig = (uint8_t)commsDriver.getParam(STEP_MODE,toBitLength(STEP_MODE),motor);
   syncPinConfig &= syncMask;
 
   // Now, let's OR in the arguments. We're going to mask the incoming
@@ -134,7 +132,7 @@ CommonConfig::setStepMode(StepMode stepMode, CommsDriver &commsDriver, int motor
   // Only some of these bits are useful (the lower three). We'll extract the
   //  current contents, clear those three bits, then set them accordingly.
   const uint8_t stepModeMask = 0xF8;
-  uint8_t stepModeConfig = (uint8_t)getParam(STEP_MODE,motor);
+  uint8_t stepModeConfig = (uint8_t)commsDriver.getParam(STEP_MODE,toBitLength(STEP_MODE),motor);
   stepModeConfig &= stepModeMask;
 
   // Now we can OR in the new bit settings. Mask the argument so we don't
@@ -159,11 +157,11 @@ CommonConfig::setFullSpeed(float stepsPerSecond, CommsDriver &commsDriver, int m
   commsDriver.setParam(FS_SPD, toBitLength(FS_SPD), integerSpeed, motor);
 }
 
-float
-CommonConfig::getFullSpeed(CommsDriver &commsDriver, int motor)
-{
-  return FSParse(commsDriver.getParam(FS_SPD, toBitLength(FS_SPD), motor));
-}
+//float
+//CommonConfig::getFullSpeed(CommsDriver &commsDriver, int motor)
+//{
+//  return FSParse(commsDriver.getParam(FS_SPD, toBitLength(FS_SPD), motor));
+//}
 
 void
 CommonConfig::setOCThreshold(CurrentThreshold ocThreshold, CommsDriver &commsDriver, int motor)
@@ -377,7 +375,7 @@ VoltageModeCfg::getRunKVAL(CommsDriver &commsDriver, int motor)
 void
 VoltageModeCfg::setHoldKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor)
 {
-  setParam(KVAL_HOLD, kvalInput, toBitLength(KVAL_HOLD), motor);
+  commsDriver.setParam(KVAL_HOLD, kvalInput, toBitLength(KVAL_HOLD), motor);
 }
 
 uint8_t
@@ -396,10 +394,10 @@ VoltageModeCfg::set(CommsDriver &commsDriver, int motor)
     setDecKVAL(decelStartingKVal, commsDriver, motor);
 
     // Set the intersect speed and slope of the curve
-    setParam(INT_SPD,intersectSpeed, commsDriver, motor);
-    setParam(ST_SLP,startSlope, commsDriver, motor);
-    setParam(FN_SLP_ACC,accelFinalSlope, commsDriver, motor);
-    setParam(FN_SLP_DEC,decelFinalSlope, commsDriver, motor);
+    commsDriver.setParam(INT_SPD,toBitLength(INT_SPD),intersectSpeed, motor);
+    commsDriver.setParam(ST_SLP,toBitLength(INT_SPD),startSlope, motor);
+    commsDriver.setParam(FN_SLP_ACC,toBitLength(FN_SLP_ACC),accelFinalSlope, motor);
+    commsDriver.setParam(FN_SLP_DEC,toBitLength(FN_SLP_DEC),decelFinalSlope, motor);
 
     // PWM Configs
     setPWMFreq(pwmFrequencyDivider, pwmFrequencyMultiplier, commsDriver, motor);
@@ -431,7 +429,7 @@ VoltageModeCfg::set(CommsDriver &commsDriver, int motor)
 //  motion starts from 0 instead of MIN_SPEED and low-speed optimization keeps
 //  the driving sine wave prettier than normal until MIN_SPEED is reached.
 void
-VoltageModeCfg::setLoSpdOpt(bool enable, CommsDriver &commsDriver, int motor)
+CommonConfig::setLoSpdOpt(bool enable, CommsDriver &commsDriver, int motor)
 {
   uint32_t temp = commsDriver.getParam(MIN_SPEED, toBitLength(MIN_SPEED), motor);
   if (enable) temp |= 0x00001000; // Set the LSPD_OPT bit
@@ -440,7 +438,7 @@ VoltageModeCfg::setLoSpdOpt(bool enable, CommsDriver &commsDriver, int motor)
 }
 
 bool
-VoltageModeCfg::getLoSpdOpt(CommsDriver &commsDriver, int motor)
+CommonConfig::getLoSpdOpt(CommsDriver &commsDriver, int motor)
 {
   return (bool) ((commsDriver.getParam(MIN_SPEED, toBitLength(MIN_SPEED), motor) & 0x00001000) != 0);
 }
@@ -517,49 +515,52 @@ std::string toString(const VoltageModeCfg &backEmfConfig)
 void
 VoltageModeCfg::readFromFile(const std::string &file)
 {
+    // Let's first try to parse the voltage mode config from the motor description
+    //StepperMotor motor = get
+
     int helper = holdingKVal;
-    tryGetArgumentAsInt(str,"KVAL_HOLD",helper);
+    tryGetArgumentAsInt(file,"KVAL_HOLD",helper);
     holdingKVal = helper;
 
     helper = constantSpeedKVal;
-    tryGetArgumentAsInt(str,"KVAL_RUN",helper);
+    tryGetArgumentAsInt(file,"KVAL_RUN",helper);
     constantSpeedKVal = helper;
 
     helper = accelStartingKVal;
-    tryGetArgumentAsInt(str,"KVAL_ACC",helper);
+    tryGetArgumentAsInt(file,"KVAL_ACC",helper);
     accelStartingKVal = helper;
 
     helper = decelStartingKVal;
-    tryGetArgumentAsInt(str,"KVAL_DEC",helper);
+    tryGetArgumentAsInt(file,"KVAL_DEC",helper);
     decelStartingKVal = helper;
 
     helper = intersectSpeed;
-    tryGetArgumentAsInt(str,"INT_SPEED",helper);
+    tryGetArgumentAsInt(file,"INT_SPEED",helper);
     intersectSpeed = helper;
 
     helper = startSlope;
-    tryGetArgumentAsInt(str,"ST_SLP",helper);
+    tryGetArgumentAsInt(file,"ST_SLP",helper);
     startSlope = helper;
 
     helper = accelFinalSlope;
-    tryGetArgumentAsInt(str,"FN_SLP_ACC",helper);
+    tryGetArgumentAsInt(file,"FN_SLP_ACC",helper);
     accelFinalSlope = helper;
 
     helper = decelFinalSlope;
-    tryGetArgumentAsInt(str,"FN_SLP_DEC",helper);
+    tryGetArgumentAsInt(file,"FN_SLP_DEC",helper);
     decelFinalSlope = helper;
 
-    tryReadConfig<SlewRate>(str, "SlewRate" ,getSlewRateBiMap(), slewRate);
-    tryReadConfig<VoltageCompensation>(str, "VoltageCompensation", getVoltageCompensationBiMap(), voltageCompensation);
-    tryReadConfig<PwmFrequencyMultiplier>(str, "PwmFrequencyMultiplier" ,getPwmFrequencyMultiplierBiMap(), pwmFrequencyMultiplier);
-    tryReadConfig<PwmFrequencyDivider>(str, "PwmFrequencyDivider" ,getPwmFrequencyDividerBiMap(), pwmFrequencyDivider);
+    tryReadConfig<SlewRate>(file, "SlewRate" ,getSlewRateBiMap(), slewRate);
+    tryReadConfig<VoltageCompensation>(file, "VoltageCompensation", getVoltageCompensationBiMap(), voltageCompensation);
+    tryReadConfig<PwmFrequencyMultiplier>(file, "PwmFrequencyMultiplier" ,getPwmFrequencyMultiplierBiMap(), pwmFrequencyMultiplier);
+    tryReadConfig<PwmFrequencyDivider>(file, "PwmFrequencyDivider" ,getPwmFrequencyDividerBiMap(), pwmFrequencyDivider);
 }
 
 void
 VoltageModeCfg::writeToFile(const std::string &cfgFilePath)
 {
     assert(!"TODO - voltage mode cfg writing");
-    // TODO !
+    // TODO ! - careful we will need to not overwrite everything here.
 }
 
 void
@@ -589,6 +590,18 @@ CommonConfig::readFromFile(const std::string &file)
 
 void
 CommonConfig::writeToFile(const std::string &cfgFilePath)
+{
+    assert(!"TODO - commoncfg writing");
+}
+
+void
+CurrentModeCfg::readFromFile(const std::string &file)
+{
+    assert("!TODO");
+}
+
+void
+CurrentModeCfg::writeToFile(const std::string &cfgFilePath)
 {
     assert(!"TODO - commoncfg writing");
 }
