@@ -4,6 +4,22 @@
 #include <map>
 #include <vector>
 
+
+std::string toString(CommsDebugLevel commsDebugLevel)
+{
+    switch (commsDebugLevel)
+    {
+    case CommsDebugNothing:
+        return "CommsDebugNothing";
+    case CommsDebugOnlyActions:
+        return "CommsDebugActions";
+    case CommsDebugEverything:
+        return "CommsDebugEverything";
+    default:
+        throw; // !TODO - throw a meaningful exception
+    }
+}
+
 CommsDriver::CommsDriver(int numMotors, int spiBus) :
     numMotors_(numMotors)
 {
@@ -16,8 +32,6 @@ CommsDriver::CommsDriver(int numMotors, int spiBus) :
 ///
 /// \brief Functions for handling comms with daisy chained L6470H boards
 ///
-
-
 void
 CommsDriver::checkMotorIsValid(int motor)
 {

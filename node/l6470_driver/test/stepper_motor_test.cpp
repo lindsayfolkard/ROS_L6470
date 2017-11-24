@@ -10,15 +10,15 @@
 
 /// @author      : Lindsay Folkard
 /// @date        : TODO
-/// @description : A simple program to interact with the SparkFunAutodriver tweaked to user mraa.
+/// @description : A simple program to interact with the Stepper driver
 ///
 
 using namespace std;
 
-void printMenu();
-void printUsage(int argc, char **argv);
+//void printMenu();
+//void printUsage(int argc, char **argv);
 //void handleMenuOption(const std::string &input, AutoDriver &driver);
-std::vector<long> getArguments(const std::string &input,int argCount);
+//std::vector<long> getArguments(const std::string &input,int argCount);
 
 int main (int argc, char ** argv)
 {

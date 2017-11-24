@@ -3,5 +3,11 @@
 add_executable(stepper_motor_test
   stepper_motor_test.cpp)
 
+add_executable(test_configs
+  test_configs.cpp)
+
 target_link_libraries(stepper_motor_test
+  l6470_driver)
+
+target_link_libraries(test_configs
   l6470_driver)

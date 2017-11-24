@@ -4,21 +4,6 @@
 #include <assert.h>
 #include "types.h"
 
-std::string toString(MotorDriverType motorDriverType)
-{
-    switch (motorDriverType)
-    {
-    case PowerStep01:
-        return "PowerStep01";
-    case L6470:
-        return "L6470";
-    case L6472:
-        return "L6472";
-    default:
-        assert(!"Invalid MotorDriverType in toString");
-    }
-}
-
 boost::bimap <StepperMotorSize,std::string> getStepperMotorSizeBiMap()
 {
     typedef boost::bimap<StepperMotorSize,std::string> MotorSizeMap;  

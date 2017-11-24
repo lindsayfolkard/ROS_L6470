@@ -14,6 +14,13 @@ enum CommsDebugLevel
   CommsDebugOnlyActions=1,
   CommsDebugEverything=2
 };
+std::string toString(CommsDebugLevel commsDebugLevel);
+inline std::ostream& operator<<(std::ostream& os, CommsDebugLevel x)
+{
+    return os << toString(x);
+}
+
+
 
 // CommsDriver
 // Description : A class to handle all communications to and from

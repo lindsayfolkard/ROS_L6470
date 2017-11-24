@@ -14,6 +14,49 @@ class WriteableConfig {
     virtual void writeToFile(const std::string &cfgFilePath) = 0;
 };
 
+
+enum MotorDriverType
+{
+    PowerStep01,
+    L6470, // not checked as of yet
+    L6472  // not checked as of yet
+};
+std::string toString(MotorDriverType motorDriverType);
+inline std::ostream& operator<<(std::ostream& os, MotorDriverType x)
+{
+    return os << toString(x);
+}
+MotorDriverType motorDriverTypeFromString(const std::string &str);
+
+struct CfgFile
+{
+    CfgFile(const std::string &stepperMotorFile,const std::string &customConfigFile) :
+        stepperMotorFile_(stepperMotorFile),
+        customConfigFile_(customConfigFile){}
+
+    std::string stepperMotorFile_;
+    std::string customConfigFile_;
+};
+
+struct OverallCfg
+{
+    OverallCfg(const std::string &filePath);
+    OverallCfg(const std::vector<CfgFile> &cfgFiles,
+               MotorDriverType             controllerType,
+               CommsDebugLevel             commsDebugLevel);
+
+    void writeToFile(const std::string &baseFile);
+
+    std::vector<CfgFile>     cfgFiles_;
+    MotorDriverType          controllerType_;
+    CommsDebugLevel          commsDebugLevel_;
+};
+std::string toString(const OverallCfg &cfg);
+inline std::ostream& operator<<(std::ostream& os,const OverallCfg &x)
+{
+    return os << toString(x);
+}
+
 class CurrentModeCfg : public AbstractConfig,
                        public WriteableConfig
 {
@@ -39,16 +82,9 @@ public:
     bool                  enableTorqueRegulation;
     bool                  externalClockEnabled;
 
-private:
-
-    // TODO !!!
 };
 
-///
-/// \brief The BackEmfConfig struct
-/// contains all information that is needed to
-/// configure a motor to be used with a controller
-///
+
 class VoltageModeCfg : public AbstractConfig,
                        public WriteableConfig
 {
