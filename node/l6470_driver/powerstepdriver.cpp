@@ -34,8 +34,7 @@ PowerStepCfg::setVoltageModeCfg(CommsDriver &commsDriver, int motor)
 }
 
 PowerStepDriver::PowerStepDriver(const std::vector<StepperMotor> &motors, int spiBus, CommsDebugLevel commsDebugLevel):
-    BaseDriver(motors,spiBus,commsDebugLevel),
-    motorDriverType(PowerStep01)
+    BaseDriver(motors,PowerStep01,spiBus,commsDebugLevel)
 {
     assert(!"TODO - powerstep driver constructor");
 }

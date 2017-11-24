@@ -567,25 +567,25 @@ void
 CommonConfig::readFromFile(const std::string &file)
 {
     // Handle standard configuration parameters
-    tryGetArgumentAsInt(str,"FullStepThresholdSpeed",fullStepThresholdSpeed);
-    tryGetArgumentAsInt(str,"ThermalDriftCoefficient",thermalDriftCoefficient);
+    tryGetArgumentAsInt(file,"FullStepThresholdSpeed",fullStepThresholdSpeed);
+    tryGetArgumentAsInt(file,"ThermalDriftCoefficient",thermalDriftCoefficient);
 
-    tryReadConfig<CurrentThreshold>(str, "OverCurrentThreshold", getCurrentThresholdBiMap(), overCurrentThreshold);
-    tryReadConfig<CurrentThreshold>(str, "StallThreshold", getCurrentThresholdBiMap(),stallThreshold);
-    tryReadConfig<StepMode>(str, "StepMode", getStepModeBiMap(),stepMode);
-    tryReadConfig<SyncSelect>(str, "SyncSelect", getSyncSelectBiMap(),syncSelect);
-    tryReadConfig<ControlMode>(str, "ControlMode",getControlModeBiMap(),controlMode);
-    tryReadConfig<OscillatorSelect>(str ,"OscillatorSelect" ,getOscillatorSelectBiMap(),oscillatorSelect);
-    tryReadConfig<SwitchConfiguration>(str ,"SwitchConfiguration" ,getSwitchConfigurationBiMap(), switchConfiguration);
-    tryReadConfig<OverCurrentDetection>(str ,"OverCurrentDetection" ,getOverCurrentDetectionBiMap(), overCurrentDetection);
+    tryReadConfig<CurrentThreshold>(file, "OverCurrentThreshold", getCurrentThresholdBiMap(), overCurrentThreshold);
+    tryReadConfig<CurrentThreshold>(file, "StallThreshold", getCurrentThresholdBiMap(),stallThreshold);
+    tryReadConfig<StepMode>(file, "StepMode", getStepModeBiMap(),stepMode);
+    tryReadConfig<SyncSelect>(file, "SyncSelect", getSyncSelectBiMap(),syncSelect);
+    tryReadConfig<ControlMode>(file, "ControlMode",getControlModeBiMap(),controlMode);
+    tryReadConfig<OscillatorSelect>(file,"OscillatorSelect" ,getOscillatorSelectBiMap(),oscillatorSelect);
+    tryReadConfig<SwitchConfiguration>(file,"SwitchConfiguration" ,getSwitchConfigurationBiMap(), switchConfiguration);
+    tryReadConfig<OverCurrentDetection>(file,"OverCurrentDetection" ,getOverCurrentDetectionBiMap(), overCurrentDetection);
 
     // Read Sync Enable
     int syncEnableState = syncEnable;
-    tryGetArgumentAsInt(str , "SyncEnable" ,syncEnableState);
+    tryGetArgumentAsInt(file, "SyncEnable" ,syncEnableState);
     syncEnable = (bool)syncEnableState;
 
     // Parse Alarm State Config (if it exists)
-    alarmState = getAlarmStateFromString(str);
+    //alarmState = getAlarmStateFromString(file);
 }
 
 void

@@ -25,7 +25,7 @@ public:
     /// Constructors
     /////////////////////////
 
-    BaseDriver(const std::vector<StepperMotor> &motors, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
+    BaseDriver(const std::vector<StepperMotor> &motors, MotorDriverType motorDriverType, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
     //BaseDriver(const std::vector<StepperMotor> &motors, const std::vector<Config> &cfgs, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
     
 //    //////////////////////////
@@ -142,7 +142,7 @@ private:
     void checkMotorIsValid(int motor);
 
     const std::vector<StepperMotor> motors_;
-    const MotorDriverType           motorDriverType;
+    const MotorDriverType           motorDriverType_;
     CommsDebugLevel                 commsDebugLevel_;
     std::unique_ptr<CommsDriver>    commsDriver_;
 

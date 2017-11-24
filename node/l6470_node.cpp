@@ -53,7 +53,7 @@ L6470Node::L6470Node():
     const double ratedCurrent=3.75;
     
     std::vector<StepperMotor> motors;
-    std::vector<Config>       cfgs;    
+    //std::vector<Config>       cfgs;
 
     for (const auto &cfgFile : stepperConfigs)
     {
@@ -70,20 +70,20 @@ L6470Node::L6470Node():
 	std::cout << "Opened " << filePath+cfgFile << " with data --> " << str << std::endl;	
 
         // Try to parse the Config
-        Config config = cfgFromString(str);
+        //Config config = cfgFromString(str);
         
         // Parse the motor config
         StepperMotor motorCfg = stepperFromString(str);
         VoltageModeCfg backEmfCfg = BackEmfConfigFromStepper(motorCfg,vBus,ratedCurrent);
-        config.backEmfConfig = backEmfCfg;
+        //config.backEmfConfig = backEmfCfg;
 
         // Add to the vector
         motors.push_back(motorCfg);
-        cfgs.push_back(config);
+        //cfgs.push_back(config);
 
 	// Let' print out ot make rusre vereyjhting makes sense
         std::cout << "Motor " << motorCfg << std::endl;
-        std::cout << "Config " << cfgFile << " : " << config << std::endl;
+        //std::cout << "Config " << cfgFile << " : " << config << std::endl;
     }
     
     // Let's instantiate the driver

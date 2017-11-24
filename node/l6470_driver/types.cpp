@@ -104,8 +104,8 @@ boost::bimap<ControlMode,std::string> getControlModeBiMap()
     boost::bimap<ControlMode,std::string> map = makeBiMap<ControlMode,std::string>
     ({
 
-    { VoltageControlMode ,  "VoltageControlMode"},
-    { CONFIG_OC_SD_ENABLE  ,  "CurrentControlMode"}
+    { VoltageControlMode, "VoltageControlMode"},
+    { CurrentControlMode, "CurrentControlMode"}
 
     });
     return map;
