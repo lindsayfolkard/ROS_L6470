@@ -30,6 +30,7 @@ struct StepperMotor
 {
     // Constructor
     StepperMotor(){} // TODO remove me!
+    StepperMotor(const std::string &cfg);
     StepperMotor(StepperMotorSize  _motorSize,
                  std::string       _motorModel,
                  double            _stepAngle,
@@ -38,6 +39,8 @@ struct StepperMotor
                  double            _phaseInductance,
                  double            _holdingTorque,
                  double            _ke);
+
+    void writeToFile(const std::string &file);
 
     // Motor Type information
     StepperMotorSize  motorSize;
@@ -61,8 +64,6 @@ inline std::ostream& operator<<(std::ostream& os,const StepperMotor &x)
 {
     return os << toString(x);
 }
-
-StepperMotor stepperFromString(const std::string &cfg);
 
 // Converts the motor parameters from a given stepper motor to a compatible
 // backemf config to be used by the L6470 Driver

@@ -3,6 +3,11 @@
 #include <math.h>
 #include <assert.h>
 #include "types.h"
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
+
+namespace pt = boost::property_tree;
 
 boost::bimap <StepperMotorSize,std::string> getStepperMotorSizeBiMap()
 {
@@ -64,29 +69,51 @@ void tryReadDoubleFromCfg(const std::string &cfg, const std::string &marker , do
 	value=std::stod(argument);
    else
 	std::cout << "Unable to read marker --> " << marker;
-
 }
 
-StepperMotor stepperFromString(const std::string &cfg)
+StepperMotor::StepperMotor(const std::string &cfg)
 {
-    StepperMotor motor;
-    
-    std::string argument = getArgument(cfg,"Motor Size");
-    if (argument != "")
-    motor.motorSize = getStepperMotorSizeBiMap().right.at(argument);
+    // Let's do this in json format (easier to parse)
+    pt::ptree root;
 
-    argument = getArgument(cfg,"Motor Model");
-    if (argument != "") 
-        motor.motorModel = argument;
+    try
+    {
+        pt::read_json(cfg,root);
 
-    tryReadDoubleFromCfg(cfg,"Step Angle",motor.stepAngle);
-    tryReadDoubleFromCfg(cfg,"Rated Current",motor.ratedCurrent);
-    tryReadDoubleFromCfg(cfg,"Phase Resistance",motor.phaseResistance);
-    tryReadDoubleFromCfg(cfg,"Phase Inductance",motor.phaseInductance);
-    tryReadDoubleFromCfg(cfg,"BackEmf Constant",motor.Ke);
-    tryReadDoubleFromCfg(cfg,"Holding Torque",motor.holdingTorque);
-    
-    return motor;
+        motorSize  = getStepperMotorSizeBiMap().right.at(root.get<std::string>("motorSize"));
+        motorModel = root.get<std::string>("motorModel");
+        stepAngle  = root.get<double>("stepAngle");
+        phaseResistance = root.get<double>("phaseResistance");
+        phaseInductance = root.get<double>("phaseInductance");
+        Ke              = root.get<double>("backEmfConstant");
+        holdingTorque   = root.get<double>("holdingTorque");
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception caught while trying to read stepper motor cfg file " << cfg << " with reason " << e.what() << std::endl;
+        throw;
+    }
+}
+
+void
+StepperMotor::writeToFile(const std::string &file)
+{
+    pt::ptree root;
+
+    root.put("motorModel",motorModel);
+    root.put("motorSize",motorSize);
+    root.put("stepAngle",stepAngle);
+    root.put("ratedCurrent",ratedCurrent);
+    root.put("phaseResistance",phaseResistance);
+    root.put("phaseInductance",phaseInductance);
+    root.put("backEmfConstant",Ke);
+    root.put("holdingTorque",holdingTorque);
+
+    // Open the file and write to json
+    std::ofstream outFile;
+    outFile.open(file);
+        //throw; // TODO - fix to real exception
+    pt::write_json(outFile,root);
 }
 
 VoltageModeCfg BackEmfConfigFromStepper(const StepperMotor & stepperMotor , double vbus , double phaseCurrent )

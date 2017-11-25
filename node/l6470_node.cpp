@@ -44,47 +44,47 @@ L6470Node::L6470Node():
     std::cout << "Created L6470 Node!" << std::endl;
 
     // Fuck it Im lazy and don't want to think too hard about how to configure the boards
-    //const std::string masterConfig = "/home/lindsay/stepper_config";
-    const std::vector <std::string>stepperConfigs = {"motor1.cfg","motor2.cfg","motor3.cfg"};
-    const std::string filePath = "/home/lindsay/git/src/ROS_L6470/node/configs/";
+//    //const std::string masterConfig = "/home/lindsay/stepper_config";
+//    const std::vector <std::string>stepperConfigs = {"motor1.cfg","motor2.cfg","motor3.cfg"};
+//    const std::string filePath = "/home/lindsay/git/src/ROS_L6470/node/configs/";
 
-    // Create the config vector
-    const int vBus = 24;
-    const double ratedCurrent=3.75;
+//    // Create the config vector
+//    const int vBus = 24;
+//    const double ratedCurrent=3.75;
     
-    std::vector<StepperMotor> motors;
-    //std::vector<Config>       cfgs;
+//    std::vector<StepperMotor> motors;
+//    //std::vector<Config>       cfgs;
 
-    for (const auto &cfgFile : stepperConfigs)
-    {
-        // Open the Config
-        std::ifstream inFile;
-	inFile.open(filePath+cfgFile,std::ifstream::in);
-        if (!inFile.is_open())
-	{
-           std::cout << "Unable to open cfg file " << filePath+cfgFile << std::endl;
-	   continue;
-	}
-        std::string str((std::istreambuf_iterator<char>(inFile)),
-                         std::istreambuf_iterator<char>());
-	std::cout << "Opened " << filePath+cfgFile << " with data --> " << str << std::endl;	
+//    for (const auto &cfgFile : stepperConfigs)
+//    {
+//        // Open the Config
+//        std::ifstream inFile;
+//	inFile.open(filePath+cfgFile,std::ifstream::in);
+//        if (!inFile.is_open())
+//	{
+//           std::cout << "Unable to open cfg file " << filePath+cfgFile << std::endl;
+//	   continue;
+//	}
+//        std::string str((std::istreambuf_iterator<char>(inFile)),
+//                         std::istreambuf_iterator<char>());
+//	std::cout << "Opened " << filePath+cfgFile << " with data --> " << str << std::endl;
 
-        // Try to parse the Config
-        //Config config = cfgFromString(str);
+//        // Try to parse the Config
+//        //Config config = cfgFromString(str);
         
-        // Parse the motor config
-        StepperMotor motorCfg = stepperFromString(str);
-        VoltageModeCfg backEmfCfg = BackEmfConfigFromStepper(motorCfg,vBus,ratedCurrent);
-        //config.backEmfConfig = backEmfCfg;
+//        // Parse the motor config
+//        //StepperMotor motorCfg = stepperFromString(str);
+//        //VoltageModeCfg backEmfCfg = BackEmfConfigFromStepper(motorCfg,vBus,ratedCurrent);
+//        //config.backEmfConfig = backEmfCfg;
 
-        // Add to the vector
-        motors.push_back(motorCfg);
-        //cfgs.push_back(config);
+//        // Add to the vector
+//        motors.push_back(motorCfg);
+//        //cfgs.push_back(config);
 
-	// Let' print out ot make rusre vereyjhting makes sense
-        std::cout << "Motor " << motorCfg << std::endl;
-        //std::cout << "Config " << cfgFile << " : " << config << std::endl;
-    }
+//	// Let' print out ot make rusre vereyjhting makes sense
+//        std::cout << "Motor " << motorCfg << std::endl;
+//        //std::cout << "Config " << cfgFile << " : " << config << std::endl;
+//    }
     
     // Let's instantiate the driver
     //const int chipSelectPin = 0; // huh
