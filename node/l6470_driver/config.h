@@ -14,7 +14,6 @@ class WriteableConfig {
     virtual void writeToFile(const std::string &cfgFilePath) = 0;
 };
 
-
 enum MotorDriverType
 {
     PowerStep01,
@@ -30,12 +29,14 @@ MotorDriverType motorDriverTypeFromString(const std::string &str);
 
 struct CfgFile
 {
-    CfgFile(const std::string &stepperMotorFile,const std::string &customConfigFile) :
+    CfgFile(const std::string &stepperMotorFile,const std::string &customConfigFile, const std::string motorModel) :
         stepperMotorFile_(stepperMotorFile),
-        customConfigFile_(customConfigFile){}
+        customConfigFile_(customConfigFile),
+        motorModel_(motorModel){}
 
     std::string stepperMotorFile_;
     std::string customConfigFile_;
+    std::string motorModel_;
 };
 
 struct OverallCfg
@@ -84,12 +85,14 @@ public:
 
 };
 
-
 class VoltageModeCfg : public AbstractConfig,
                        public WriteableConfig
 {
 public:
 
+    VoltageModeCfg();
+    VoltageModeCfg(const std::string &file);
+    
     virtual void set(CommsDriver &commsDriver, int motor) override;
     virtual void readFromFile(const std::string &file) override;
     virtual void writeToFile(const std::string &cfgFilePath) override;
@@ -112,6 +115,8 @@ public:
 
 private:
 
+    void setDefaults();
+    
     // probs can just be external methods in their own namespace but fuck it
     void setAccKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor );
     void setDecKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor );
@@ -145,6 +150,9 @@ class CommonConfig : public AbstractConfig,
 {
 public:
 
+    CommonConfig(const std::string &file) { readFromFile(file); }
+    CommonConfig(){ setDefaults(); }
+    
     virtual void set(CommsDriver &commsDriver, int motor) override;
     virtual void readFromFile(const std::string &file) override;
     virtual void writeToFile(const std::string &cfgFilePath) override;
@@ -171,6 +179,8 @@ public:
 
 private:
 
+    void setDefaults();
+    
     void setOCThreshold(CurrentThreshold ocThreshold, CommsDriver &commsDriver, int motor );
     void setStallThreshold(CurrentThreshold stallCurrent, CommsDriver &commsDriver, int motor );
     void setStepMode(StepMode stepMode, CommsDriver &commsDriver, int motor );
@@ -205,30 +215,17 @@ inline std::ostream& operator<<(std::ostream& os,const CommonConfig &x)
 std::string getArgument(const std::string &cfg , const std::string &marker);
 void tryGetArgumentAsInt(const std::string &cfg, const std::string &marker, int &value);
 
-template <typename T> bool tryReadConfig(const std::string &cfg , const std::string &marker, const boost::bimap<T,std::string> &mapping, T &value)
+template <typename T> bool tryReadConfig(const std::string &inputStr, const boost::bimap<T,std::string> &mapping, T &value)
 {
-    std::string argument = getArgument(cfg,marker);
-
     // Try and find a matching element
-    if (argument != "")
+    if (inputStr != "")
     {
-        value = mapping.right.at(argument);
+        value = mapping.right.at(inputStr);
         return true;
     }
     else
     {
-        std::cout << "No valid cfg entry for marker --> " << marker << std::endl;
+        std::cout << "No valid cfg entry for marker --> " << std::endl;
         return false;
     }
 }
-
-
-
-
-
-
-
-
-
-
-

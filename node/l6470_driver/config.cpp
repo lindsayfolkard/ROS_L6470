@@ -51,13 +51,10 @@ OverallCfg::OverallCfg(const std::string &filePath)
         // Get the stepper motor configs
         for (pt::ptree::value_type &child : root.get_child("motors"))
         {
-            // debug
-            //std::cout << "Designation :" << child.second.get<int>("number");
-            std::cout << "------------------------------------" << std::endl;
-            std::cout << "Motor model :" << child.second.get<std::string>("model") << std::endl;
-            std::cout << "Motor Cfg File  : " << child.second.get<std::string> ("motorCfgFile") << std::endl;
-            std::cout << "Custom Cfg File : " << child.second.get<std::string> ("customCfgFile")<< std::endl;
-            std::cout << "------------------------------------" << std::endl;
+            CfgFile cfg(child.second.get<std::string> ("motorCfgFile"),
+                        child.second.get<std::string> ("customCfgFile"),
+                        child.second.get<std::string>("model"));
+            cfgFiles_.push_back(cfg);
         }
 
     }
@@ -66,7 +63,6 @@ OverallCfg::OverallCfg(const std::string &filePath)
         std::cout << "Exception thrown while trying to read overallCfg with reason " << e.what();
         throw; // rethrow the exception
     }
-
 }
 
 OverallCfg::OverallCfg( const std::vector<CfgFile> &cfgFiles,
@@ -90,7 +86,7 @@ OverallCfg::writeToFile(const std::string &baseFile)
     for (const auto &cfgFile : cfgFiles_)
     {
         pt::ptree child;
-        child.put("model","NEMA23"); // TODO - fix
+        child.put("model",cfgFile.motorModel_);
         child.put("motorCfgFile",cfgFile.stepperMotorFile_);
         child.put("customCfgFile",cfgFile.customConfigFile_);
         cfgNode.push_back((std::make_pair("",child)));
@@ -122,6 +118,37 @@ toString(const OverallCfg &cfg)
 //////////////////////////////////
 /// Common Configuration Commands
 //////////////////////////////////
+
+void 
+CommonConfig::setDefaults()
+{
+    fullStepThresholdSpeed=900;
+    thermalDriftCoefficient=0;
+
+    overCurrentThreshold=OCD_TH_6000m;
+    stallThreshold=OCD_TH_6000m;
+
+    // STEP_MODE register settings
+    stepMode=STEP_SEL_1_16;
+    syncSelect=SYNC_SEL_16;
+    controlMode=VoltageControlMode; // Voltage or current (NB: some chips will generally support one or the other)
+    syncEnable=true;
+
+    // CONFIG register settings
+    oscillatorSelect=CONFIG_INT_16MHZ;
+    switchConfiguration=CONFIG_SW_HARD_STOP;
+    overCurrentDetection=CONFIG_OC_SD_ENABLE;
+
+    // Alarm Register Settings
+    alarmState.overCurrentEnabled=true;
+    alarmState.thermalShutdownEnabled=true;
+    alarmState.thermalWarningEnabled=true;
+    alarmState.underVoltageEnabled=true;
+    alarmState.stallDetectionAEnabled=true;
+    alarmState.stallDetectionBEnabled=true;
+    alarmState.switchTurnOnEnabled=true;
+    alarmState.badCommandEnabled=true;
+}
 
 void
 CommonConfig::set(CommsDriver &commsDriver, int motor)
@@ -634,83 +661,169 @@ std::string toString(const VoltageModeCfg &backEmfConfig)
 void
 VoltageModeCfg::readFromFile(const std::string &file)
 {
-    // Let's first try to parse the voltage mode config from the motor description
-    //StepperMotor motor = get
+    // Let's do this in json format (easier to parse)
+    pt::ptree root;
 
-    int helper = holdingKVal;
-    tryGetArgumentAsInt(file,"KVAL_HOLD",helper);
-    holdingKVal = helper;
+    try
+    {
+        pt::read_json(file,root);
 
-    helper = constantSpeedKVal;
-    tryGetArgumentAsInt(file,"KVAL_RUN",helper);
-    constantSpeedKVal = helper;
+        holdingKVal       = root.get<int>("holdingKVal");
+        constantSpeedKVal = root.get<int>("constantSpeedKVal");
+        accelStartingKVal = root.get<int>("accelStartingKVal");
+        decelStartingKVal = root.get<int>("decelStartingKVal");
 
-    helper = accelStartingKVal;
-    tryGetArgumentAsInt(file,"KVAL_ACC",helper);
-    accelStartingKVal = helper;
+        intersectSpeed  = root.get<int>("intersectSpeed");
+        startSlope      = root.get<int>("startSlope");
+        accelFinalSlope = root.get<int>("accelFinalSlope");
+        decelFinalSlope = root.get<int>("decelFinalSlope");
+        enableLowSpeedOptimisation = root.get<bool>("enableLowSpeedOptimisation");
 
-    helper = decelStartingKVal;
-    tryGetArgumentAsInt(file,"KVAL_DEC",helper);
-    decelStartingKVal = helper;
+        tryReadConfig<SlewRate>(root.get<std::string>("slewRate") ,getSlewRateBiMap(), slewRate);
+        tryReadConfig<VoltageCompensation>(root.get<std::string>("voltageCompensation"), getVoltageCompensationBiMap(), voltageCompensation);
+        tryReadConfig<PwmFrequencyMultiplier>(root.get<std::string>("pwmFrequencyMultiplier"),getPwmFrequencyMultiplierBiMap(), pwmFrequencyMultiplier);
+        tryReadConfig<PwmFrequencyDivider>(root.get<std::string>("pwmFrequencyDivider"),getPwmFrequencyDividerBiMap(), pwmFrequencyDivider);
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception thrown while trying to read VoltageModeCfg from file " << file << " with reason " << e.what();
+        throw;
+    }
+}
 
-    helper = intersectSpeed;
-    tryGetArgumentAsInt(file,"INT_SPEED",helper);
-    intersectSpeed = helper;
+VoltageModeCfg::VoltageModeCfg():
+    holdingKVal(0),
+    constantSpeedKVal(0),
+    accelStartingKVal(0),
+    decelStartingKVal(0),
+    intersectSpeed(0),
+    startSlope(0),
+    accelFinalSlope(0),
+    decelFinalSlope(0),
+    slewRate(CONFIG_SR_180V_us),
+    voltageCompensation(CONFIG_VS_COMP_DISABLE),
+    pwmFrequencyMultiplier(CONFIG_PWM_MUL_1),
+    pwmFrequencyDivider(CONFIG_PWM_DIV_1),
+    enableLowSpeedOptimisation(true)
+{    
+}
 
-    helper = startSlope;
-    tryGetArgumentAsInt(file,"ST_SLP",helper);
-    startSlope = helper;
-
-    helper = accelFinalSlope;
-    tryGetArgumentAsInt(file,"FN_SLP_ACC",helper);
-    accelFinalSlope = helper;
-
-    helper = decelFinalSlope;
-    tryGetArgumentAsInt(file,"FN_SLP_DEC",helper);
-    decelFinalSlope = helper;
-
-    tryReadConfig<SlewRate>(file, "SlewRate" ,getSlewRateBiMap(), slewRate);
-    tryReadConfig<VoltageCompensation>(file, "VoltageCompensation", getVoltageCompensationBiMap(), voltageCompensation);
-    tryReadConfig<PwmFrequencyMultiplier>(file, "PwmFrequencyMultiplier" ,getPwmFrequencyMultiplierBiMap(), pwmFrequencyMultiplier);
-    tryReadConfig<PwmFrequencyDivider>(file, "PwmFrequencyDivider" ,getPwmFrequencyDividerBiMap(), pwmFrequencyDivider);
+VoltageModeCfg::VoltageModeCfg(const std::string &file):
+    VoltageModeCfg()
+{
+    readFromFile(file);
 }
 
 void
 VoltageModeCfg::writeToFile(const std::string &cfgFilePath)
 {
-    assert(!"TODO - voltage mode cfg writing");
-    // TODO ! - careful we will need to not overwrite everything here.
+    pt::ptree root;
+
+    root.put("holdingKVal",holdingKVal);
+    root.put("constantSpeedKVal",constantSpeedKVal);
+    root.put("accelStartingKVal",accelStartingKVal);
+    root.put("decelStartingKVal",decelStartingKVal);
+
+    root.put("intersectSpeed",intersectSpeed);
+    root.put("startSlope",startSlope);
+    root.put("accelFinalSlope",accelFinalSlope);
+    root.put("decelFinalSlope",decelFinalSlope);
+
+    root.put("slewRate",toString(slewRate));
+    root.put("voltageCompensation",toString(voltageCompensation));
+    root.put("pwmFrequencyMultiplier",toString(pwmFrequencyMultiplier));
+    root.put("pwmFrequencyDivider",toString(pwmFrequencyDivider));
+    root.put("enableLowSpeedOptimisation",enableLowSpeedOptimisation);
+
+    // Open the file and write to json
+    std::ofstream outFile;
+    outFile.open(cfgFilePath);
+        //throw; // TODO - fix to real exception
+    pt::write_json(outFile,root);
 }
 
 void
 CommonConfig::readFromFile(const std::string &file)
 {
-    // Handle standard configuration parameters
-    tryGetArgumentAsInt(file,"FullStepThresholdSpeed",fullStepThresholdSpeed);
-    tryGetArgumentAsInt(file,"ThermalDriftCoefficient",thermalDriftCoefficient);
+    // Let's do this in json format (easier to parse)
+    pt::ptree root;
 
-    tryReadConfig<CurrentThreshold>(file, "OverCurrentThreshold", getCurrentThresholdBiMap(), overCurrentThreshold);
-    tryReadConfig<CurrentThreshold>(file, "StallThreshold", getCurrentThresholdBiMap(),stallThreshold);
-    tryReadConfig<StepMode>(file, "StepMode", getStepModeBiMap(),stepMode);
-    tryReadConfig<SyncSelect>(file, "SyncSelect", getSyncSelectBiMap(),syncSelect);
-    tryReadConfig<ControlMode>(file, "ControlMode",getControlModeBiMap(),controlMode);
-    tryReadConfig<OscillatorSelect>(file,"OscillatorSelect" ,getOscillatorSelectBiMap(),oscillatorSelect);
-    tryReadConfig<SwitchConfiguration>(file,"SwitchConfiguration" ,getSwitchConfigurationBiMap(), switchConfiguration);
-    tryReadConfig<OverCurrentDetection>(file,"OverCurrentDetection" ,getOverCurrentDetectionBiMap(), overCurrentDetection);
+    try
+    {
+        pt::read_json(file,root);
 
-    // Read Sync Enable
-    int syncEnableState = syncEnable;
-    tryGetArgumentAsInt(file, "SyncEnable" ,syncEnableState);
-    syncEnable = (bool)syncEnableState;
+        fullStepThresholdSpeed  = root.get<int>("fullStepThresholdSpeed");
+        thermalDriftCoefficient = root.get<int>("thermalDriftCoefficient");
 
-    // Parse Alarm State Config (if it exists)
-    //alarmState = getAlarmStateFromString(file);
+        tryReadConfig<CurrentThreshold>(root.get<std::string>("overCurrentThreshold"), getCurrentThresholdBiMap(), overCurrentThreshold);
+        tryReadConfig<CurrentThreshold>(root.get<std::string>("stallThreshold"), getCurrentThresholdBiMap(),stallThreshold);
+        tryReadConfig<StepMode>(root.get<std::string>("stepMode"), getStepModeBiMap(),stepMode);
+        tryReadConfig<SyncSelect>(root.get<std::string>("syncSelect"), getSyncSelectBiMap(),syncSelect);
+        tryReadConfig<ControlMode>(root.get<std::string>("controlMode"), getControlModeBiMap(),controlMode);
+        tryReadConfig<OscillatorSelect>(root.get<std::string>("oscillatorSelect"), getOscillatorSelectBiMap(),oscillatorSelect);
+        tryReadConfig<SwitchConfiguration>(root.get<std::string>("switchConfiguration"), getSwitchConfigurationBiMap(), switchConfiguration);
+        tryReadConfig<OverCurrentDetection>(root.get<std::string>("overCurrentDetection"), getOverCurrentDetectionBiMap(), overCurrentDetection);
+
+        // Read Sync Enable
+        syncEnable = root.get<bool>("syncEnable");
+
+        // Parse Alarm State Config (if it exists)
+        pt::ptree alarmRoot = root.get_child("alarmState");
+        alarmState.overCurrentEnabled = alarmRoot.get<bool>("overCurrentEnabled");
+        alarmState.thermalShutdownEnabled = alarmRoot.get<bool>("thermalShutdownEnabled");
+        alarmState.thermalWarningEnabled = alarmRoot.get<bool>("thermalWarningEnabled");
+        alarmState.underVoltageEnabled = alarmRoot.get<bool>("underVoltageEnabled");
+        alarmState.stallDetectionAEnabled = alarmRoot.get<bool>("stallDetectionAEnabled");
+        alarmState.stallDetectionBEnabled = alarmRoot.get<bool>("stallDetectionBEnabled");
+        alarmState.switchTurnOnEnabled = alarmRoot.get<bool>("switchTurnOnEnabled");
+        alarmState.badCommandEnabled = alarmRoot.get<bool>("badCommandEnabled");
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception caught whilst trying to read CommonConfig from file " << file << " with reason " << e.what() << std::endl;
+        throw;
+    }
 }
 
 void
 CommonConfig::writeToFile(const std::string &cfgFilePath)
 {
-    assert(!"TODO - commoncfg writing");
+    pt::ptree root;
+
+    root.put("fullStepThresholdSpeed",fullStepThresholdSpeed);
+    root.put("thermalDriftCoefficient",thermalDriftCoefficient);
+
+    root.put("overCurrentThreshold",toString(overCurrentThreshold));
+    root.put("stallThreshold",toString(stallThreshold));
+
+    // STEP_MODE register settings
+    root.put("stepMode",toString(stepMode));
+    root.put("syncSelect",toString(syncSelect));
+    root.put("controlMode",toString(controlMode)); // Voltage or current (NB: some chips will generally support one or the other)
+    root.put("syncEnable",syncEnable);
+
+    // CONFIG register settings
+    root.put("oscillatorSelect",toString(oscillatorSelect));
+    root.put("switchConfiguration",toString(switchConfiguration));
+    root.put("overCurrentDetection",toString(overCurrentDetection));
+
+    // Alarm Register Settings
+    pt::ptree alarmStateNode;
+    alarmStateNode.put("overCurrentEnabled",alarmState.overCurrentEnabled);
+    alarmStateNode.put("thermalShutdownEnabled",alarmState.thermalShutdownEnabled);
+    alarmStateNode.put("thermalWarningEnabled",alarmState.thermalWarningEnabled);
+    alarmStateNode.put("underVoltageEnabled",alarmState.underVoltageEnabled);
+    alarmStateNode.put("stallDetectionAEnabled",alarmState.stallDetectionAEnabled);
+    alarmStateNode.put("stallDetectionBEnabled",alarmState.stallDetectionBEnabled);
+    alarmStateNode.put("switchTurnOnEnabled",alarmState.switchTurnOnEnabled);
+    alarmStateNode.put("badCommandEnabled",alarmState.badCommandEnabled);
+    root.add_child("alarmState",alarmStateNode);
+
+    // Open the file and write to json
+    std::ofstream outFile;
+    outFile.open(cfgFilePath);
+        //throw; // TODO - fix to real exception
+    pt::write_json(outFile,root);
 }
 
 void
