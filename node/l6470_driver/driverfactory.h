@@ -1,9 +1,7 @@
 #pragma once
 
 #include "config.h"
-#include "powerstepdriver.h"
 #include "abstractdriver.h"
-#include "l6470driver.h"
 #include <memory>
 
 ///

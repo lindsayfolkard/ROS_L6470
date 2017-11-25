@@ -18,7 +18,8 @@ enum MotorDriverType
 {
     PowerStep01,
     L6470, // not checked as of yet
-    L6472  // not checked as of yet
+    L6472,  // not checked as of yet
+    Simulator
 };
 std::string toString(MotorDriverType motorDriverType);
 inline std::ostream& operator<<(std::ostream& os, MotorDriverType x)
@@ -27,16 +28,24 @@ inline std::ostream& operator<<(std::ostream& os, MotorDriverType x)
 }
 MotorDriverType motorDriverTypeFromString(const std::string &str);
 
+///
+/// \brief The CfgFile struct
+/// \abstract Contains links to required config files for a particular stepper motor
 struct CfgFile
 {
-    CfgFile(const std::string &stepperMotorFile,const std::string &customConfigFile, const std::string motorModel) :
+    CfgFile(const std::string motorModel, const std::string &stepperMotorFile, const std::string &customConfigFile="", const std::string voltageModeConfigFile="", const std::string currentModeConfigFile="") :
+        motorModel_(motorModel),
         stepperMotorFile_(stepperMotorFile),
-        customConfigFile_(customConfigFile),
-        motorModel_(motorModel){}
+        commonConfigFile_(customConfigFile),
+        voltageModeConfigFile_(voltageModeConfigFile),
+        currentModeConfigFile_(currentModeConfigFile)
+        {}
 
-    std::string stepperMotorFile_;
-    std::string customConfigFile_;
     std::string motorModel_;
+    std::string stepperMotorFile_;
+    std::string commonConfigFile_;      // if empty, default commonConfig is used
+    std::string voltageModeConfigFile_; // if empty, then voltage mode config is derived from the stepper motor properties
+    std::string currentModeConfigFile_; // if not empty, then the current mode config is derived from the stepper motor properties ???
 };
 
 struct OverallCfg
@@ -44,13 +53,15 @@ struct OverallCfg
     OverallCfg(const std::string &filePath);
     OverallCfg(const std::vector<CfgFile> &cfgFiles,
                MotorDriverType             controllerType,
-               CommsDebugLevel             commsDebugLevel);
+               CommsDebugLevel             commsDebugLevel = CommsDebugNothing,
+               int                         spiBus = 0);
 
     void writeToFile(const std::string &baseFile);
 
     std::vector<CfgFile>     cfgFiles_;
     MotorDriverType          controllerType_;
     CommsDebugLevel          commsDebugLevel_;
+    int                      spiBus_;
 };
 std::string toString(const OverallCfg &cfg);
 inline std::ostream& operator<<(std::ostream& os,const OverallCfg &x)
@@ -91,6 +102,7 @@ class VoltageModeCfg : public AbstractConfig,
 public:
 
     VoltageModeCfg();
+    //VoltageModeCfg()
     VoltageModeCfg(const std::string &file);
     
     virtual void set(CommsDriver &commsDriver, int motor) override;

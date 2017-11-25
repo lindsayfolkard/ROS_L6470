@@ -137,7 +137,7 @@ public:
     virtual void resetPos(int motor) override;
     virtual void resetDev(const std::vector <int> &motors) override;
 
-private:
+protected:
 
     void checkMotorIsValid(int motor);
 

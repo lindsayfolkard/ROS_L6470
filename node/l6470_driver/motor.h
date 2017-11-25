@@ -57,7 +57,10 @@ struct StepperMotor
 
     // Motor Back EMF constant
     double Ke; // V/Hz --> see http://www.st.com/content/ccc/resource/technical/document/application_note/e8/ca/05/a0/9e/ff/4e/69/DM00039787.pdf/files/DM00039787.pdf/jcr:content/translations/en.DM00039787.pdf
-		     // for instructions on how to calculate for a given motor.
+             // for instructions on how to calculate for a given motor.
+
+    double vbus; // Operating voltage of the stepper motor driver
+    double phaseCurrent; // phase current to be used when operating with stepper driver
 };
 std::string toString(const StepperMotor &x);
 inline std::ostream& operator<<(std::ostream& os,const StepperMotor &x)
@@ -69,7 +72,7 @@ inline std::ostream& operator<<(std::ostream& os,const StepperMotor &x)
 // backemf config to be used by the L6470 Driver
 // See : http://www.st.com/content/ccc/resource/technical/document/application_note/e8/ca/05/a0/9e/ff/4e/69/DM00039787.pdf/files/DM00039787.pdf/jcr:content/translations/en.DM00039787.pdf
 // page 15
-VoltageModeCfg BackEmfConfigFromStepper(const StepperMotor & stepperMotor , double vbus , double phaseCurrent );
+VoltageModeCfg BackEmfConfigFromStepper(const StepperMotor &stepperMotor);
 
 ///
 /// Individual Stepper Motor Structs for specific motors.

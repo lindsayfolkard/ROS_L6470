@@ -58,6 +58,8 @@ std::string toString(const StepperMotor &x)
     ss << "Phase Inductance : " << x.phaseInductance << " mH" << std::endl;
     ss << "BackEmf Constant : " << x.Ke << " V/Hz" << std::endl;
     ss << "Holding Torque   : " << x.holdingTorque << "Nm" << std::endl;
+    ss << "Vbus             : " << x.vbus << "V" << std::endl;
+    ss << "Phase Current    : " << x.phaseCurrent << "A" << std::endl;
     return ss.str();
 }
 
@@ -116,13 +118,13 @@ StepperMotor::writeToFile(const std::string &file)
     pt::write_json(outFile,root);
 }
 
-VoltageModeCfg BackEmfConfigFromStepper(const StepperMotor & stepperMotor , double vbus , double phaseCurrent )
+VoltageModeCfg BackEmfConfigFromStepper(const StepperMotor &stepperMotor)
 {
     VoltageModeCfg backEmfConfig;
 
     // Calculate the respective KVals
     const int kValMultiplier = 256; // 2^8
-    const uint8_t kVal = ((stepperMotor.phaseResistance*phaseCurrent)/vbus)*kValMultiplier;
+    const uint8_t kVal = ((stepperMotor.phaseResistance*stepperMotor.phaseCurrent)/stepperMotor.vbus)*kValMultiplier;
     assert(kVal > 0 && kVal < 0xFF);
     backEmfConfig.accelStartingKVal = kVal;
     backEmfConfig.holdingKVal = kVal;
@@ -135,10 +137,10 @@ VoltageModeCfg BackEmfConfigFromStepper(const StepperMotor & stepperMotor , doub
     backEmfConfig.intersectSpeed = ((4 * stepperMotor.phaseResistance)/(2 * M_PI * stepperMotor.phaseInductance)) * pow(2,26) * tTick;
 
     // Calculate the starting slope
-    backEmfConfig.startSlope = ((stepperMotor.Ke/4)/vbus) * pow(2,16);
+    backEmfConfig.startSlope = ((stepperMotor.Ke/4)/stepperMotor.vbus) * pow(2,16);
 
     // Calculate the Final Slope
-    const int finalSlope = ((((2 * M_PI * phaseCurrent) + stepperMotor.Ke)/4)/vbus) * pow(2,16);
+    const int finalSlope = ((((2 * M_PI * stepperMotor.phaseCurrent) + stepperMotor.Ke)/4)/stepperMotor.vbus) * pow(2,16);
     backEmfConfig.accelFinalSlope = finalSlope;
     backEmfConfig.decelFinalSlope = finalSlope;
 
