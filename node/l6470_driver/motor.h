@@ -38,7 +38,9 @@ struct StepperMotor
                  double            _phaseResistance,
                  double            _phaseInductance,
                  double            _holdingTorque,
-                 double            _ke);
+                 double            _ke,
+                 double            _vbus,
+                 double            _phaseCurrent);
 
     void writeToFile(const std::string &file);
 
@@ -94,7 +96,9 @@ struct Stepper_57H703 : public StepperMotor
         0.9,
         3.4,
         2.012,
-        0.073){}
+        0.073,
+        24,
+        2.5){}
 };
 
 /// Model  :
@@ -110,7 +114,9 @@ struct Stepper_42BYGHW811 : public StepperMotor
        1.25,
        1.8,
        0.48,
-       0.014){}
+       0.014,
+       24,
+       2.5){}
 };
 
 /// Model  :
@@ -126,6 +132,8 @@ struct Stepper_57BYGH51 : public StepperMotor
         3.5,
         12,
         1.0,
-        0.054){}
+        0.054,
+        24,
+        2.5){}
 };
 

@@ -1,6 +1,7 @@
 #include "l6470_node.hpp"
 #include "l6470_driver/types.h"
 #include "l6470_driver/commands.h"
+#include "l6470_driver/driverfactory.h"
 #include <iostream> // TODO - lets remove and just use ros logging output (much richer)
 #include <stdexcept>
 #include <string>
@@ -43,53 +44,13 @@ L6470Node::L6470Node():
     stopSrv_ = this->create_service<l6470_srvs::srv::Stop> ("stop",d);
     std::cout << "Created L6470 Node!" << std::endl;
 
-    // Fuck it Im lazy and don't want to think too hard about how to configure the boards
-//    //const std::string masterConfig = "/home/lindsay/stepper_config";
-//    const std::vector <std::string>stepperConfigs = {"motor1.cfg","motor2.cfg","motor3.cfg"};
-//    const std::string filePath = "/home/lindsay/git/src/ROS_L6470/node/configs/";
-
-//    // Create the config vector
-//    const int vBus = 24;
-//    const double ratedCurrent=3.75;
-    
-//    std::vector<StepperMotor> motors;
-//    //std::vector<Config>       cfgs;
-
-//    for (const auto &cfgFile : stepperConfigs)
-//    {
-//        // Open the Config
-//        std::ifstream inFile;
-//	inFile.open(filePath+cfgFile,std::ifstream::in);
-//        if (!inFile.is_open())
-//	{
-//           std::cout << "Unable to open cfg file " << filePath+cfgFile << std::endl;
-//	   continue;
-//	}
-//        std::string str((std::istreambuf_iterator<char>(inFile)),
-//                         std::istreambuf_iterator<char>());
-//	std::cout << "Opened " << filePath+cfgFile << " with data --> " << str << std::endl;
-
-//        // Try to parse the Config
-//        //Config config = cfgFromString(str);
-        
-//        // Parse the motor config
-//        //StepperMotor motorCfg = stepperFromString(str);
-//        //VoltageModeCfg backEmfCfg = BackEmfConfigFromStepper(motorCfg,vBus,ratedCurrent);
-//        //config.backEmfConfig = backEmfCfg;
-
-//        // Add to the vector
-//        motors.push_back(motorCfg);
-//        //cfgs.push_back(config);
-
-//	// Let' print out ot make rusre vereyjhting makes sense
-//        std::cout << "Motor " << motorCfg << std::endl;
-//        //std::cout << "Config " << cfgFile << " : " << config << std::endl;
-//    }
-    
-    // Let's instantiate the driver
-    //const int chipSelectPin = 0; // huh
-    //const int resetPin = 0; // Is it even needed
-    //driver_.reset(new MultiDriver(motors,configs,chipSelectPin,resetPin));
+    // Instantiate the Stepper Driver from the factory
+    const std::string overallCfgFile = "~/dspin_stepper_configs/ros_overall_config.txt"; // TODO - figure out where this file can be stored/deployed nicely
+    std::cout << "Try to instantiate stepper motor driver with ros_overall_config file from " << overallCfgFile << std::endl;
+    OverallCfg overallCfg(overallCfgFile);
+    driver_ = factoryMakeDriver(overallCfg);
+    assert(driver_ || !"driver is null pointer!" );
+    std::cout << "Instantiated " << overallCfg.controllerType_ << " stepper motor driver with " << overallCfg.cfgFiles_.size() << " daisy chained steppers" << std::endl;
 }
 
 L6470Node::~L6470Node()

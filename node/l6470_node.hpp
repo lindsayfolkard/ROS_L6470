@@ -9,9 +9,8 @@
 
 // Includes
 
-// L6470 Driver
-//#include "l6470_driver/multidriver.h"
-#include "l6470_driver/basedriver.h"
+// Driver
+#include "l6470_driver/abstractdriver.h"
 
 // Ros 2 Libraries
 #include "rclcpp/rclcpp.hpp"
@@ -68,8 +67,8 @@ private:
   // Wall Timers
   rclcpp::timer::TimerBase::SharedPtr timer_; // I prefer if there is really only one task that talks to the controller
 
-  // L6470 Multi Driver
-  //std::unique_ptr<MultiDriver> driver_;
+  // Stepper Motor Driver
+  std::unique_ptr<AbstractDriver> driver_;
 
 };
 

@@ -3,6 +3,10 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
+AbstractConfig::~AbstractConfig(){}
+
+WriteableConfig::~WriteableConfig(){}
+
 std::string toString(MotorDriverType motorDriverType)
 {
     switch (motorDriverType)

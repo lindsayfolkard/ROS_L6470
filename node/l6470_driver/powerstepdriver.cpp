@@ -2,17 +2,16 @@
 
 PowerStepCfg::PowerStepCfg (const CfgFile &cfgFile)
 {
-//    if (cfgFile.commonConfigFile_!="")
-//        commonCfg_ = CommonConfig(cfgFile.commonConfigFile_);
+    if (cfgFile.commonConfigFile_!="")
+        commonCfg_ = CommonConfig(cfgFile.commonConfigFile_);
 
-//    if (cfgFile.voltageModeConfigFile_ != "")
-//        voltageModeCfg_ = VoltageModeCfg(cfgFile.voltageModeConfigFile_);
-//    else if (cfgFile.stepperMotorFile_ != "")
-//        voltageModeCfg_ = BackEmfConfigFromStepper(StepperMotor(cfgFile.stepperMotorFile_));
+    if (cfgFile.voltageModeConfigFile_ != "")
+        voltageModeCfg_ = VoltageModeCfg(cfgFile.voltageModeConfigFile_);
+    else if (cfgFile.stepperMotorFile_ != "")
+        voltageModeCfg_ = BackEmfConfigFromStepper(StepperMotor(cfgFile.stepperMotorFile_));
 
-//    if (cfgFile.currentModeConfigFile_ != "")
-//        currentModeCfg_ = CurrentModeCfg(cfgFile.currentModeConfigFile_);
-//
+    //if (cfgFile.currentModeConfigFile_ != "")
+    //    currentModeCfg_ = CurrentModeCfg(cfgFile.currentModeConfigFile_);
 }
 
 void

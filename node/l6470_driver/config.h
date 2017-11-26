@@ -5,12 +5,15 @@
 
 // Abstract Classes for passing configs around
 class AbstractConfig {
+public:
+    virtual ~AbstractConfig() = 0;
     virtual void set(CommsDriver &commsDriver, int motor) = 0;
     virtual void readFromFile(const std::string &filePath) = 0;
 };
 
 class WriteableConfig {
-
+public:
+    virtual ~WriteableConfig() = 0;
     virtual void writeToFile(const std::string &cfgFilePath) = 0;
 };
 

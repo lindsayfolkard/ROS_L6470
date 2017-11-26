@@ -18,9 +18,8 @@ class AbstractDriver
     /// Constructors
     /////////////////////////
 
-    //AbstractDriver(const std::vector<StepperMotor> &motors, int chipSelectPin, int resetPin, int busyPin = -1 ,CommsDebugLevel commsDebugLevel = CommsDebugNothing);
+    virtual ~AbstractDriver(){}
 
-    virtual ~AbstractDriver() = 0;
     /////////////////////////
     /// Status Commands
     /////////////////////////
@@ -122,5 +121,3 @@ class AbstractDriver
     virtual void resetDev(const std::vector <int> &motors) = 0;
 
 };
-
-

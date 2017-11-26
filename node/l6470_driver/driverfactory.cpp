@@ -58,5 +58,5 @@ std::unique_ptr<AbstractDriver> factoryMakeDriver(const OverallCfg &overallCfg)
         assert(!"Invalid controller type in driverfactory.cpp factoryMakeDriver");
     }
 
-    return driver;
+    return std::move(driver);
 }

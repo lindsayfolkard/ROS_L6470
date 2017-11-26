@@ -145,8 +145,6 @@ protected:
     const MotorDriverType           motorDriverType_;
     CommsDebugLevel                 commsDebugLevel_;
     std::unique_ptr<CommsDriver>    commsDriver_;
-
-
 };
 
 /// #TODO - make pin mapping dynamic as we cannot know in advance how someone would use it in reality.

@@ -37,7 +37,7 @@ StepperMotor::StepperMotor(StepperMotorSize  _motorSize,
                            double            _phaseResistance,
                            double            _phaseInductance,
                            double            _holdingTorque,
-                           double            _ke):
+                           double            _ke, double _vbus, double _phaseCurrent):
     motorSize(_motorSize),
     motorModel(_motorModel),
     stepAngle(_stepAngle),
@@ -45,7 +45,9 @@ StepperMotor::StepperMotor(StepperMotorSize  _motorSize,
     phaseResistance(_phaseResistance),
     phaseInductance(_phaseInductance),
     holdingTorque(_holdingTorque),
-    Ke(_ke){}
+    Ke(_ke),
+    vbus(_vbus),
+    phaseCurrent(_phaseCurrent){}
 
 std::string toString(const StepperMotor &x)
 {
@@ -82,13 +84,15 @@ StepperMotor::StepperMotor(const std::string &cfg)
     {
         pt::read_json(cfg,root);
 
-        motorSize  = getStepperMotorSizeBiMap().right.at(root.get<std::string>("motorSize"));
-        motorModel = root.get<std::string>("motorModel");
-        stepAngle  = root.get<double>("stepAngle");
+        motorSize       = getStepperMotorSizeBiMap().right.at(root.get<std::string>("motorSize"));
+        motorModel      = root.get<std::string>("motorModel");
+        stepAngle       = root.get<double>("stepAngle");
         phaseResistance = root.get<double>("phaseResistance");
         phaseInductance = root.get<double>("phaseInductance");
         Ke              = root.get<double>("backEmfConstant");
         holdingTorque   = root.get<double>("holdingTorque");
+        vbus            = root.get<double>("vbus");
+        phaseCurrent    = root.get<double>("phaseCurrent");
     }
     catch (std::exception &e)
     {
@@ -110,6 +114,8 @@ StepperMotor::writeToFile(const std::string &file)
     root.put("phaseInductance",phaseInductance);
     root.put("backEmfConstant",Ke);
     root.put("holdingTorque",holdingTorque);
+    root.put("vbus",vbus);
+    root.put("phaseCurrent",phaseCurrent);
 
     // Open the file and write to json
     std::ofstream outFile;

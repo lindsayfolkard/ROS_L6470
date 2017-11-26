@@ -108,8 +108,9 @@ void SimDriver::setMinSpeed(const std::map <int,float> &minSpeeds){
 void SimDriver::setMinSpeed(float stepsPerSecond , int motor){
 }
 
-ProfileCfg getProfileCfg(int motor){
-
+ProfileCfg
+SimDriver::getProfileCfg(int motor){
+    return ProfileCfg();
 }
 
 // void setFullSpeed(float stepsPerSecond){ }
