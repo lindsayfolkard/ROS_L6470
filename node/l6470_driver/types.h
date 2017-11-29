@@ -345,7 +345,7 @@ struct Status
     MotorStatus        motorStatus;
 
     // Speed and Position
-    int32_t position; // steps from home
+    int32_t  position; // steps from home
     uint32_t speed; // steps/s
 };
 std::string toString (Status &status);
