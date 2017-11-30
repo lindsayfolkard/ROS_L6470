@@ -93,7 +93,6 @@ public:
     // Config Register
     bool                  predictiveCurrentControlEnabled;
     TargetSwitchingPeriod targetSwitchingPeriod;
-    SwitchConfiguration   switchConfiguration;
     bool                  enableTorqueRegulation;
     bool                  externalClockEnabled;
 
