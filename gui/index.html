@@ -32,7 +32,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
     <a class="navbar-brand" href="#">
     <img src="img/white-stepper-motor-512.png" width="30" height="30" class="d-inline-block align-top" alt="">
-    <b> ROS STSPIN</b>
+    <b id="ros-id"> ROS STSPIN</b>
     </a>
     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -416,21 +416,22 @@
   </div>
 
   <!-- Bootstrap core JavaScript-->
-  <script src="./js/jquery.min.js"></script>
+  <script>window.$ = window.jQuery = require('./js/jquery.min.js');</script>
+  <!--<script src="./js/jquery.min.js"></script> -->
   <script src="./js/bootstrap.bundle.min.js"></script>
   <!-- Core plugin JavaScript-->
   <script src="./js/jquery.easing.min.js"></script>
   <!-- Page level plugin JavaScript-->
-  <script src="./js/Chart.min.js"></script>
+<!--  <script src="./js/Chart.min.js"></script>-->
   <script src="./js/jquery.dataTables.js"></script>
   <script src="./js/dataTables.bootstrap4.js"></script>
   <!-- Custom scripts for all pages-->
   <script src="./js/sb-admin.min.js"></script>
   <!-- Custom scripts for this page-->
   <script src="./js/sb-admin-datatables.min.js"></script>
-  <script src="./js/sb-admin-charts.min.js"></script>
-
+<!--  <script src="./js/sb-admin-charts.min.js"></script>-->
   <script src="js/jquery.AshAlom.gaugeMeter-2.0.0.min.js"></script>
+  <script src="./js/ros_js/subscriptions.js"></script>
   <!------------ End Dashboard Page ---------------->
 
   <!------------ Start of Control Page -------------->
