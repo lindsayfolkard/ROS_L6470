@@ -1,0 +1,1769 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AngularElectronFuck</title>
+  <base href="./">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Lindsay Folkard">
+    <title>STSPIN Stepper Control ROS2.0 </title>
+
+    <!-- Bootstrap core CSS-->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template-->
+    <link href="assets/css/font-awesome.css" rel="stylesheet" type="text/css">
+
+    <!-- Page level plugin CSS-->
+    <link href="assets/css/dataTables.bootstrap4.css" rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="assets/css/sb-admin.css" rel="stylesheet">
+
+    <link href="assets/css/gauge.css" rel="stylesheet">
+    <link href="assets/css/led.css" rel="stylesheet">
+    <link href="assets/css/switch.css" rel="stylesheet">
+</head>
+
+<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+  <!-- Navigation-->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+    <a class="navbar-brand" href="#">
+    <img src="img/white-stepper-motor-512.png" width="30" height="30" class="d-inline-block align-top" alt="">
+    <b id="ros-id"> ROS STSPIN</b>
+    </a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+          <a class="nav-link" onclick="return show('dashboard_page');">
+            <i class="fa fa-fw fa-dashboard"></i>
+            <span class="nav-link-text">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Plots">
+          <a class="nav-link" onclick="return show('control_page');">
+            <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">Control</span>
+          </a>
+        </li>
+
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Config">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseConfig" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-wrench"></i>
+            <span class="nav-link-text">Config</span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="collapseConfig">
+            <li>
+              <a onclick="return show('driver_config_page');">Driver Config</a>
+            </li>
+            <!-- <li>
+              <a onclick="return show('stepper_library_page');">Stepper Library</a>
+            </li> -->
+            <li>
+              <a onclick="return show('joystick_config_page');">Joystick Config</a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Resources">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseResources" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-book"></i>
+            <span class="nav-link-text">Resources</span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="collapseResources">
+            <li>
+              <a onclick="return show('what_is_this_page');">What is this ?</a>
+            </li>
+            <li>
+              <a onclick="return show('setup_guide');">Setup Guide</a>
+            </li>
+            <li>
+              <a href="https://github.com/lindsayfolkard/ROS_L6470" target="_blank">Github</a>
+            </li>
+          </ul>
+        </li>
+
+      </ul>
+      <ul class="navbar-nav sidenav-toggler">
+        <li class="nav-item">
+          <a class="nav-link text-center" id="sidenavToggler">
+            <i class="fa fa-fw fa-angle-left"></i>
+          </a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav ml-auto">
+        <button type="button" class="btn btn-primary"><i class="fa fa-fw fa-pause"></i></button>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle mr-lg-2" id="alertsDropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-fw fa-bell"></i>
+            <span class="d-lg-none">Alerts
+              <span class="badge badge-pill badge-warning">6 New</span>
+            </span>
+            <span class="indicator text-warning d-none d-lg-block">
+              <i class="fa fa-fw fa-circle"></i>
+            </span>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="alertsDropdown">
+            <h6 class="dropdown-header">New Alerts:</h6>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">
+              <span class="text-success">
+                <strong>
+                  <i class="fa fa-long-arrow-up fa-fw"></i>Status Update</strong>
+              </span>
+              <span class="small float-right text-muted">11:21 AM</span>
+              <div class="dropdown-message small">This is an automated server response message. All systems are online.</div>
+            </a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">
+              <span class="text-danger">
+                <strong>
+                  <i class="fa fa-long-arrow-down fa-fw"></i>Status Update</strong>
+              </span>
+              <span class="small float-right text-muted">11:21 AM</span>
+              <div class="dropdown-message small">This is an automated server response message. All systems are online.</div>
+            </a>
+            <div class="dropdown-divider"></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-------------- Dasboard Page ------------------->
+  <div class="content-wrapper hideable_content_page" id="dashboard_page" style="display:none">
+    <div class="container-fluid">
+      <!-- Breadcrumbs-->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active"><strong>
+          <i class="fa fa-desktop fa-fw"></i> System Overview </strong>
+        </li>
+      </ol>
+
+      <div class="row">
+
+        <div class="col-md-4 col-sm-5 mb-3">
+          <div class="card border-success mr-2 ml-2 mt-2 mb-2">
+            <div class="card-header text-white bg-success o-hidden h-10">
+              <img src="img/white-stepper-motor-512.png" width="20" height="20" class="d-inline-block align-top" alt="">
+              <b>ROS NODE</b>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-5">
+                  <div class="row">
+                    <img src="img/powerstep01.jpg" width="120" height="120" class="rounded mx-auto d-block">
+                  </div>
+                  <div class="row">
+                    <b align="middle" class="mt-3 mx-auto d-block">PowerStep01</b>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="row border border-success rounded mb-2 mt-0 pb-2 pt-3 pl-2 pr-2">
+                    <span class="switch">
+                      <input type="checkbox" class="switch" id="switch-id" checked="1">
+                      <label for="switch-id"><b>Node Enabled</b></label>
+                    </span>
+                  </div>
+                  <div class="row pt-2 pb-0 mb-0">
+                    <div class="card border-success w-100" style="max-width: 20rem;">
+                      <div class="card-header"><b>Node State</b></div>
+                      <div class="card-body text-success">
+                        <h4 class="card-title">Running (Ok)</h4>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Example Notifications Card-->
+        <div class="col-md-8 col-sm-5 mb-3 ml-0">
+          <div class="card border-success mr-2 ml-2 mt-2 mb-2">
+            <div class="card-header text-white bg-info">
+              <i class="fa fa-bell-o"></i> <b>ROS Logs</b></div>
+            <div class="list-group list-group-flush small">
+              <a class="list-group-item list-group-item-action" href="#">
+                <div class="media">
+                  <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/45x45" alt="">
+                  <div class="media-body">
+                    <strong>Warn</strong> motor2 appears to have stopped ?
+                    <div class="text-muted smaller">Today at 5:43 PM - 5m ago</div>
+                  </div>
+                </div>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#">
+                <div class="media">
+                  <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/45x45" alt="">
+                  <div class="media-body">
+                    <strong>Samantha King</strong>sent you a new message!
+                    <div class="text-muted smaller">Today at 4:37 PM - 1hr ago</div>
+                  </div>
+                </div>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#">
+                <div class="media">
+                  <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/45x45" alt="">
+                  <div class="media-body">
+                    <strong>Jeffery Wellings</strong>added a new photo to the album
+                    <strong>Beach</strong>.
+                    <div class="text-muted smaller">Today at 4:31 PM - 1hr ago</div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- End of Feed -->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active"><strong>
+          <i class="fa  fa-gears fa-fw"></i> Stepper Motor Status </strong></li>
+      </ol>
+
+      <!-- Start of Motor 1 Dashboard-->
+      <div class="row">
+        <div class="col-lg-4 col-sm-8 mb-3">
+          <div class="card border-primary" style="max-width: 50rem;">
+            <div class="card-header text-white bg-primary o-hidden h-10">
+              <img src="img/white-stepper-motor-512.png" width="20" height="20" class="d-inline-block align-top" alt="">
+              <b>Motor 1</b>
+            </div>
+            <div class="card-body pl-0 pr-0">
+              <div class="container">
+                <div class="row">
+                  <div class="col-5">
+                    <div class="card border-primary mb-3" style="max-width: 20rem;">
+                      <div class="card-header">
+                        <b>NEMA17</b>
+                      </div>
+                      <div class="card-body">
+                        <img src="img/nema17.jpg" width="125" height="175" class="rounded mx-auto d-block">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-7">
+                    <div class="row pb-0 mb-0">
+                      <div class="col-6 ml-0 pl-0 pr-0 pb-0 mb-0">
+                        <div class="GaugeMeter mx-auto d-block" id="GaugeMeter_Speed" data-percent="45" data-theme="light-blue" data-style="Arch" data-width="15" data-size="145" data-text="600" data-stripe="1" data-label="steps/s "></div>
+                      </div>
+                      <div class="col-6 ml-0 pl-0 pr-0 pb-0 mb-0">
+                        <div class="GaugeMeter" id="GaugeMeter_Position" data-percent="75" data-theme="light-blue" data-style="Arch" data-width="15" data-size="145" data-text="200" data-stripe="1" data-label="steps"></div>
+                      </div>
+
+                    </div>
+
+                    <div class="row">
+
+                      <div class="col-5 pl-2 ml-3 pb-0 mb-0">
+                        <img src="img/blue_cw.gif" width="85" height="85" class="mx-auto d-block align-middle" alt="">
+                        <div align="middle" class="mx-auto d-block"><b> CW </b></div>
+                      </div>
+                      <div class="col-5 pl-2 ml-3 pb-0 mb-0">
+                        <div class="row pl-0 pb-1 pt-2 mb-1 pr-0">
+                          <!-- <div class="led-box"> -->
+                          <div class="led-yellow-off ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">Switch</b>
+                        </div>
+                        <div class="row pl-0 pb-1 pt-3 mb-1">
+                          <button type="button" class="btn btn-outline-primary mx-auto d-block" data-toggle="collapse" data-target="#collapseExample" title="Popover title"><div class="led-green btn btn-outline-primary"  id="status_led"></div><b class="pl-2">Status</b></button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="card-body-icon">
+
+              </div> -->
+              <!-- <div class="mr-6">26 New Messages!</div> -->
+            </div>
+            <div class="collapse" id="collapseExample">
+              <div class="card border-info mr-2 ml-2 mt-2 mb-2">
+                <div class="card-header">
+                  General Status
+                </div>
+                <div class="card-body">
+
+                  <div class="row pt-2 pb-2">
+                    <div class="col">
+                      <div class="row">
+                        <!-- <div class="led-box"> -->
+                        <div class="led-yellow-off ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">HighZ</b>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="row">
+                        <!-- <div class="led-box"> -->
+                        <div class="led-yellow-off ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">Busy</b>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row pt-2 pb-2">
+                    <div class="col">
+                      <div class="row">
+                        <!-- <div class="led-box"> -->
+                        <div class="led-yellow-off ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">SwitchClosed</b>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="row">
+                        <!-- <div class="led-box"> -->
+                        <div class="led-yellow-off ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">SwitchEvent</b>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row pt-2 pb-2">
+                    <div class="col">
+                      <div class="row">
+                        <!-- <div class="led-box"> -->
+                        <div class="led-yellow-off ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">StepClock</b>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="card border-danger mr-2 ml-2 mt-2 mb-2">
+                <div class="card-header">
+                  Warnings
+                </div>
+                <div class="card-body">
+                  <div class="row pt-2 pb-2">
+                    <div class="col">
+                      <div class="row">
+                        <!-- <div class="led-box"> -->
+                        <div class="led-red ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">LastCommandSuccess</b>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="row">
+                        <!-- <div class="led-box"> -->
+                        <div class="led-green ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">LastCommandValid</b>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row pt-2 pb-2">
+                    <div class="col">
+                      <div class="row">
+                        <!-- <div class="led-box"> -->
+                        <div class="led-green ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">ThermalWarning</b>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="row">
+                        <!-- <div class="led-box"> -->
+                        <div class="led-green ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">ThermalShutdown</b>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row pt-2 pb-2">
+                    <div class="col">
+                      <div class="row">
+                        <!-- <div class="led-box"> -->
+                        <div class="led-green ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">StallPhaseA</b>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="row">
+                        <!-- <div class="led-box"> -->
+                        <div class="led-green ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">StallPhaseB</b>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row pt-2 pb-2">
+                    <div class="col">
+                      <div class="row">
+                        <!-- <div class="led-box"> -->
+                        <div class="led-green ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">OverCurrent</b>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- <a class="card-footer text-white clearfix small z-1" href="#">
+              <span class="float-left">View Details</span>
+              <span class="float-right">
+                <i class="fa fa-angle-right"></i>
+              </span>
+            </a> -->
+          </div>
+        </div>
+      </div>
+      <!-- End of Motor 1 Dashboard-->
+
+    </div>
+
+    <app-root></app-root>
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script>window.$ = window.jQuery = require('./assets/js/jquery.min.js');</script>
+  <!--<script src="./js/jquery.min.js"></script> -->
+  <script src="assets/js/bootstrap.bundle.min.js"></script>
+  <!-- Core plugin JavaScript-->
+  <script src="assets/js/jquery.easing.min.js"></script>
+  <!-- Page level plugin JavaScript-->
+<!--  <script src="./js/Chart.min.js"></script>-->
+  <script src="assets/js/jquery.dataTables.js"></script>
+  <script src="assets/js/dataTables.bootstrap4.js"></script>
+  <!-- Custom scripts for all pages-->
+  <script src="assets/js/sb-admin.min.js"></script>
+  <!-- Custom scripts for this page-->
+  <script src="assets/js/sb-admin-datatables.min.js"></script>
+<!--  <script src="./js/sb-admin-charts.min.js"></script>-->
+  <script src="assets/js/jquery.AshAlom.gaugeMeter-2.0.0.min.js"></script>
+<!--  <script src="./js/ros_js/subscriptions.js"></script>-->
+  <!------------ End Dashboard Page ---------------->
+
+  <!------------ Start of Control Page -------------->
+  <div class="content-wrapper hideable_content_page" id="control_page" style="display:none">
+    <div class="container-fluid">
+      <!-- Breadcrumbs-->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active"><strong>
+          <i class="fa fa-desktop fa-fw"></i> Control </strong>
+        </li>
+      </ol>
+
+      <!-- Start of Motor 1 Dashboard-->
+      <div class="card row border border-primary ml-3 mr-3 pl-0 pr-0 mb-2">
+
+        <!-- Start of motor 1 header -->
+        <div class="card-header row rounded text-white bg-primary o-hidden pb-2 mb-0 pt-2  pl-1 ml-0 pr-1 w-100" data-toggle="collapse" data-target="#collapseBodyControl" aria-expanded="false" aria-controls="collapseBody">
+          <img src="img/white-stepper-motor-512.png" width="20" height="20" class="d-inline-block align-top pb-0 mb-0 ml-4 mt-0" alt="">
+          <b class="ml-2 mt-0"> Motor 1</b>
+        </div>
+        <!-- End of motor 1 header -->
+
+        <!-- Start of Card Body-->
+        <div class="card-body pl-0 pr-0 collapse" id="collapseBodyControl">
+
+            <div class="row mt-0 pt-0 ml-0 pl-0">
+
+              <!-- State -->
+              <div class="col-3 border border-primary rounded ml-0 pl-0 pr-0 ml-1 mr-0">
+
+                <div class="row text-primary text-center mx-auto d-block pl-0 pr-0 ml-0 mr-0">
+                  <strong>Motor State</strong>
+                </div>
+                <div class="row pb-0 mb-0 ml-0 mr-0 pl-0 pr-0">
+                  <div class="col-6 ml-0 pl-0 pr-0 pb-0 mb-0">
+                    <div class="GaugeMeter mx-auto d-block" id="GaugeMeter_Speed" data-percent="45" data-theme="light-blue" data-style="Arch" data-width="15" data-size="145" data-text="600" data-stripe="1" data-label="steps/s "></div>
+                  </div>
+                  <div class="col-6 ml-0 pl-0 pr-0 pb-0 mb-0">
+                    <div class="GaugeMeter" id="GaugeMeter_Position" data-percent="75" data-theme="light-blue" data-style="Arch" data-width="15" data-size="145" data-text="200" data-stripe="1" data-label="steps"></div>
+                  </div>
+
+                </div>
+
+                <div class="row">
+
+                  <div class="col-5 pl-2 ml-3 pb-0 mb-0">
+                    <img src="img/blue_cw.gif" width="65" height="65" class="mx-auto d-block align-middle" alt="">
+                    <div align="middle" class="mx-auto d-block"><b> CW </b></div>
+                  </div>
+                  <div class="col-5 pl-2 ml-3 pb-0 mb-0">
+                    <div class="row pl-0 pb-1 pt-2 mb-1 pr-0 pb-0">
+                      <!-- <div class="led-box"> -->
+                      <div class="led-yellow-off ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">Switch</b>
+                    </div>
+                    <div class="row pl-0 pb-1 pt-1 ml-0 mb-0 mt-0">
+                      <button type="button" class="btn btn-outline-primary mx-auto d-block" data-toggle="collapse" data-target="#collapseExample" title="Popover title"><div class="led-green btn btn-outline-primary"  id="status_led"></div><b class="pl-2">Status</b></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End of State -->
+
+              <!-- Stop Commands -->
+              <div class="col-1 pt-0 mt-0 mr-2 pr-0 ml-0">
+                <div class="card border-primary mt-0 pt-0 mb-0" style="max-width: 20rem;">
+                  <div class="card-body mt-0 pt-0 pb-2 pl-2 pr-2">
+                    <div class="row text-center mx-auto d-block text-primary pt-0 mb-2">
+                      <strong>Stop</strong>
+                    </div>
+
+                    <div class="row mb-3 w-100 mx-auto d-block">
+                      <button type="button" class="btn btn-outline-danger w-100">Hard Stop</button>
+                    </div>
+
+                    <div class="row mb-3 w-100 mx-auto d-block">
+                      <button type="button" class="btn btn-outline-warning w-100">Soft Stop</button>
+                    </div>
+
+                    <div class="row mb-3 w-100 mx-auto d-block">
+                      <button type="button" class="btn btn-outline-success w-100">HardHiZ</button>
+                    </div>
+
+                    <div class="row mb-3 w-100 mx-auto d-block">
+                      <button type="button" class="btn btn-outline-info w-100">SoftHiZ</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End Of Stop Commands -->
+
+              <!-- Profile -->
+              <div class="col-2 pr-0 pl-0 ml-0 mr-2">
+                <div class="row mb-2 w-100 mx-auto d-block border border-primary rounded">
+                  <div class="row text-center mx-auto d-block text-primary">
+                    <strong>Profile</strong>
+                  </div>
+                  <!-- <div class="row form-group ml-1 mr-1"> -->
+                  <div class="row ml-2 pl-0">
+                    <div class="col-5 ml-0 pl-0 mr-0 pr-0">
+                      <label for="exampleInputEmail1" class="pb-0 mb-0"><b>Accel</b></label>
+                      <input type="scientific" class="form-control" id="goToPosition" placeholder="i.e 1000">
+                    </div>
+                    <div class="col-5 ml-2 pl-0 mr-0 pr-0">
+                      <label for="exampleInputEmail1" class="pb-0 mb-0"><b>Decel</b></label>
+                      <input type="scientific" class="form-control" id="goToPosition" placeholder="i.e 1000">
+                    </div>
+                  </div>
+                  <div class="row mt-2 ml-2 pl-0">
+                    <div class="col-5 ml-0 pl-0 pr-0 mr-0">
+                      <label for="exampleInputEmail1" class="pb-0 mb-0"><b>Min Speed</b></label>
+                      <input type="scientific" class="form-control" id="goToPosition" placeholder="i.e 1000">
+                    </div>
+                    <div class="col-5 ml-2 pl-0 mr-0 pr-0">
+                      <label for="exampleInputEmail1" class="pb-0 mb-0"><b>Max Speed</b></label>
+                      <input type="scientific" class="form-control" id="goToPosition" placeholder="i.e 1000">
+                    </div>
+                  </div>
+                  <div class="row mt-3 mb-2 ml-2 mr-2">
+                    <div class="row mb-2 w-100 mx-auto d-block">
+                      <button type="button" class="btn btn-outline-success w-100">Set Profile</button>
+                    </div>
+                  </div>
+                  <!-- </div> -->
+
+                </div>
+              </div>
+              <!-- End of Profile -->
+
+              <!-- Movement Commands -->
+              <div class="col pr-0 pt-0 mt-0 ml-0 mr-4 pl-0 border border-primary rounded">
+                <!-- <div class="card border-primary mt-0 pt-0 mb-0 ml-0 w-100" style="max-width: 20rem;"> -->
+                  <div class="card-body mt-0 pt-0 pb-2 mr-0 pr-0 ml-0 pl-3">
+                    <div class="row text-center mx-auto d-block text-primary pt-0 mb-2">
+                      <strong>Movement Commands</strong>
+                    </div>
+                  <div class="row mr-0 pr-0">
+
+                    <div class="col-5 mr-0 pr-0">
+                      <!-- Go to Position Command -->
+                      <div class="row mb-2 w-100 mx-auto d-block border border-primary rounded">
+                        <div class="row text-center mx-auto d-block text-primary">
+                          Go To Position
+                        </div>
+                        <div class="row form-group ml-1 mr-1">
+                          <div class="col-6 mr-0 pr-0 pl-1">
+                            <label for="exampleInputEmail" class="pb-0 mb-0"><b>Position</b></label>
+                            <input type="scientific" class="form-control" id="goToPosition" placeholder="i.e 1000">
+                          </div>
+                          <div class="col-2 align-bottom mt-4">
+                            <button type="button" class="btn btn-outline-success">Go</button>
+                          </div>
+                        </div>
+
+                      </div>
+                      <!-- End Go To Position Command -->
+
+                      <!-- Go To Position Dir Command -->
+                      <div class="row mb-2 pb-1 w-100 mx-auto d-block border border-primary rounded pl-0 ml-0">
+                        <div class="row text-center mx-auto d-block text-primary">
+                          Go To Position Dir
+                        </div>
+                        <div class="row form-group ml-0 mr-1 pl-0 pb-0 mb-2">
+                          <div class="col-6 mr-0 pr-0 pl-2">
+                            <label for="exampleInputEmail1" class="pb-0 mb-0"><b>Position</b></label>
+                            <input type="scientific" class="form-control" id="goToPosition" placeholder="i.e 1000">
+                          </div>
+                          <div class="col-4 mr-0 pr-0 ml-0 pl-1">
+                            <label for="dirSelect" class="pt-0 pb-0 mb-0"><b>Dir</b></label>
+                            <select class="form-control pt-0 pb-0 mt-0 ml-0 mr-0" id="dirSelect">
+                              <option>CW</option>
+                              <option>CCW</option>
+                            </select>
+                          </div>
+                          <div class="col-2 align-bottom mt-4 pl-1 pr-0">
+                            <button type="button" class="btn btn-outline-success pl-2 pr-2">Go</button>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <!-- End Go To Position Dir Command -->
+
+                      <!-- Go to Position Command -->
+                    </div>
+
+                    <div class="col-3 ml-0">
+                      <div class="row mb-2 w-100 mx-auto d-block border border-primary rounded pr-0 mr-0">
+                        <div class="row text-center mx-auto d-block text-primary">
+                          Run at Speed
+                        </div>
+
+                          <div class="row ml-1 mr-1 mt-1">
+                            <label for="exampleInputEmail1" class="pb-0 mb-0"><b>Speed</b></label>
+                            <input type="scientific" class="form-control" id="goToPosition" placeholder="i.e 1000">
+                          </div>
+
+                          <div class="row ml-1 mr-1 pt-1">
+                            <label for="dirSelect" class="pt-0 pb-0 mb-0"><b>Direction</b></label>
+                            <select class="form-control pt-0 pb-0 mt-0" id="dirSelect">
+                              <option>CW</option>
+                              <option>CCW</option>
+                            </select>
+                          </div>
+
+                          <div class="row align-bottom mt-2 mb-2">
+                            <button type="button" class="btn btn-outline-success pr-1 pl-1 mx-auto d-block">Run</button>
+                          </div>
+
+                      </div>
+                    </div>
+                    <div class="col-4 ml-0 pl-0">
+                      <div class="row mb-2 w-100 mx-auto d-block border border-primary rounded">
+
+                        <div class="row text-center mx-auto d-block text-primary">
+                          Go Until
+                        </div>
+
+                        <div class="row form-group ml-1 mr-1 mb-0">
+                          <div class="col-6 mr-0 pr-0 ml-0 pl-0">
+                            <label for="exampleInputEmail1" class="pb-0 mb-0"><b>Speed</b></label>
+                            <input type="scientific" class="form-control" id="goToPosition" placeholder="i.e 1000">
+                          </div>
+
+                          <div class="col-6 mr-0 pr-0 pl-1">
+                            <label for="dirSelect" class="pt-0 pb-0 mb-0 ml-0 pl-0"><b>Direction</b></label>
+                            <select class="form-control pt-0 pb-0 mt-0" id="dirSelect">
+                              <option>CW</option>
+                              <option>CCW</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div class="row ml-1 mr-1 mt-1 pt-1">
+                            <label for="dirSelect" class="pt-0 pb-0 mb-0"><b>Action</b></label>
+                            <select class="form-control pt-0 pb-0 mt-0" id="dirSelect">
+                              <option>Reset Abs Pos</option>
+                              <option>Copy Abs Pos</option>
+                            </select>
+                        </div>
+
+                        <div class="row align-bottom mt-2 mb-2">
+                          <button type="button" class="btn btn-outline-success mx-auto d-block">Go</button>
+                        </div>
+
+                      </div>
+
+                    </div>
+                  </div>
+
+                  </div>
+              </div>
+                <!-- </div> -->
+            </div>
+
+        </div>
+        <!-- End of Card Body-->
+
+      </div>
+      <!-- End of Motor 1 Dashboard-->
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active"><strong>
+          <i class="fa fa-bar-chart-o fa-fw"></i> Real Time Plots </strong>
+        </li>
+      </ol>
+
+      <!-- Area Chart Example-->
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-area-chart"></i> Area Chart Example</div>
+        <div class="card-body">
+          <canvas id="myAreaChart" width="100%" height="30"></canvas>
+        </div>
+        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+      </div>
+
+    </div>
+  </div>
+  <!------------  End of Control Page --------------->
+
+  <!------------ Start of Driver Config Page --------------->
+  <div class="content-wrapper hideable_content_page" id="driver_config_page">
+    <div class="container-fluid">
+
+      <!-- Breadcrumbs-->
+      <div class="breadcrumb row ml-0 mr-0 pb-0 pt-0">
+        <div class="breadcrumb-item active col-3 ml-4 pl-0 mt-3"><strong>
+          <i class="fa fa-desktop fa-fw"></i> Driver Config </strong>
+        </div>
+        <!-- <li class="breadcrumb-item-active"> -->
+        <div class="col-6">
+        </div>
+        <div class="col-2">
+          <div class="p-2">
+            <span class="switch">
+               <input type="checkbox" class="switch" id="switch-two" checked="1">
+               <label for="switch-two"><b>Locked</b></label>
+             </span>
+          </div>
+        </div>
+        <!-- </li> -->
+      </div>
+      <!-- End of breadCrumbs-->
+
+      <!--- Overall Ros Config --->
+      <div class="row">
+        <div class="col-md-10 col-sm-5 mb-2 pl-4">
+          <div class="card border-success mr-2 ml-2 mt-2 mb-2">
+            <div class="card-header text-white bg-success o-hidden h-10">
+              <img src="img/white-stepper-motor-512.png" width="20" height="20" class="d-inline-block align-top" alt="">
+              <b>ROS NODE</b>
+            </div>
+            <div class="card-body">
+              <div class="row ml-1">
+                <div class="card border border-success mr-4">
+                  <div class="row mx-auto d-block mt-1">
+                    <strong> <p class="text-success text-center"> Config File</p> </strong>
+                  </div>
+                  <div class="row mt-1 mx-auto d-block ">
+                    <div class="form-group mx-sm-3 ">
+                      <!-- <label for="inputPassword2" class="sr-only">~/ROS/overall_cfg.txt</label> -->
+                      <input type="password" class="form-control" id="inputPassword2" placeholder="~/ROS/overall_cfg.txt">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col mt-3 ml-3 mr-0">
+                      <button type="submit" class="btn btn-outline-success">Reload</button>
+                    </div>
+                    <div class="col mt-3">
+                      <button type="submit" class="btn btn-outline-success">Save</button>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="mr-4">
+                  <div class="dropdown">
+                    <button class="btn btn-outline-success dropdown-toggle" type="button" id="menu1" data-toggle="dropdown" disabled>
+                  <strong> Driver </strong>
+                  <img src="img/powerstep01.jpg" width="120" height="120" class="rounded mx-auto d-block">
+                </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                      <a class="dropdown-item border-success" href="#"><strong> L6470 </strong> <img src="img/l6470.jpg" width="70" height="70" class="rounded mx-auto d-block"></a>
+                      <a class="dropdown-item" href="#"><strong> L6472 </strong> <img src="img/l6470.jpg" width="70" height="70" class="rounded mx-auto d-block"></a>
+                      <a class="dropdown-item" href="#"><strong> L6480 </strong> <img src="img/l6470.jpg" width="70" height="70" class="rounded mx-auto d-block"></a>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="card border border-success mr-4 pr-3 pl-3">
+                  <div class="row mx-auto d-block mt-1">
+                    <strong> <p class="text-success text-center mb-1"> Comms </p> </strong>
+                  </div>
+                  <p class="text-success text-center mb-0 mt-0"> Interface</p>
+                  <select class="form-control border border-success outline-success txt-success" disabled>
+                  <option class="txt-success"><p class="txt-success">SPI</p></option>
+                  <option class="txt-success"><p class="txt-success">USB</p></option>
+                </select>
+
+                  <p class="text-success text-center mb-0 mt-0"> Bus</p>
+                  <select class="form-control border border-success outline-success txt-success" disabled>
+                  <option class="txt-success"><p class="txt-success">0</p></option>
+                  <option class="txt-success"><p class="txt-success">1</p></option>
+                  <option class="txt-success"><p class="txt-success">2</p></option>
+                </select>
+                </div>
+
+                <div class="card border border-success mr-4 pr-3 pl-3">
+                  <div class="row mx-auto d-block mt-1">
+                    <strong> <p class="text-success text-center mb-1"> Logging </p> </strong>
+                  </div>
+                  <p class="text-success text-center mb-0 mt-0"> Driver Debug</p>
+                  <select class="form-control border border-success outline-success txt-success" disabled>
+                 <option class="txt-success"><p class="txt-success">Nothing</p></option>
+                 <option class="txt-success"><p class="txt-success">Only Actions</p></option>
+                 <option class="txt-success"><p class="txt-success">Everything</p></option>
+               </select>
+
+                  <p class="text-success text-center mb-0 mt-0"> ROS Debug</p>
+                  <select class="form-control border border-success outline-success txt-success" disabled>
+                  <option class="txt-success"><p class="txt-success"> >= Info </p></option>
+                  <option class="txt-success"><p class="txt-success"> >= Warn </p></option>
+                  <option class="txt-success"><p class="txt-success"> >= Error </p></option>
+                </select>
+
+                </div>
+                <div class="col">
+                  <div class="row  w-100">
+                    <div class="card border-success w-100 mx-auto d-block" style="max-width: 20rem;">
+                      <div class="card-header border-success text-center pt-1 pb-1 w-100"><b>Driver Config State</b></div>
+                      <div class="card-body text-success pt-2 pb-2  w-100">
+                        <p class="card-title text-center">Configuration (Ok)</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mt-4 w-100 mx-auto d-block">
+                    <button type="submit" class="btn btn-outline-success w-100 mx-auto d-block pt-3 pb-3" data-toggle="modal" data-target="#exampleModal">Re-Configure Driver</button>
+
+                    <!-- Modal -->
+                    <div class="modal fade border border-danger" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header text-white bg-danger text-center pt-1 pb-1">
+                            <h5 class="modal-title text-center" id="exampleModalLabel"><strong><p class="text-center">Warning</p></strong></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                          </div>
+                          <div class="modal-body">
+                            Reconfiguring the driver will stop the current node and restart. Are you sure you want to continue?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--- End Overall ROS Config --->
+
+      <!-- Breadcrumbs-->
+      <div class="breadcrumb row ml-0 mr-0 pb-3 pt-0">
+        <div class="breadcrumb-item active col-3 ml-4 pl-0 mt-3"><strong>
+          <i class="fa fa-gears fa-fw"></i> Motor Configurations</strong>
+        </div>
+      </div>
+      <!-- End of Breadcrumbs-->
+
+      <!--- Motor Configurations --->
+      <!-- <div class="row ml-1 border" id="motor_configs"> -->
+      <!-- <div class="col-lg-16 col-sm-8 mb-3 border"> -->
+      <div class="card row border border-primary ml-3 mr-3 pl-0 pr-0 mb-2">
+
+        <div class="card-header row rounded text-white bg-primary o-hidden pb-2 mb-0 pt-2  pl-1 ml-0 pr-1 w-100" data-toggle="collapse" data-target="#collapseBody" aria-expanded="false" aria-controls="collapseBody">
+          <img src="img/white-stepper-motor-512.png" width="20" height="20" class="d-inline-block align-top pb-0 mb-0 ml-4 mt-0" alt="">
+          <b class="ml-2 mt-0"> Motor 1</b>
+        </div>
+
+        <div class="card-body pl-0 pr-0 ml-0 mr-0 collapse" id="collapseBody">
+
+          <div class="row border border-primary rounded ml-2 mr-2">
+            <div class="row border btn btn-outline-primary text-center mx-auto d-block w-100" data-toggle="collapse" data-target="#collapseOverallConfig" aria-expanded="false" aria-controls="collapseOverallConfig">
+              <strong class=" mx-auto d-block mt-1"> Overall Config </strong>
+            </div>
+
+            <div class="row collapse w-100" id="collapseOverallConfig">
+            <div class="row ml-2">
+
+              <!-- Stepper Motor --->
+              <div class="col-lg-2 pb-2">
+                <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#motor_config_modal">
+
+                  <strong class="text-primary text-center mt-1"> Stepper Motor </strong>
+
+                  <div class="card-body mt-0 pt-0 mb-0">
+                    <img src="img/nema17.jpg" width="125" height="175" class="rounded mx-auto d-block">
+                  </div>
+
+                  <div class="row ml-2 mb-2 mt-0 pr-0 mr-2 pb-2">
+                      <select class="form-control border border-primary outline-primary txt-success txt-center">
+                        <option class="txt-success"><p>NEMA17-H3056</p></option>
+                        <option class="txt-success"><p>NEMA23-H2175</p></option>
+                        <option class="txt-success"><p>NEMA17-H3167</p></option>
+                      </select>
+                  </div>
+                </button>
+              </div>
+              <!--- End of Stepper Motor -->
+
+              <!--- General Properties --->
+              <div class="col-lg-2 card border border-primary mt-0 pr-4 mr-2 pl-4 ml-0">
+
+                <div class="row">
+
+                  <strong class="text-primary  mx-auto d-block mt-1"> General Properties </strong>
+                  <form>
+
+                    <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" data-html="true"  title="<strong>Full Step Threshold Speed</strong> When the actual speed exceeds this
+value, the step mode is automatically switched to full-step two-phase on">
+
+                        <label for="validationDefault05"><b>Full Step Threshold Speed</b></label>
+                        <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 500 (steps/s)" required>
+                        <div class="invalid-feedback">
+                          Please provide a valid zip.
+                        </div>
+                    </div>
+
+                    <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" title="The value used by the winding resistance thermal drift
+compensation system (see Section 7.6 on page 37).">
+                        <label for="validationDefault05"><b>Thermal Drift Coefficient</b></label>
+                        <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                        <div class="invalid-feedback">
+                          Please provide a valid zip.
+                        </div>
+                    </div>
+
+                    <div class="row ml-2 mr-2 mt-2">
+                        <label for="validationDefault05"><b>Control Mode</b></label>
+                        <select class="form-control border border-primary outline-primary txt-success txt-center">
+                          <option class="txt-success"><p>Voltage Mode</p></option>
+                          <option class="txt-success"><p>Current Mode</p></option>
+                        </select>
+                    </div>
+
+                  </form>
+                </div>
+
+              </div>
+              <!--- General Properties -->
+
+                    <!--- -->
+                    <div class="col-lg-2 card border border-primary rounded pl-1 pr-1 ml-2">
+                      <!-- <div class="row pb-4"> -->
+                      <div class="row text-center">
+                        <strong class="text-primary mt-1 text-center mx-auto d-block"> Current Thresholds </strong>
+                      </div>
+                      <form>
+                        <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" data-html="true"  title="When the current in any of the Power MOSFETs exceeds a programmed overcurrent
+threshold, the STATUS register OCD flag is forced low until the overcurrent event has
+expired and a GetStatus command is sent to the IC (see Section 9.1.22 on page 55 and
+Section 9.1.17 on page 47). The overcurrent event expires when all the Power MOSFET
+currents fall below the programmed overcurrent threshold.">
+
+                            <label for="validationDefault05 text-center"><b>Over Current Threshold</b></label>
+                            <select class="form-control border border-primary outline-primary txt-success txt-center">
+                              <option class="txt-success"><p>375 ma</p></option>
+                              <option class="txt-success"><p>NEMA23-H2175</p></option>
+                              <option class="txt-success"><p>NEMA17-H3167</p></option>
+                            </select>
+                        </div>
+                        <div class="row ml-2 mr-2 mt-2">
+                            <label for="validationDefault05 text-center"><b>Stall Threshold</b></label>
+                            <select class="form-control border border-primary outline-primary txt-success txt-center">
+                              <option class="txt-success"><p>375 ma</p></option>
+                              <option class="txt-success"><p>NEMA23-H2175</p></option>
+                              <option class="txt-success"><p>NEMA17-H3167</p></option>
+                            </select>
+                        </div>
+                        <div class="row ml-2 mr-2 mt-2">
+                            <label for="validationDefault05 text-center"><b>Over Current Action</b></label>
+                            <select class="form-control border border-primary outline-primary txt-success txt-center">
+                              <option class="txt-success"><p>Bridges shutdown</p></option>
+                              <option class="txt-success"><p>Bridges don't shutdown</p></option>
+                            </select>
+                        </div>
+                      </form>
+                      <!-- </div> -->
+                    </div>
+                    <!--- -->
+
+                    <!--- -->
+                    <div class="col-2 card border border-primary rounded pl-1 pr-1 ml-3 mr-0">
+                      <!-- <div class="row pb-4"> -->
+                      <div class="row text-center">
+                        <strong class="text-primary mt-1 text-center mx-auto d-block"> Micro Stepping </strong>
+                      </div>
+                        <form>
+                          <div class="row ml-2 mr-2 mt-2">
+
+                              <label for="validationDefault05 text-center"><b>Step Mode</b></label>
+                              <select class="form-control border border-primary outline-primary txt-success txt-center">
+                                <option class="txt-success"><p>STEP_SEL_1</p></option>
+                                <option class="txt-success"><p>NEMA23-H2175</p></option>
+                                <option class="txt-success"><p>NEMA17-H3167</p></option>
+                              </select>
+                          </div>
+                          <div class="row ml-2 mr-2 mt-2">
+                              <label for="validationDefault05 text-center"><b>Sync Select</b></label>
+                              <select class="form-control border border-primary outline-primary txt-success txt-center">
+                                <option class="txt-success"><p>SYNC_SEL_1_2</p></option>
+                                <option class="txt-success"><p>NEMA23-H2175</p></option>
+                                <option class="txt-success"><p>NEMA17-H3167</p></option>
+                              </select>
+                          </div>
+                          <div class="row ml-2 mr-2 mt-4">
+                            <span class="switch">
+                              <input type="checkbox" class="switch" id="switch-sync-enabled" checked="1">
+                              <label for="switch-sync-enabled"><b>Sync Enabled</b></label>
+                            </span>
+                          </div>
+                        </form>
+                      <!-- </div> -->
+                    </div>
+                    <!--- -->
+
+                    <!--- -->
+                    <div class="col-3 ml-2 pl-1">
+                      <!-- <div class="row pb-4"> -->
+                      <div class="row card border border-primary ml-1 mr-1">
+                        <strong class="text-primary text-center mt-1"> Electrical Properties </strong>
+                        <form>
+                          <div class="row ml-2 mr-2 mt-2">
+
+                            <div class="col-md-6 mb-3">
+                              <label for="validationDefault05 text-center"><b>Oscillator</b></label>
+                              <select class="form-control border border-primary outline-primary txt-success txt-center">
+                                <option class="txt-success"><p>INT 16MHZ</p></option>
+                              </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                              <label for="validationDefault05 text-center"><b>Switch</b></label>
+                              <select class="form-control border border-primary outline-primary txt-success txt-center">
+                                <option class="txt-success"><p>HARD STOP</p></option>
+                              </select>
+                            </div>
+
+                          </div>
+                        </form>
+                      </div>
+
+                      <!--- --->
+                      <div class="row card border border-primary ml-1 mr-1 mt-2">
+                        <strong class="text-primary text-center mt-1"> Alarm States </strong>
+                        <div class="row pl-1">
+
+                          <div class="col-6">
+                            <span class="switch switch-sm">
+                              <input type="checkbox" class="switch" id="switch-over-current" checked="1">
+                              <label for="switch-over-current"><b>OverCurrent</b></label>
+                            </span>
+                          </div>
+
+                          <div class="col-6">
+                            <span class="switch switch-sm">
+                              <input type="checkbox" class="switch" id="switch-thermal-shutdown" checked="1">
+                              <label for="switch-thermal-shutdown"><b>ThermalShut</b></label>
+                            </span>
+                          </div>
+
+                        </div>
+                        <div class="row pl-1">
+
+                          <div class="col-6">
+                            <span class="switch switch-sm">
+                              <input type="checkbox" class="switch" id="switch-thermal-warn" checked="1">
+                              <label for="switch-thermal-warn"><b>ThermalWarn</b></label>
+                            </span>
+                          </div>
+
+                          <div class="col-6">
+                            <span class="switch switch-sm">
+                              <input type="checkbox" class="switch" id="switch-under-volt" checked="1">
+                              <label for="switch-under-volt"><b>UnderVolt</b></label>
+                            </span>
+                          </div>
+
+                        </div>
+                        <div class="row pl-1">
+
+                          <div class="col-6">
+                            <span class="switch switch-sm">
+                              <input type="checkbox" class="switch" id="switch-stall-detectA" checked="1">
+                              <label for="switch-stall-detectA"><b>StallDetectA</b></label>
+                            </span>
+                          </div>
+
+                          <div class="col-6">
+                            <span class="switch switch-sm">
+                              <input type="checkbox" class="switch" id="switch-stall-detectB" checked="1">
+                              <label for="switch-stall-detectB"><b>StallDetectB</b></label>
+                            </span>
+                          </div>
+
+                        </div>
+                        <div class="row pl-1">
+
+                          <div class="col-6">
+                            <span class="switch switch-sm">
+                              <input type="checkbox" class="switch" id="switch-switch-turn-on" checked="1">
+                              <label for="switch-switch-turn-on"><b>SwitchTurn</b></label>
+                            </span>
+                          </div>
+
+                          <div class="col-6">
+                            <span class="switch switch-sm">
+                              <input type="checkbox" class="switch" id="switch-bad-command" checked="1">
+                              <label for="switch-bad-command"><b>BadCommand</b></label>
+                            </span>
+                          </div>
+
+                        </div>
+                      </div>
+                      <!--- --->
+
+                      <!-- </div> -->
+                    </div>
+                    <!--- -->
+
+                  </div>
+
+                  <!-- End of Overall Config Page -->
+                </div>
+              </div>
+
+                  <!--- Start of Voltage Mode Config Page --->
+                    <div class="row border border-primary rounded ml-2 mr-2 mt-2 mb-2">
+                      <div class="row border btn btn-outline-primary text-center mx-auto d-block w-100" data-toggle="collapse" data-target="#collapseVoltageModeConfig" aria-expanded="false" aria-controls="collapseVoltageModeConfig">
+                        <strong class=" mx-auto d-block mt-1"> Voltage Mode Config </strong>
+                      </div>
+
+                      <div class="row collapse w-100" id="collapseVoltageModeConfig">
+                      <div class="row ml-2">
+
+                        <!-- Stepper Motor --->
+                        <div class="col-lg-2 pb-2 border border-primary ml-3 mr-2 mb-2 rounded">
+                            <strong class="text-primary text-center mt-1 mx-auto d-block"> Automate </strong>
+
+                            <div class="row border border-danger ml-2 mr-2 rounded mt-2">
+                              <div class="row text-center mx-auto d-block pl-2 pr-2">
+                                <strong><p> Automatic Voltage Mode Cfg </p></strong>
+                              </div>
+                              <div class="row ml-2 mb-2 mt-0 pr-0 mr-2 pb-2 mx-auto d-block">
+                                <span class="switch">
+                                  <input type="checkbox" class="switch" id="switch-auto-voltage-config" checked="1">
+                                  <label for="switch-auto-voltage-config"></label>
+                                </span>
+                              </div>
+                            </div>
+                        </div>
+                        <!--- End of Stepper Motor -->
+
+                        <!--- General Properties --->
+                        <div class="col-lg-2 card border border-primary mt-0 pr-4 mr-2 pl-4 ml-0 mb-2">
+
+                          <div class="row">
+
+                            <strong class="text-primary  mx-auto d-block mt-1"> KVal </strong>
+                            <form>
+
+                              <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" data-html="true"  title="<strong>Full Step Threshold Speed</strong> When the actual speed exceeds this
+          value, the step mode is automatically switched to full-step two-phase on">
+
+                                  <label for="validationDefault05"><b>Holding KVal</b></label>
+                                  <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 500 (steps/s)" required>
+                              </div>
+
+                              <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" title="The value used by the winding resistance thermal drift
+          compensation system (see Section 7.6 on page 37).">
+                                  <label for="validationDefault05"><b>Constant Speed KVal</b></label>
+                                  <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                              </div>
+
+                              <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" title="The value used by the winding resistance thermal drift
+          compensation system (see Section 7.6 on page 37).">
+                                  <label for="validationDefault05"><b>Accel Starting KVal</b></label>
+                                  <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                              </div>
+
+                              <div class="row ml-2 mr-2 mt-2 pb-2" data-toggle="tooltip" data-placement="top" title="The value used by the winding resistance thermal drift
+          compensation system (see Section 7.6 on page 37).">
+                                  <label for="validationDefault05"><b>Decel Starting KVal</b></label>
+                                  <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                              </div>
+
+                            </form>
+                          </div>
+
+                        </div>
+                        <!--- General Properties -->
+
+                              <!--- -->
+                              <div class="col-lg-2 card border border-primary rounded pl-1 pr-1 ml-2 mb-2">
+                                <!-- <div class="row pb-4"> -->
+                                <div class="row text-center">
+                                  <strong class="text-primary mt-1 text-center mx-auto d-block"> Slope </strong>
+                                </div>
+                                <form>
+
+                                  <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" data-html="true"  title="<strong>Full Step Threshold Speed</strong> When the actual speed exceeds this
+              value, the step mode is automatically switched to full-step two-phase on">
+
+                                      <label for="validationDefault05"><b>Intersect Speed</b></label>
+                                      <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 500 (steps/s)" required>
+                                  </div>
+
+                                  <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" title="The value used by the winding resistance thermal drift
+              compensation system (see Section 7.6 on page 37).">
+                                      <label for="validationDefault05"><b>Start Slope</b></label>
+                                      <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                                  </div>
+
+                                  <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" title="The value used by the winding resistance thermal drift
+              compensation system (see Section 7.6 on page 37).">
+                                      <label for="validationDefault05"><b>Accel Final Slope</b></label>
+                                      <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                                  </div>
+
+                                  <div class="row ml-2 mr-2 mt-2 pb-2" data-toggle="tooltip" data-placement="top" title="The value used by the winding resistance thermal drift
+              compensation system (see Section 7.6 on page 37).">
+                                      <label for="validationDefault05"><b>Decel Final Slope</b></label>
+                                      <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                                  </div>
+
+                                </form>
+                                <!-- </div> -->
+                              </div>
+                              <!--- -->
+
+                              <!--- -->
+                              <div class="col-2 card border border-primary rounded pl-1 pr-1 ml-3 mr-0 mb-2">
+                                <!-- <div class="row pb-4"> -->
+                                <div class="row text-center">
+                                  <strong class="text-primary mt-1 text-center mx-auto d-block"> PWM Settings </strong>
+                                </div>
+                                  <form>
+                                    <div class="row ml-2 mr-2 mt-2">
+
+                                        <label for="validationDefault05 text-center"><b>PWM Frequency Multiplier</b></label>
+                                        <select class="form-control border border-primary outline-primary txt-success txt-center">
+                                          <option class="txt-success"><p>MUL_0_625</p></option>
+                                          <option class="txt-success"><p>MUL_0_75</p></option>
+                                          <option class="txt-success"><p>MUL_0_875</p></option>
+                                        </select>
+                                    </div>
+                                    <div class="row ml-2 mr-2 mt-4">
+                                        <label for="validationDefault05 text-center"><b>PWM Frequency Divider</b></label>
+                                        <select class="form-control border border-primary outline-primary txt-success txt-center">
+                                          <option class="txt-success"><p>DIV_1</p></option>
+                                          <option class="txt-success"><p>DIV_2</p></option>
+                                          <option class="txt-success"><p>DIV_3</p></option>
+                                        </select>
+                                    </div>
+                                    <div class="row ml-0 mr-0 mt-4 border border-primary rounded text-center mx-auto d-block">
+                                      <div class="row text-center mx-auto d-block">
+                                        <b>Enable Low Speed Optimisation</b>
+                                      </div>
+                                      <div class="row mx-auto d-block">
+                                        <span class="switch">
+                                          <input type="checkbox" class="switch" id="switch-enable-speed-optimisation" checked="1">
+                                          <label for="switch-enable-speed-optimisation"></label>
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </form>
+                                <!-- </div> -->
+                              </div>
+                              <!--- -->
+
+                              <!--- -->
+                              <div class="col-3 ml-2 pl-1">
+                                <!-- <div class="row pb-4"> -->
+                                <div class="row card border border-primary ml-1 mr-1 mb-2">
+                                  <strong class="text-primary text-center mt-1"> Misc </strong>
+                                  <form>
+                                    <div class="row ml-2 mr-2 mt-2">
+
+                                      <div class="col-md-6 mb-3">
+                                        <label for="validationDefault05 text-center"><b>Slew Rate</b></label>
+                                        <select class="form-control border border-primary outline-primary txt-success txt-center">
+                                          <option class="txt-success"><p>180V_us</p></option>
+                                          <option class="txt-success"><p>290V_us</p></option>
+                                          <option class="txt-success"><p>530V_us</p></option>
+                                        </select>
+                                      </div>
+
+                                      <div class="col-md-6 mb-3">
+                                        <label for="validationDefault05 text-center"><b>Voltage Compensation</b></label>
+                                        <span class="switch">
+                                          <input type="checkbox" class="switch" id="switch-enable-voltage-compensation" checked="1">
+                                          <label for="switch-enable-voltage-compensation"></label>
+                                        </span>
+                                      </div>
+
+                                    </div>
+                                  </form>
+                                </div>
+                                <!-- </div> -->
+                              </div>
+                              <!--- -->
+
+                            </div>
+
+                            <!-- End of Voltage Mode Config Page -->
+
+                <!-- </div> -->
+              </div>
+            </div>
+            <!-- <div class="card-body-icon">
+
+            <!-- Current Mode Config -->
+            <div class="row border border-primary rounded ml-2 mr-2 mt-2 mb-2">
+              <div class="row border btn btn-outline-primary text-center mx-auto d-block w-100" data-toggle="collapse" data-target="#collapseCurrentModeConfig" aria-expanded="false" aria-controls="collapseCurrentModeConfig">
+                <strong class=" mx-auto d-block mt-1"> Current Mode Config </strong>
+              </div>
+
+              <div class="row collapse w-100" id="collapseCurrentModeConfig">
+              <div class="row ml-2">
+
+                <!-- Stepper Motor --->
+                <div class="col-lg-2 pb-2 border border-primary ml-3 mr-2 mb-2 rounded">
+                    <strong class="text-primary text-center mt-1 mx-auto d-block"> Automate </strong>
+
+                    <div class="row border border-danger ml-2 mr-2 rounded mt-2">
+                      <div class="row text-center mx-auto d-block pl-2 pr-2">
+                        <strong><p> Automatic Current Mode Cfg </p></strong>
+                      </div>
+                      <div class="row ml-2 mb-2 mt-0 pr-0 mr-2 pb-2 mx-auto d-block">
+                        <span class="switch">
+                          <input type="checkbox" class="switch" id="switch-auto-voltage-config" checked="1">
+                          <label for="switch-auto-voltage-config"></label>
+                        </span>
+                      </div>
+                    </div>
+                </div>
+                <!--- End of Stepper Motor -->
+
+                <!--- General Properties --->
+                <div class="col-lg-2 card border border-primary mt-0 pr-4 mr-2 pl-4 ml-0 mb-2">
+
+                  <div class="row">
+
+                    <strong class="text-primary  mx-auto d-block mt-1"> TVal </strong>
+                    <form>
+
+                      <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" data-html="true"  title="<strong>Full Step Threshold Speed</strong> When the actual speed exceeds this
+  value, the step mode is automatically switched to full-step two-phase on">
+
+                          <label for="validationDefault05"><b>Holding TVal</b></label>
+                          <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 500 (steps/s)" required>
+                      </div>
+
+                      <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" title="The value used by the winding resistance thermal drift
+  compensation system (see Section 7.6 on page 37).">
+                          <label for="validationDefault05"><b>Run TVal</b></label>
+                          <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                      </div>
+
+                      <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" title="The value used by the winding resistance thermal drift
+  compensation system (see Section 7.6 on page 37).">
+                          <label for="validationDefault05"><b>Accel TVal</b></label>
+                          <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                      </div>
+
+                      <div class="row ml-2 mr-2 mt-2 pb-2" data-toggle="tooltip" data-placement="top" title="The value used by the winding resistance thermal drift
+  compensation system (see Section 7.6 on page 37).">
+                          <label for="validationDefault05"><b>Decel TVal</b></label>
+                          <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                      </div>
+
+                    </form>
+                  </div>
+
+                </div>
+                <!--- General Properties -->
+
+                      <!--- -->
+                      <div class="col-lg-2 card border border-primary rounded pl-1 pr-1 ml-2 mb-2">
+                        <!-- <div class="row pb-4"> -->
+                        <div class="row text-center">
+                          <strong class="text-primary mt-1 text-center mx-auto d-block"> T Values </strong>
+                        </div>
+                        <form>
+
+                          <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" data-html="true"  title="<strong>Full Step Threshold Speed</strong> When the actual speed exceeds this
+      value, the step mode is automatically switched to full-step two-phase on">
+
+                              <label for="validationDefault05"><b>T Fast</b></label>
+                              <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 500 (steps/s)" required>
+                          </div>
+
+                          <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" title="The value used by the winding resistance thermal drift
+      compensation system (see Section 7.6 on page 37).">
+                              <label for="validationDefault05"><b>T On</b></label>
+                              <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                          </div>
+
+                          <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" title="The value used by the winding resistance thermal drift
+      compensation system (see Section 7.6 on page 37).">
+                              <label for="validationDefault05"><b>T Off</b></label>
+                              <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                          </div>
+
+                        </form>
+                        <!-- </div> -->
+                      </div>
+                      <!--- -->
+
+                      <!--- -->
+                      <div class="col-2 card border border-primary rounded pl-1 pr-1 ml-3 mr-0 mb-2">
+                        <!-- <div class="row pb-4"> -->
+                        <div class="row text-center">
+                          <strong class="text-primary mt-1 text-center mx-auto d-block"> Misc </strong>
+                        </div>
+                          <form>
+                            <div class="row ml-2 mr-2 mt-2">
+
+                                <label for="validationDefault05 text-center"><b>Target Switching Period</b></label>
+                                <select class="form-control border border-primary outline-primary txt-success txt-center">
+                                  <option class="txt-success"><p>250KHz</p></option>
+                                  <option class="txt-success"><p>125KHz</p></option>
+                                  <option class="txt-success"><p>62_5KHz</p></option>
+                                </select>
+                            </div>
+
+                            <div class="row ml-0 mr-0 mt-4 border border-primary rounded text-center mx-auto d-block">
+                              <div class="row text-center mx-auto d-block">
+                                <b>Enable Torque Regulation</b>
+                              </div>
+                              <div class="row mx-auto d-block">
+                                <span class="switch">
+                                  <input type="checkbox" class="switch" id="switch-enable-torque-regulation" checked="1">
+                                  <label for="switch-enable-torque-regulation"></label>
+                                </span>
+                              </div>
+                            </div>
+
+                            <div class="row ml-0 mr-0 mt-4 border border-primary rounded text-center mx-auto d-block">
+                              <div class="row text-center mx-auto d-block">
+                                <b>Predictive Current Control Enabled</b>
+                              </div>
+                              <div class="row mx-auto d-block">
+                                <span class="switch">
+                                  <input type="checkbox" class="switch" id="switch-enable-predictive-current-control" checked="1">
+                                  <label for="switch-enable-predictive-current-control"></label>
+                                </span>
+                              </div>
+                            </div>
+
+                          </form>
+                        <!-- </div> -->
+                      </div>
+                      <!--- -->
+
+                      <!--- -->
+                      <div class="col-3 ml-2 pl-1 border border-primary rounded">
+                        <div class="row text-center">
+                          <strong class="text-primary mt-1 text-center mx-auto d-block"> Misc </strong>
+                        </div>
+
+                        <div class="row mr-0 ml-2 mt-4 border border-primary rounded text-center mx-auto d-block">
+                          <div class="row text-center mx-auto d-block">
+                            <b>External Clock Enabled</b>
+                          </div>
+                          <div class="row mx-auto d-block">
+                            <span class="switch">
+                              <input type="checkbox" class="switch" id="switch-enable-external-clock" checked="1">
+                              <label for="switch-enable-external-clock"></label>
+                            </span>
+                          </div>
+                        </div>
+                        <!-- </div> -->
+                      </div>
+                      <!--- -->
+
+                    </div>
+
+                    <!-- End of Voltage Mode Config Page -->
+
+        <!-- </div> -->
+      </div>
+    </div>
+
+            </div>
+            <!-- <div class="mr-6">26 New Messages!</div> -->
+          <!-- </div> -->
+        <!-- </div> -->
+      </div>
+    </div>
+
+    </div>
+
+    </div>
+
+
+    <!--- End Motor Configurations --->
+
+    <!-- Modal -->
+<div class="modal fade" id="motor_config_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white mt-0 mb-0 pt-1 pb-0">
+        <img src="img/white-stepper-motor-512.png" width="20" height="20" class="d-inline-block align-top mr-2 mt-1 mb-0 pt-0 pb-0" alt="">
+        <h5 class="modal-title" id="exampleModalLabel"><p class="text-white"><strong>Stepper Motor Configuration</strong></p></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-4 pl-2 pr-2 ml-2 mr-2">
+                  <div class="card border border-primary mt-0 pt-0 mb-0 pl-2 pr-2">
+                    <img src="img/nema17.jpg" width="125" height="200" class="rounded mx-auto d-block">
+                  </div>
+                </div>
+
+                <div class="col-lg-7 card border border-primary mr-0 pr-2 pl-2">
+                  <strong class="text-primary text-center mt-1"> Model Information </strong>
+                  <form>
+                    <div class="form-row">
+                      <div class="col">
+                        <div class="form-group">
+                          <label for="motor_size"><b>Size</b></label>
+                          <select class="form-control" id="motor_size">
+                          <option>NEMA17</option>
+                          <option>NEMA23</option>
+                          <option>NEMA34</option>
+                          <option>NEMA11</option>
+                          <option>NEMA07</option>
+                        </select>
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div class="form-group">
+                          <label for="motor_model"><b>Model</b></label>
+                          <input type="password" class="form-control" id="motor_model" placeholder="i.e serial N/O">
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div class="form-row">
+                      <div class="col">
+                        <div class="form-group">
+                          <label for="motor_cfg_file"><b>Config File Path</b></label>
+                          <input type="password" class="form-control" id="motor_cfg_file" placeholder="~/ROS/Node/cfgs/motors/nema17-bghy3.cfg">
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="row card border border-primary ml-1 mr-1 mt-2">
+                <strong class="text-primary text-center mt-1"> Electrical Properties </strong>
+                <form>
+                  <div class="row ml-2 mr-2 mt-2">
+
+                    <div class="col-md-5 mb-3">
+                      <label for="validationDefault05 text-center"><b>BackEmf Const(ke)</b></label>
+                      <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                      <div class="invalid-feedback">
+                        Please provide a valid zip.
+                      </div>
+                    </div>
+
+                    <div class="col-md-5 mb-3">
+                      <label for="validationDefault05 text-center"><b>Max Current(A)</b></label>
+                      <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                      <div class="invalid-feedback">
+                        Please provide a valid zip.
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="row ml-2 mr-2 mt-2">
+
+                    <div class="col-md-6 mb-3">
+                      <label for="validationDefault05 text-center"><b>Phase Resistance  (Ω)</b></label>
+                      <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                      <div class="invalid-feedback">
+                        Please provide a valid zip.
+                      </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                      <label for="validationDefault05 text-center"><b>Phase Inductance(mH)</b></label>
+                      <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                      <div class="invalid-feedback">
+                        Please provide a valid zip.
+                      </div>
+                    </div>
+
+                  </div>
+                </form>
+              </div>
+
+              <div class="row card border border-primary ml-1 mr-1 mt-2">
+                <strong class="text-primary text-center mt-1"> Physical Properties </strong>
+                <form>
+                  <div class="row ml-2 mr-2 mt-2">
+
+                    <div class="col-md-5 mb-3">
+                      <label for="validationDefault05 text-center"><b>Step Angle (°)</b></label>
+                      <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                      <div class="invalid-feedback">
+                        Please provide a valid zip.
+                      </div>
+                    </div>
+
+                    <div class="col-md-5 mb-3">
+                      <label for="validationDefault05 text-center"><b>Motor Torque(Nm)</b></label>
+                      <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                      <div class="invalid-feedback">
+                        Please provide a valid zip.
+                      </div>
+                    </div>
+
+                  </div>
+              </div>
+              </form>
+            </div>
+
+            <div class="row card border border-warning ml-3 mr-3 mt-1 mb-4">
+              <strong class="text-primary text-center mt-1"> Power Supply Properties </strong>
+              <form>
+                <div class="row ml-2 mr-2 mt-2">
+
+                  <div class="col-md-5 mb-3">
+                    <label for="validationDefault05 text-center"><b>Supply Voltage(V)</b></label>
+                    <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                    <div class="invalid-feedback">
+                      Please provide a valid zip.
+                    </div>
+                  </div>
+
+                  <div class="col-md-5 mb-3">
+                    <label for="validationDefault05 text-center"><b>Phase Current(A)</b></label>
+                    <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                    <div class="invalid-feedback">
+                      Please provide a valid zip.
+                    </div>
+                  </div>
+
+                </div>
+            </div>
+            </form>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-success" data-dismiss="modal">New</button>
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-outline-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  </div>
+
+  </div>
+  <!------------ End of Driver Config Page  ---------------->
+
+  <!------------ Start of Joystick Config Page --------------->
+  <div class="content-wrapper hideable_content_page" id="joystick_config_page" style="display:none">
+    <div class="container-fluid">
+      <!-- Breadcrumbs-->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active"><strong>
+          <i class="fa fa-desktop fa-fw"></i> Joystick Config </strong>
+        </li>
+      </ol>
+    </div>
+  </div>
+  <!------------ End of Driver Config Page  ---------------->
+
+  <!------------ Start of Joystick Config Page --------------->
+  <div class="content-wrapper hideable_content_page" id="what_is_this_page" style="display:none">
+    <div class="container-fluid">
+      <!-- Breadcrumbs-->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active"><strong>
+          <i class="fa fa-desktop fa-fw"></i> What is this? </strong>
+        </li>
+      </ol>
+    </div>
+  </div>
+  <!------------ End of Driver Config Page  ---------------->
+
+  <!------------ Start of Joystick Config Page --------------->
+  <div class="content-wrapper hideable_content_page" id="setup_page" style="display:none">
+    <div class="container-fluid">
+      <!-- Breadcrumbs-->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active"><strong>
+          <i class="fa fa-desktop fa-fw"></i> Setup Guide</strong>
+        </li>
+      </ol>
+    </div>
+  </div>
+  <!------------ End of Driver Config Page  ---------------->
+
+  <script>
+    $(document).ready(function() {
+      $(".GaugeMeter").gaugeMeter();
+    });
+  </script>
+
+  <script>
+    function show(elementId) {
+      $(".hideable_content_page").each(function(i) {
+        this.style.display = 'none';
+      });
+      console.log("desired page is " + elementId);
+      document.getElementById(elementId).style.display = 'block';
+    }
+  </script>
+  <script>
+    $(function() {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
+  </script>
+  <script>
+    $(function() {
+      var $winHeight = $(window).height()
+      $('.ledcontainer').height($winHeight);
+    });
+  </script>
+
+  <script>
+    $(function() {
+      $('[data-toggle="popover"]').popover()
+    })
+  </script>
+
+  <!-- <script>
+  function show(shown, hidden) {
+    document.getElementById(shown).style.display='block';
+    document.getElementById(hidden).style.display='none';
+    return false;
+  }
+</script> -->
+
+</body>
+
+</html>
+

@@ -37,6 +37,7 @@ export class AppComponent {
 
 
   /// Getters to prevent NaN errors
+
   get maxVal() {
     return isNaN(this.max) || this.max < 0.1 ? 0.1 : this.max;
   }

@@ -1,7 +1,9 @@
 <main class="content">
         
     <h1>Electron Timer</h1>
+
     <div class="progress-wrapper" *ngIf="maxVal">
+
         <div class="text" *ngIf="!isFinished">
           {{ max - current | number: '1.1-1' }}
         </div>
@@ -12,21 +14,25 @@
         </div>
         
         <round-progress
-                [max]="max"
-                [current]="current"
+                [max]="maxVal"
+                [current]="currentVal"
                 [radius]="100"
                 [stroke]="25">
         </round-progress>
         
     </div>
+
     <div class="controls-wrapper">
- 
-        <label>Seconds</label>
-        <input class="input" placeholder="number of seconds" type="text" 
+            <div>
+              <label>Seconds</label>
+              <input class="input" placeholder="number of seconds" type="text" 
               [(ngModel)]="max"
               (keydown)="reset()">
+            </div>
             
-        <button *ngIf="currentVal <= 0" (click)="start()">Start</button>
-        <button *ngIf="!isFinished" (click)="finish()">Finish</button>
+        <button class="button is-info" *ngIf="currentVal <= 0" (click)="start()">Start</button>
+        <button class="button is-danger" *ngIf="!isFinished" (click)="finish()">Finish</button>
     </div>
+
+
 </main>
