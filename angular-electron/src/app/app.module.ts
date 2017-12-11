@@ -4,11 +4,13 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 
 import { FormsModule } from '@angular/forms'; // <-- here
-import { RoundProgressModule } from 'angular-svg-round-progressbar'; // <-- here
+import { RoundProgressModule } from 'angular-svg-round-progressbar';
+import { MotorsComponent } from './motors/motors.component'; // <-- here
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    MotorsComponent
   ],
   imports: [
     BrowserModule, 
