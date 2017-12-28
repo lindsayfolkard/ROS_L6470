@@ -1,0 +1,29 @@
+<!-- <div *ngIf="messageService.messages.length">
+
+  <h2>Messages</h2>
+  <button class="clear"
+          (click)="messageService.clear()">clear</button>
+  <div *ngFor='let message of messageService.messages'> {{message}} </div>
+
+</div> -->
+
+<div class="card border-success mr-2 ml-2 mt-2 mb-2">
+  <div class="card-header text-white bg-info">
+    <i class="fa fa-bell-o"></i> <b>ROS Logs</b></div>
+  <div *ngIf="messageService.messages.length" class="anyClass list-group list-group-flush small" flex-grow="1" overflow-y="auto">
+
+    <div *ngFor='let message of messageService.messages'>
+      <a class="list-group-item list-group-item-action">
+        <div class="media">
+          <i class="fa fa-warning fa-fw fa-lg" style="color:#ff0000;"></i>
+          <div class="media-body">
+            <strong>Warn</strong> {{message}}
+            <div class="text-muted smaller">Today at 5:43 PM - 5m ago</div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+  </div>
+  <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+</div>

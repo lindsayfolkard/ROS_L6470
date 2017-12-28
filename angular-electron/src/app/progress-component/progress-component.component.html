@@ -1,0 +1,17 @@
+<div class="progress-wrapper" *ngIf="maxVal">
+
+    <div class="current text-center">{{ current }}</div>
+
+    <round-progress
+            [max]="maxVal"
+            [current]="currentVal"
+            [radius]="50"
+            [stroke]="10"
+            [semicircle]=true
+            [responsive]=true>
+    </round-progress>
+    <!-- <div class="text text-center">
+      {{label}}
+    </div> -->
+
+</div>
