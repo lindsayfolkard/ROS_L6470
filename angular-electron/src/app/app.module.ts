@@ -13,7 +13,8 @@ import { MessagesComponent } from './messages/messages.component'; // <-- here
 import { MotorService } from './motor.service'
 import { MessageService } from './message.service';
 import { ProgressComponentComponent } from './progress-component/progress-component.component';
-import { SystemOverviewComponent } from './system-overview/system-overview.component'
+import { SystemOverviewComponent } from './system-overview/system-overview.component';
+import { MotorControlComponent } from './motor-control/motor-control.component'
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { SystemOverviewComponent } from './system-overview/system-overview.compo
     MotorDetailComponent,
     MessagesComponent,
     ProgressComponentComponent,
-    SystemOverviewComponent
+    SystemOverviewComponent,
+    MotorControlComponent
   ],
   imports: [
     BrowserModule,

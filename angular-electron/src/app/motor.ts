@@ -22,6 +22,14 @@ export class StatusFlags
   // }
 }
 
+export class Profile
+{
+  accel: number;
+  decel: number;
+  maxSpeed: number;
+  minSpeed: number;
+}
+
 export function areStatusFlagsOk(statusFlags: StatusFlags) : boolean {
   return statusFlags.lastCommandSuccessful && statusFlags.lastCommandValid && !statusFlags.hasThermalWarning && !statusFlags.hasThermalShutdown && !statusFlags.stalledPhaseA
          && !statusFlags.stalledPhaseB && !statusFlags.overCurrent;
@@ -40,6 +48,9 @@ export class Motor {
 
   // General STATUS
   statusFlags: StatusFlags;
+
+  // Current Profile Information
+  profile: Profile;
 }
 
 export class RosConfig

@@ -1,0 +1,247 @@
+<!-- Start of Motor 1 Dashboard-->
+<div class="card row border border-primary ml-3 mr-3 pl-0 pr-0 mb-2" *ngFor="let motor of motors">
+
+  <!-- Start of motor 1 header -->
+  <div class="card-header row rounded text-white bg-primary o-hidden pb-2 mb-0 pt-2  pl-1 ml-0 pr-1 w-100" data-toggle="collapse" [attr.data-target]="'#collapse_control_' + motor.id" aria-expanded="false" aria-controls="collapseBody">
+    <!-- <img src="./assets/img/white-stepper-motor-512.png" width="10" height="10" class="d-inline-block align-top pb-0 mb-0 ml-4 mt-0" alt=""> -->
+    <b class="ml-2 mt-0"> Motor {{motor.id}}</b>
+  </div>
+  <!-- End of motor 1 header -->
+
+  <!-- Start of Card Body-->
+  <div class="card-body pl-0 pr-0 collapse" id="collapse_control_{{motor.id}}">
+
+      <div class="row mt-0 pt-0 ml-0 pl-0">
+
+        <!-- State -->
+        <div class="col-3 border border-primary rounded ml-0 pl-0 pr-0 ml-1 mr-0">
+
+          <div class="row text-primary text-center mx-auto d-block pl-0 pr-0 ml-0 mr-0">
+            <strong>Motor State</strong>
+          </div>
+          <div class="row pb-0 mb-0 ml-0 mr-0 pl-0 pr-0">
+            <div class="col-6 ml-0 pl-0 pr-0 pb-0 mb-0">
+              <div class="GaugeMeter mx-auto d-block" id="GaugeMeter_Speed" data-percent="45" data-theme="light-blue" data-style="Arch" data-width="15" data-size="145" data-text="600" data-stripe="1" data-label="steps/s "></div>
+            </div>
+            <div class="col-6 ml-0 pl-0 pr-0 pb-0 mb-0">
+              <div class="GaugeMeter" id="GaugeMeter_Position" data-percent="75" data-theme="light-blue" data-style="Arch" data-width="15" data-size="145" data-text="200" data-stripe="1" data-label="steps"></div>
+            </div>
+
+          </div>
+
+          <div class="row">
+
+            <div class="col-5 pl-2 ml-3 pb-0 mb-0">
+              <img src="img/blue_cw.gif" width="65" height="65" class="mx-auto d-block align-middle" alt="">
+              <div align="middle" class="mx-auto d-block"><b> CW </b></div>
+            </div>
+            <div class="col-5 pl-2 ml-3 pb-0 mb-0">
+              <div class="row pl-0 pb-1 pt-2 mb-1 pr-0 pb-0">
+                <!-- <div class="led-box"> -->
+                <div class="led-yellow-off ml-4 pl-0 pr-0 mr-2" id="switch_led"></div><b class="pl-0 ml-0">Switch</b>
+              </div>
+              <div class="row pl-0 pb-1 pt-1 ml-0 mb-0 mt-0">
+                <button type="button" class="btn btn-outline-primary mx-auto d-block" data-toggle="collapse" data-target="#collapseExample" title="Popover title"><div class="led-green btn btn-outline-primary"  id="status_led"></div><b class="pl-2">Status</b></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End of State -->
+
+        <!-- Stop Commands -->
+        <div class="col-1 pt-0 mt-0 mr-2 pr-0 ml-0">
+          <div class="card border-primary mt-0 pt-0 mb-0" style="max-width: 20rem;">
+            <div class="card-body mt-0 pt-0 pb-2 pl-2 pr-2">
+              <div class="row text-center mx-auto d-block text-primary pt-0 mb-2">
+                <strong>Stop</strong>
+              </div>
+
+              <div class="row mb-3 w-100 mx-auto d-block">
+                <button type="button" class="btn btn-outline-danger w-100" (click)="hardStop(motor)">Hard Stop</button>
+              </div>
+
+              <div class="row mb-3 w-100 mx-auto d-block">
+                <button type="button" class="btn btn-outline-warning w-100" (click)="softStop(motor)">Soft Stop</button>
+              </div>
+
+              <div class="row mb-3 w-100 mx-auto d-block">
+                <button type="button" class="btn btn-outline-success w-100" (click)="hardHiZ(motor)">HardHiZ</button>
+              </div>
+
+              <div class="row mb-3 w-100 mx-auto d-block">
+                <button type="button" class="btn btn-outline-info w-100" (click)="softHiZ(motor)">SoftHiZ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Of Stop Commands -->
+
+        <!-- Profile -->
+        <div class="col-2 pr-0 pl-0 ml-0 mr-2">
+          <div class="row mb-2 w-100 mx-auto d-block border border-primary rounded">
+            <div class="row text-center mx-auto d-block text-primary">
+              <strong>Profile</strong>
+            </div>
+            <!-- <div class="row form-group ml-1 mr-1"> -->
+            <div class="row ml-2 pl-0">
+              <div class="col-5 ml-0 pl-0 mr-0 pr-0">
+                <label for="exampleInputEmail1" class="pb-0 mb-0"><b>Accel</b></label>
+                <input [(ngModel)]="motor.profile.accel" type="scientific" class="form-control">
+              </div>
+              <div class="col-5 ml-2 pl-0 mr-0 pr-0">
+                <label for="exampleInputEmail1" class="pb-0 mb-0"><b>Decel</b></label>
+                <input [(ngModel)]="motor.profile.decel" type="scientific" class="form-control">
+              </div>
+            </div>
+            <div class="row mt-2 ml-2 pl-0">
+              <div class="col-5 ml-0 pl-0 pr-0 mr-0">
+                <label for="exampleInputEmail1" class="pb-0 mb-0"><b>Min Speed</b></label>
+                <input [(ngModel)]="motor.profile.minSpeed" type="scientific" class="form-control">
+              </div>
+              <div class="col-5 ml-2 pl-0 mr-0 pr-0">
+                <label for="exampleInputEmail1" class="pb-0 mb-0"><b>Max Speed</b></label>
+                <input [(ngModel)]="motor.profile.maxSpeed" type="scientific" class="form-control">
+              </div>
+            </div>
+            <div class="row mt-3 mb-2 ml-2 mr-2">
+              <div class="row mb-2 w-100 mx-auto d-block">
+                <button type="button" class="btn btn-outline-success w-100" (click)="setProfile(motor)">Set Profile</button>
+              </div>
+            </div>
+            <!-- </div> -->
+
+          </div>
+        </div>
+        <!-- End of Profile -->
+
+        <!-- Movement Commands -->
+        <div class="col pr-0 pt-0 mt-0 ml-0 mr-4 pl-0 border border-primary rounded">
+          <!-- <div class="card border-primary mt-0 pt-0 mb-0 ml-0 w-100" style="max-width: 20rem;"> -->
+            <div class="card-body mt-0 pt-0 pb-2 mr-0 pr-0 ml-0 pl-3">
+              <div class="row text-center mx-auto d-block text-primary pt-0 mb-2">
+                <strong>Movement Commands</strong>
+              </div>
+            <div class="row mr-0 pr-0">
+
+              <div class="col-5 mr-0 pr-0">
+                <!-- Go to Position Command -->
+                <div class="row mb-2 w-100 mx-auto d-block border border-primary rounded">
+                  <div class="row text-center mx-auto d-block text-primary">
+                    Go To Position
+                  </div>
+                  <div class="row form-group ml-1 mr-1">
+                    <div class="col-6 mr-0 pr-0 pl-1">
+                      <label for="exampleInputEmail" class="pb-0 mb-0"><b>Position</b></label>
+                      <input type="scientific" class="form-control" id="motor.id" placeholder="motor.position">
+                    </div>
+                    <div class="col-2 align-bottom mt-4">
+                      <button type="button" class="btn btn-outline-success">Go</button>
+                    </div>
+                  </div>
+
+                </div>
+                <!-- End Go To Position Command -->
+
+                <!-- Go To Position Dir Command -->
+                <div class="row mb-2 pb-1 w-100 mx-auto d-block border border-primary rounded pl-0 ml-0">
+                  <div class="row text-center mx-auto d-block text-primary">
+                    Go To Position Dir
+                  </div>
+                  <div class="row form-group ml-0 mr-1 pl-0 pb-0 mb-2">
+                    <div class="col-6 mr-0 pr-0 pl-2">
+                      <label for="exampleInputEmail1" class="pb-0 mb-0"><b>Position</b></label>
+                      <input type="scientific" class="form-control" id="goToPosition" placeholder="i.e 1000">
+                    </div>
+                    <div class="col-4 mr-0 pr-0 ml-0 pl-1">
+                      <label for="dirSelect" class="pt-0 pb-0 mb-0"><b>Dir</b></label>
+                      <select class="form-control pt-0 pb-0 mt-0 ml-0 mr-0" id="dirSelect">
+                        <option>CW</option>
+                        <option>CCW</option>
+                      </select>
+                    </div>
+                    <div class="col-2 align-bottom mt-4 pl-1 pr-0">
+                      <button type="button" class="btn btn-outline-success pl-2 pr-2">Go</button>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- End Go To Position Dir Command -->
+
+                <!-- Go to Position Command -->
+              </div>
+
+              <div class="col-3 ml-0">
+                <div class="row mb-2 w-100 mx-auto d-block border border-primary rounded pr-0 mr-0">
+                  <div class="row text-center mx-auto d-block text-primary">
+                    Run at Speed
+                  </div>
+
+                    <div class="row ml-1 mr-1 mt-1">
+                      <label for="exampleInputEmail1" class="pb-0 mb-0"><b>Speed</b></label>
+                      <input type="scientific" class="form-control" id="goToPosition" placeholder="i.e 1000">
+                    </div>
+
+                    <div class="row ml-1 mr-1 pt-1">
+                      <label for="dirSelect" class="pt-0 pb-0 mb-0"><b>Direction</b></label>
+                      <select class="form-control pt-0 pb-0 mt-0" id="dirSelect">
+                        <option>CW</option>
+                        <option>CCW</option>
+                      </select>
+                    </div>
+
+                    <div class="row align-bottom mt-2 mb-2">
+                      <button type="button" class="btn btn-outline-success pr-1 pl-1 mx-auto d-block">Run</button>
+                    </div>
+
+                </div>
+              </div>
+              <div class="col-4 ml-0 pl-0">
+                <div class="row mb-2 w-100 mx-auto d-block border border-primary rounded">
+
+                  <div class="row text-center mx-auto d-block text-primary">
+                    Go Until
+                  </div>
+
+                  <div class="row form-group ml-1 mr-1 mb-0">
+                    <div class="col-6 mr-0 pr-0 ml-0 pl-0">
+                      <label for="exampleInputEmail1" class="pb-0 mb-0"><b>Speed</b></label>
+                      <input type="scientific" class="form-control" id="goToPosition" placeholder="i.e 1000">
+                    </div>
+
+                    <div class="col-6 mr-0 pr-0 pl-1">
+                      <label for="dirSelect" class="pt-0 pb-0 mb-0 ml-0 pl-0"><b>Direction</b></label>
+                      <select class="form-control pt-0 pb-0 mt-0" id="dirSelect">
+                        <option>CW</option>
+                        <option>CCW</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="row ml-1 mr-1 mt-1 pt-1">
+                      <label for="dirSelect" class="pt-0 pb-0 mb-0"><b>Action</b></label>
+                      <select class="form-control pt-0 pb-0 mt-0" id="dirSelect">
+                        <option>Reset Abs Pos</option>
+                        <option>Copy Abs Pos</option>
+                      </select>
+                  </div>
+
+                  <div class="row align-bottom mt-2 mb-2">
+                    <button type="button" class="btn btn-outline-success mx-auto d-block">Go</button>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+            </div>
+        </div>
+          <!-- </div> -->
+      </div>
+
+  </div>
+  <!-- End of Card Body-->
+
+</div>
+<!-- End of Motor 1 Dashboard-->

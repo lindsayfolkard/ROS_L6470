@@ -10,7 +10,7 @@ export class MotorDetailComponent implements OnInit {
 
   @Input() motor: Motor;
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
   }
