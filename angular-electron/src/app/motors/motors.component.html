@@ -1,8 +1,174 @@
-<div class="card border border-outline border-success">
-  <h2>My Motors</h2>
-  <ul class="motors">
-    <li *ngFor="let motor of motors">
-      <span class="badge">{{motor.id}}</span> {{motor.name}}
+<!-- <div class="card border border-outline border-success"> -->
+  <ul class="motorlist motors w-100 pl-0 ml-0 pr-0 mr-0">
+    <li class="card border-primary pl-0 ml-0 pr-0 mr-0 mb-2 w-50" *ngFor="let motor of motors" (click)="onSelect(motor)" [class.selected]="motor == selectedMotor">
+
+            <div class="card-header text-white bg-primary o-hidden h-10">
+              <!-- <img src="./assets/img/white-stepper-motor-512.png" width="20" height="20" class="d-inline-block align-top" alt=""> -->
+              <b>Motor {{motor.id}}</b>
+            </div>
+            <div class="card-body pl-0 pr-0">
+
+              <div class="container">
+
+                <div class="row">
+
+                  <!-- Motor Image -->
+                  <div class="col-2">
+                    <div class="card border-primary mb-3" style="max-width: 20rem;">
+                      <div class="card-header">
+                        <b>{{motor.type}}</b>
+                      </div>
+                      <div class="card-body">
+                        <img src="./assets/img/nema17.jpg" class="rounded mx-auto d-block img-fluid">
+                      </div>
+                    </div>
+                  </div>
+                  <!-- End of Motor Image -->
+
+                  <!-- Motor Details -->
+                  <div class="col-4">
+
+                    <div class="row pb-0 mb-0">
+                      <div class="col-5 ml-1 pl-0 pr-0 pb-0 mb-0">
+                        <app-progress-component [current]="motor.position" [label]="steps"></app-progress-component>
+                        <div class="text-center pt-0 mt-0"><strong>steps</strong></div>
+                      </div>
+                      <div class="col-5 ml-2 pl-0 pr-0 pb-0 mb-0">
+                        <app-progress-component [current]="motor.speed" [label]="steps/s"></app-progress-component>
+                        <div class="text-center pt-0 mt-0"><strong>steps/s</strong></div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+
+                      <div class="col-md-4 pl-2 ml-3 pb-0 mb-0">
+
+                        <div *ngIf="motor.dirCW == true">
+                          <img src="./assets/img/blue_cw.gif" width="75" height="75" class="mx-auto d-block align-middle" alt="">
+                          <div align="middle" class="mx-auto d-block"><b> CW </b></div>
+                        </div>
+                        <div *ngIf="motor.dirCW == false">
+                          <img src="./assets/img/blue_ccw.gif" width="75" height="75" class="mx-auto d-block align-middle" alt="">
+                          <div align="middle" class="mx-auto d-block"><b> CCW </b></div>
+                        </div>
+                      </div>
+                      <div class="col-4 pl-2 ml-3 pb-0 mb-0">
+                        <div class="row pl-0 pb-1 pt-2 mb-1 pr-0">
+                          <!-- <div class="led-box"> -->
+                          <div class="led-yellow-off ml-4 pl-0 pr-0 mr-2" id="switch_led" [class.led-yellow-on]="motor.isSwitchClosed === true" [class.led-yellow-off]="motor.isSwitchClosed === false"></div><b class="pl-0 ml-0">Switch</b>
+                        </div>
+                        <div class="row pl-0 pb-1 pt-3 mb-1">
+                          <button type="button" class="btn btn-outline-primary mx-auto d-block" data-toggle="collapse" [attr.data-target]="'#collapse' + motor.id" title="Popover title"><div class="led-green btn btn-outline-primary"  id="status_led"></div><b class="pl-2">Status</b></button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- End of Motor Detail -->
+
+                </div>
+              </div>
+
+            </div>
+
+            <div class="collapse" id="collapse{{motor.id}}">
+              <div class="card border-info mr-2 ml-2 mt-2 mb-2">
+                <div class="card-header">
+                  General Status
+                </div>
+                <div class="card-body">
+
+                  <div class="row pt-2 pb-2">
+                    <div class="col">
+                      <div class="row">
+                        <div class="ml-4 pl-0 pr-0 mr-2" id="switch_led" [class.led-yellow-on]="motor.statusFlags.isHighZ === true" [class.led-yellow-off]="motor.statusFlags.isHighZ === false"></div><b class="pl-0 ml-0">HighZ</b>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="row">
+                        <div class="led-yellow-off ml-4 pl-0 pr-0 mr-2" id="switch_led" [class.led-yellow-on]="motor.statusFlags.isBusy === true" [class.led-yellow-off]="motor.statusFlags.isBusy === false"></div><b class="pl-0 ml-0">Busy</b>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row pt-2 pb-2">
+                    <div class="col">
+                      <div class="row">
+                        <div class="led-yellow-off ml-4 pl-0 pr-0 mr-2" id="switch_led" [class.led-yellow-on]="motor.statusFlags.switchClosed === true" [class.led-yellow-off]="motor.statusFlags.switchClosed === false"></div><b class="pl-0 ml-0">SwitchClosed</b>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="row">
+                        <div class="led-yellow-off ml-4 pl-0 pr-0 mr-2" id="switch_led" [class.led-yellow-on]="motor.statusFlags.switchEvent === true" [class.led-yellow-off]="motor.statusFlags.switchEvent === false"></div><b class="pl-0 ml-0">SwitchEvent</b>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row pt-2 pb-2">
+                    <div class="col">
+                      <div class="row">
+                        <div class="led-yellow-off ml-4 pl-0 pr-0 mr-2" id="switch_led"[class.led-yellow-on]="motor.statusFlags.stepClock === true" [class.led-yellow-off]="motor.statusFlags.stepClock === false"></div><b class="pl-0 ml-0">StepClock</b>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="card border-danger mr-2 ml-2 mt-2 mb-2">
+                <div class="card-header">
+                  Warnings
+                </div>
+                <div class="card-body">
+                  <div class="row pt-2 pb-2">
+                    <div class="col">
+                      <div class="row">
+                        <div class="led-red ml-4 pl-0 pr-0 mr-2" id="switch_led" [class.led-green]="motor.statusFlags.lastCommandSuccessful === true" [class.led-red]="motor.statusFlags.lastCommandSuccessful === false"></div><b class="pl-0 ml-0">LastCommandSuccess</b>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="row">
+                        <div class="led-green ml-4 pl-0 pr-0 mr-2" id="switch_led" [class.led-green]="motor.statusFlags.lastCommandValid === true" [class.led-red]="motor.statusFlags.lastCommandValid === false"></div><b class="pl-0 ml-0">LastCommandValid</b>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row pt-2 pb-2">
+                    <div class="col">
+                      <div class="row">
+                        <div class="led-green ml-4 pl-0 pr-0 mr-2" id="switch_led" [class.led-red]="motor.statusFlags.hasThermalWarning === true" [class.led-green]="motor.statusFlags.hasThermalWarning === false"></div><b class="pl-0 ml-0">ThermalWarning</b>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="row">
+                        <div class="led-green ml-4 pl-0 pr-0 mr-2" id="switch_led" [class.led-red]="motor.statusFlags.hasThermalShutdown === true" [class.led-green]="motor.statusFlags.hasThermalShutdown === false"></div><b class="pl-0 ml-0">ThermalShutdown</b>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row pt-2 pb-2">
+                    <div class="col">
+                      <div class="row">
+                        <div class="led-green ml-4 pl-0 pr-0 mr-2" id="switch_led"[class.led-red]="motor.statusFlags.stalledPhaseA === true" [class.led-green]="motor.statusFlags.stalledPhaseA === false"></div><b class="pl-0 ml-0">StallPhaseA</b>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="row">
+                        <div class="led-green ml-4 pl-0 pr-0 mr-2" id="switch_led" [class.led-red]="motor.statusFlags.stalledPhaseB === true" [class.led-green]="motor.statusFlags.stalledPhaseB === false"></div><b class="pl-0 ml-0">StallPhaseB</b>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row pt-2 pb-2">
+                    <div class="col">
+                      <div class="row">
+                        <div class="led-green ml-4 pl-0 pr-0 mr-2" id="switch_led" [class.led-red]="motor.statusFlags.overCurrent === true" [class.led-green]="motor.statusFlags.overCurrent === false"></div><b class="pl-0 ml-0">OverCurrent</b>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
     </li>
   </ul>
-</div>

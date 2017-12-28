@@ -1,39 +1,153 @@
-<main class="content">
+<!-------------- Dasboard Page ------------------->
+<div class="content-wrapper hideable_content_page" id="dashboard_page" style="display:none">
+  <div class="container-fluid">
 
-    <h1>Electron Timer</h1>
+    <!-- System Overview -->
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active"><strong>
+        <i class="fa fa-desktop fa-fw"></i> System Overview </strong>
+      </li>
+    </ol>
+    <div class="row">
+      <div class="col-md-4 col-sm-5 mb-3">
+        <app-system-overview></app-system-overview>
+      </div>
+      <div class="col-md-8 col-sm-5 mb-3 ml-0">
+        <app-messages></app-messages>
+      </div>
+    </div>
+    <!-- End of System Overview -->
 
-    <div class="progress-wrapper" *ngIf="maxVal">
+      <!-- Start of Motor Status -->
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active"><strong>
+        <i class="fa  fa-gears fa-fw"></i> Stepper Motor Status </strong></li>
+    </ol>
 
-        <div class="text" *ngIf="!isFinished">
-          {{ max - current | number: '1.1-1' }}
-        </div>
+      <app-motors></app-motors>
 
-        <div class="text" *ngIf="isFinished">
-            ding!
-            <audio src="assets/chime.mp3" autoplay></audio>
-        </div>
+    <!-- End of Motor Status-->
 
-        <round-progress
-                [max]="maxVal"
-                [current]="currentVal"
-                [radius]="100"
-                [stroke]="25">
-        </round-progress>
+  </div>
+</div>
+<!-- End of Dashboard Page -->
+
+<!------------ Start of Control Page -------------->
+<div class="content-wrapper hideable_content_page" id="control_page" style="display:none">
+  <div class="container-fluid">
+
+    <!-- Control BreadCrumb-->
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active"><strong>
+        <i class="fa fa-desktop fa-fw"></i> Control </strong>
+      </li>
+    </ol>
+
+    <!-- Control Content -->
+    <div class="row">
 
     </div>
+    <!-- End of Crontol Content-->
 
-    <div class="controls-wrapper">
-            <div>
-              <label>Seconds</label>
-              <input class="input" placeholder="number of seconds" type="text"
-              [(ngModel)]="max"
-              (keydown)="reset()">
-            </div>
+    <!-- Start of Plot Content -->
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active"><strong>
+        <i class="fa fa-bar-chart-o fa-fw"></i> Real Time Plots </strong>
+      </li>
+    </ol>
 
-        <button class="button is-info" *ngIf="currentVal <= 0" (click)="start()">Start</button>
-        <button class="button is-danger" *ngIf="!isFinished" (click)="finish()">Finish</button>
+    <div class="row">
+
     </div>
+    <!-- End of Plot Content -->
 
-    <app-motors></app-motors>
+  </div>
+</div>
+<!------------  End of Control Page --------------->
 
-</main>
+<!------------ Start of Driver Config Page --------------->
+<div class="content-wrapper hideable_content_page" id="driver_config_page">
+  <div class="container-fluid">
+
+    <!-- Breadcrumb-->
+    <div class="breadcrumb row ml-0 mr-0 pb-0 pt-0">
+      <div class="breadcrumb-item active col-3 ml-4 pl-0 mt-3"><strong>
+        <i class="fa fa-desktop fa-fw"></i> Driver Config </strong>
+      </div>
+      <div class="col-6">
+      </div>
+      <div class="col-2">
+        <div class="p-2">
+          <span class="switch">
+             <input type="checkbox" class="switch" id="switch-two" checked="1">
+             <label for="switch-two"><b>Locked</b></label>
+           </span>
+        </div>
+      </div>
+    </div>
+    <!-- End of breadCrumb-->
+
+    <!--- Overall ROS Config --->
+    <div class="row">
+    </div>
+    <!--- End Overall ROS Config --->
+
+    <!-- Motor Configuration Breadcrumb-->
+    <div class="breadcrumb row ml-0 mr-0 pb-3 pt-0">
+      <div class="breadcrumb-item active col-3 ml-4 pl-0 mt-3"><strong>
+        <i class="fa fa-gears fa-fw"></i> Motor Configurations</strong>
+      </div>
+    </div>
+    <!-- End of Breadcrumbs-->
+
+    <!--- Motor Configurations --->
+    <div class="row">
+
+    </div>
+    <!--- End Motor Configurations --->
+
+  <!-- Motor Configuration Modal -->
+  <!-- End of Motor Configuration Modal -->
+  </div>
+</div>
+<!------------ End of Driver Config Page  ---------------->
+
+<!------------ Start of Joystick Config Page --------------->
+<div class="content-wrapper hideable_content_page" id="joystick_config_page" style="display:none">
+  <div class="container-fluid">
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active"><strong>
+        <i class="fa fa-desktop fa-fw"></i> Joystick Config </strong>
+      </li>
+    </ol>
+
+  </div>
+</div>
+<!------------ End of Joystick Config Page  ---------------->
+
+<!------------ Start of What is this Page --------------->
+<div class="content-wrapper hideable_content_page" id="what_is_this_page" style="display:none">
+  <div class="container-fluid">
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active"><strong>
+        <i class="fa fa-desktop fa-fw"></i> What is this? </strong>
+      </li>
+    </ol>
+  </div>
+</div>
+<!------------ End of What is this Page  ---------------->
+
+<!------------ Start of Setup Guide Page --------------->
+<div class="content-wrapper hideable_content_page" id="setup_page" style="display:none">
+  <div class="container-fluid">
+    <!-- Breadcrumbs-->
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active"><strong>
+        <i class="fa fa-desktop fa-fw"></i> Setup Guide</strong>
+      </li>
+    </ol>
+  </div>
+</div>
+<!------------ End of Setup Guide Page  ---------------->
