@@ -1,0 +1,119 @@
+<div class="card border-success mr-2 ml-2 mt-2 mb-2">
+      <div class="card-header text-white bg-success o-hidden h-10">
+        <!-- <img src="./assets/img/white-stepper-motor-512.png" width="20" height="20" class="d-inline-block align-top" alt=""> -->
+        <b>ROS NODE</b>
+      </div>
+      <div class="card-body">
+        <div class="row ml-1">
+          <div class="card border border-success mr-4">
+            <div class="row mx-auto d-block mt-1">
+              <strong> <p class="text-success text-center"> Config File</p> </strong>
+            </div>
+            <div class="row mt-1 mx-auto d-block ">
+              <div class="form-group mx-sm-3 ">
+                <!-- <label for="inputPassword2" class="sr-only">~/ROS/overall_cfg.txt</label> -->
+                <input [(ngModel)]="rosConfig.localCfgFile" type="password" class="form-control">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col mt-3 ml-3 mr-0">
+                <button type="submit" class="btn btn-outline-success" (click)="reloadCfgFile()">Reload</button>
+              </div>
+              <div class="col mt-3">
+                <button type="submit" class="btn btn-outline-success" (click)="saveCfgFile()">Save</button>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="mr-4">
+            <div class="dropdown">
+              <button class="btn btn-outline-success dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">
+                <strong> Driver </strong>
+            <!-- <img src="img/powerstep01.jpg" width="120" height="120" class="rounded mx-auto d-block"> -->
+              </button>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                <li class="dropdown-item border-success" *ngFor="let driver of driverTypes" ><strong> {{driver}} </strong> </li>
+                <!-- <a class="dropdown-item border-success" ><strong> L6470 </strong></a>
+                <a class="dropdown-item" ><strong> L6472 </strong></a>
+                <a class="dropdown-item" ><strong> L6480 </strong></a> -->
+              </ul>
+            </div>
+          </div>
+
+          <div class="card border border-success mr-4 pr-3 pl-3">
+            <div class="row mx-auto d-block mt-1">
+              <strong> <p class="text-success text-center mb-1"> Comms </p> </strong>
+            </div>
+            <p class="text-success text-center mb-0 mt-0"> Interface</p>
+            <select class="form-control border border-success outline-success txt-success">
+              <option class="txt-success"><p class="txt-success">SPI</p></option>
+              <option class="txt-success"><p class="txt-success">USB</p></option>
+            </select>
+
+            <p class="text-success text-center mb-0 mt-0"> Bus</p>
+            <select class="form-control border border-success outline-success txt-success">
+              <option class="txt-success"><p class="txt-success">0</p></option>
+              <option class="txt-success"><p class="txt-success">1</p></option>
+              <option class="txt-success"><p class="txt-success">2</p></option>
+            </select>
+          </div>
+
+          <div class="card border border-success mr-4 pr-3 pl-3">
+            <div class="row mx-auto d-block mt-1">
+              <strong> <p class="text-success text-center mb-1"> Logging </p> </strong>
+            </div>
+            <p class="text-success text-center mb-0 mt-0"> Driver Debug</p>
+            <select class="form-control border border-success outline-success txt-success">
+              <option class="txt-success"><p class="txt-success">Nothing</p></option>
+              <option class="txt-success"><p class="txt-success">Only Actions</p></option>
+              <option class="txt-success"><p class="txt-success">Everything</p></option>
+            </select>
+
+            <p class="text-success text-center mb-0 mt-0"> ROS Debug</p>
+            <select class="form-control border border-success outline-success txt-success">
+              <option class="txt-success"><p class="txt-success"> >= Info </p></option>
+              <option class="txt-success"><p class="txt-success"> >= Warn </p></option>
+              <option class="txt-success"><p class="txt-success"> >= Error </p></option>
+            </select>
+          </div>
+
+          <div class="col">
+            <div class="row  w-100">
+              <div class="card border-success w-100 mx-auto d-block" style="max-width: 20rem;">
+                <div class="card-header border-success text-center pt-1 pb-1 w-100"><b>Driver Config State</b></div>
+                <div class="card-body text-success pt-2 pb-2  w-100">
+                  <p class="card-title text-center">Configuration (Ok)</p>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-4 w-100 mx-auto d-block">
+              <button type="submit" class="btn btn-outline-success w-100 mx-auto d-block pt-3 pb-3" data-toggle="modal" data-target="#exampleModal">Re-Configure Driver</button>
+
+              <!-- Modal -->
+              <div class="modal fade border border-danger" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header text-white bg-danger text-center pt-1 pb-1">
+                      <h5 class="modal-title text-center" id="exampleModalLabel"><strong><p class="text-center">Warning</p></strong></h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                      Reconfiguring the driver will stop the current node and restart. Are you sure you want to continue?
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- End of Modal -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+</div>

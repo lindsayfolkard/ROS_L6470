@@ -1,0 +1,264 @@
+<div class="card row border border-primary ml-3 mr-3 pl-0 pr-0 mb-2">
+
+  <div class="card-header row rounded text-white bg-primary o-hidden pb-2 mb-0 pt-2  pl-1 ml-0 pr-1 w-100" data-toggle="collapse" data-target="#collapseBody" aria-expanded="false" aria-controls="collapseBody">
+    <!-- <img src="img/white-stepper-motor-512.png" width="20" height="20" class="d-inline-block align-top pb-0 mb-0 ml-4 mt-0" alt=""> -->
+    <b class="ml-2 mt-0"> Motor 1</b>
+  </div>
+
+  <div class="card-body pl-0 pr-0 ml-0 mr-0 collapse" id="collapseBody">
+
+    <div class="row border border-primary rounded ml-2 mr-2">
+      <div class="row border btn btn-outline-primary text-center mx-auto d-block w-100" data-toggle="collapse" data-target="#collapseOverallConfig" aria-expanded="false" aria-controls="collapseOverallConfig">
+        <strong class=" mx-auto d-block mt-1"> Overall Config </strong>
+      </div>
+
+      <div class="row collapse w-100" id="collapseOverallConfig">
+      <div class="row ml-2">
+
+        <!-- Stepper Motor --->
+        <div class="col-lg-2 pb-2">
+          <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#motor_config_modal">
+
+            <strong class="text-primary text-center mt-1"> Stepper Motor </strong>
+
+            <div class="card-body mt-0 pt-0 mb-0">
+              <img src="img/nema17.jpg" width="125" height="175" class="rounded mx-auto d-block">
+            </div>
+
+            <div class="row ml-2 mb-2 mt-0 pr-0 mr-2 pb-2">
+                <select class="form-control border border-primary outline-primary txt-success txt-center">
+                  <option class="txt-success"><p>NEMA17-H3056</p></option>
+                  <option class="txt-success"><p>NEMA23-H2175</p></option>
+                  <option class="txt-success"><p>NEMA17-H3167</p></option>
+                </select>
+            </div>
+          </button>
+        </div>
+        <!--- End of Stepper Motor -->
+
+        <!--- General Properties --->
+        <div class="col-lg-2 card border border-primary mt-0 pr-4 mr-2 pl-4 ml-0">
+
+          <div class="row">
+
+            <strong class="text-primary  mx-auto d-block mt-1"> General Properties </strong>
+            <form>
+
+              <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" data-html="true"
+              title="<strong>Full Step Threshold Speed</strong> When the actual speed exceeds this value,
+               the step mode is automatically switched to full-step two-phase on">
+
+                  <label for="validationDefault05"><b>Full Step Threshold Speed</b></label>
+                  <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 500 (steps/s)" required>
+                  <div class="invalid-feedback">
+                    Please provide a valid zip.
+                  </div>
+              </div>
+
+              <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" title="The value used
+              by the winding resistance thermal drift compensation system (see Section 7.6 on page 37).">
+                  <label for="validationDefault05"><b>Thermal Drift Coefficient</b></label>
+                  <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
+                  <div class="invalid-feedback">
+                    Please provide a valid zip.
+                  </div>
+              </div>
+
+              <div class="row ml-2 mr-2 mt-2">
+                  <label for="validationDefault05"><b>Control Mode</b></label>
+                  <select class="form-control border border-primary outline-primary txt-success txt-center">
+                    <option class="txt-success"><p>Voltage Mode</p></option>
+                    <option class="txt-success"><p>Current Mode</p></option>
+                  </select>
+              </div>
+
+            </form>
+          </div>
+
+        </div>
+        <!--- General Properties -->
+
+              <!--- -->
+              <div class="col-lg-2 card border border-primary rounded pl-1 pr-1 ml-2">
+                <!-- <div class="row pb-4"> -->
+                <div class="row text-center">
+                  <strong class="text-primary mt-1 text-center mx-auto d-block"> Current Thresholds </strong>
+                </div>
+                <form>
+                  <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" data-html="true"
+                  title="When the current in any of the Power MOSFETs exceeds a programmed overcurrent threshold,
+                  the STATUS register OCD flag is forced low until the overcurrent event has
+                  expired and a GetStatus command is sent to the IC (see Section 9.1.22 on page 55 and
+                  Section 9.1.17 on page 47). The overcurrent event expires when all the Power MOSFET
+                  currents fall below the programmed overcurrent threshold.">
+
+                      <label for="validationDefault05 text-center"><b>Over Current Threshold</b></label>
+                      <select class="form-control border border-primary outline-primary txt-success txt-center">
+                        <option class="txt-success"><p>375 ma</p></option>
+                        <option class="txt-success"><p>NEMA23-H2175</p></option>
+                        <option class="txt-success"><p>NEMA17-H3167</p></option>
+                      </select>
+                  </div>
+                  <div class="row ml-2 mr-2 mt-2">
+                      <label for="validationDefault05 text-center"><b>Stall Threshold</b></label>
+                      <select class="form-control border border-primary outline-primary txt-success txt-center">
+                        <option class="txt-success"><p>375 ma</p></option>
+                        <option class="txt-success"><p>NEMA23-H2175</p></option>
+                        <option class="txt-success"><p>NEMA17-H3167</p></option>
+                      </select>
+                  </div>
+                  <div class="row ml-2 mr-2 mt-2">
+                      <label for="validationDefault05 text-center"><b>Over Current Action</b></label>
+                      <select class="form-control border border-primary outline-primary txt-success txt-center">
+                        <option class="txt-success"><p>Bridges shutdown</p></option>
+                        <option class="txt-success"><p>Bridges don't shutdown</p></option>
+                      </select>
+                  </div>
+                </form>
+                <!-- </div> -->
+              </div>
+              <!--- -->
+
+              <!--- -->
+              <div class="col-2 card border border-primary rounded pl-1 pr-1 ml-3 mr-0">
+                <!-- <div class="row pb-4"> -->
+                <div class="row text-center">
+                  <strong class="text-primary mt-1 text-center mx-auto d-block"> Micro Stepping </strong>
+                </div>
+                  <form>
+                    <div class="row ml-2 mr-2 mt-2">
+
+                        <label for="validationDefault05 text-center"><b>Step Mode</b></label>
+                        <select class="form-control border border-primary outline-primary txt-success txt-center">
+                          <option class="txt-success"><p>STEP_SEL_1</p></option>
+                          <option class="txt-success"><p>NEMA23-H2175</p></option>
+                          <option class="txt-success"><p>NEMA17-H3167</p></option>
+                        </select>
+                    </div>
+                    <div class="row ml-2 mr-2 mt-2">
+                        <label for="validationDefault05 text-center"><b>Sync Select</b></label>
+                        <select class="form-control border border-primary outline-primary txt-success txt-center">
+                          <option class="txt-success"><p>SYNC_SEL_1_2</p></option>
+                          <option class="txt-success"><p>NEMA23-H2175</p></option>
+                          <option class="txt-success"><p>NEMA17-H3167</p></option>
+                        </select>
+                    </div>
+                    <div class="row ml-2 mr-2 mt-4">
+                      <span class="switch">
+                        <input type="checkbox" class="switch" id="switch-sync-enabled" checked="1">
+                        <label for="switch-sync-enabled"><b>Sync Enabled</b></label>
+                      </span>
+                    </div>
+                  </form>
+                <!-- </div> -->
+              </div>
+              <!--- -->
+
+              <!--- -->
+              <div class="col-3 ml-2 pl-1">
+                <!-- <div class="row pb-4"> -->
+                <div class="row card border border-primary ml-1 mr-1">
+                  <strong class="text-primary text-center mt-1"> Electrical Properties </strong>
+                  <form>
+                    <div class="row ml-2 mr-2 mt-2">
+
+                      <div class="col-md-6 mb-3">
+                        <label for="validationDefault05 text-center"><b>Oscillator</b></label>
+                        <select class="form-control border border-primary outline-primary txt-success txt-center">
+                          <option class="txt-success"><p>INT 16MHZ</p></option>
+                        </select>
+                      </div>
+
+                      <div class="col-md-6 mb-3">
+                        <label for="validationDefault05 text-center"><b>Switch</b></label>
+                        <select class="form-control border border-primary outline-primary txt-success txt-center">
+                          <option class="txt-success"><p>HARD STOP</p></option>
+                        </select>
+                      </div>
+
+                    </div>
+                  </form>
+                </div>
+
+                <!--- --->
+                <div class="row card border border-primary ml-1 mr-1 mt-2">
+                  <strong class="text-primary text-center mt-1"> Alarm States </strong>
+                  <div class="row pl-1">
+
+                    <div class="col-6">
+                      <span class="switch switch-sm">
+                        <input type="checkbox" class="switch" id="switch-over-current" checked="1">
+                        <label for="switch-over-current"><b>OverCurrent</b></label>
+                      </span>
+                    </div>
+
+                    <div class="col-6">
+                      <span class="switch switch-sm">
+                        <input type="checkbox" class="switch" id="switch-thermal-shutdown" checked="1">
+                        <label for="switch-thermal-shutdown"><b>ThermalShut</b></label>
+                      </span>
+                    </div>
+
+                  </div>
+                  <div class="row pl-1">
+
+                    <div class="col-6">
+                      <span class="switch switch-sm">
+                        <input type="checkbox" class="switch" id="switch-thermal-warn" checked="1">
+                        <label for="switch-thermal-warn"><b>ThermalWarn</b></label>
+                      </span>
+                    </div>
+
+                    <div class="col-6">
+                      <span class="switch switch-sm">
+                        <input type="checkbox" class="switch" id="switch-under-volt" checked="1">
+                        <label for="switch-under-volt"><b>UnderVolt</b></label>
+                      </span>
+                    </div>
+
+                  </div>
+                  <div class="row pl-1">
+
+                    <div class="col-6">
+                      <span class="switch switch-sm">
+                        <input type="checkbox" class="switch" id="switch-stall-detectA" checked="1">
+                        <label for="switch-stall-detectA"><b>StallDetectA</b></label>
+                      </span>
+                    </div>
+
+                    <div class="col-6">
+                      <span class="switch switch-sm">
+                        <input type="checkbox" class="switch" id="switch-stall-detectB" checked="1">
+                        <label for="switch-stall-detectB"><b>StallDetectB</b></label>
+                      </span>
+                    </div>
+
+                  </div>
+                  <div class="row pl-1">
+
+                    <div class="col-6">
+                      <span class="switch switch-sm">
+                        <input type="checkbox" class="switch" id="switch-switch-turn-on" checked="1">
+                        <label for="switch-switch-turn-on"><b>SwitchTurn</b></label>
+                      </span>
+                    </div>
+
+                    <div class="col-6">
+                      <span class="switch switch-sm">
+                        <input type="checkbox" class="switch" id="switch-bad-command" checked="1">
+                        <label for="switch-bad-command"><b>BadCommand</b></label>
+                      </span>
+                    </div>
+
+                  </div>
+                </div>
+                <!--- --->
+
+                <!-- </div> -->
+              </div>
+              <!--- -->
+
+            </div>
+
+            <!-- End of Overall Config Page -->
+          </div>

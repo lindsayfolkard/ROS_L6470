@@ -14,7 +14,9 @@ import { MotorService } from './motor.service'
 import { MessageService } from './message.service';
 import { ProgressComponentComponent } from './progress-component/progress-component.component';
 import { SystemOverviewComponent } from './system-overview/system-overview.component';
-import { MotorControlComponent } from './motor-control/motor-control.component'
+import { MotorControlComponent } from './motor-control/motor-control.component';
+import { MotorConfigComponent } from './motor-config/motor-config.component';
+import { RosConfigComponent } from './ros-config/ros-config.component'
 
 @NgModule({
   declarations: [
@@ -25,7 +27,9 @@ import { MotorControlComponent } from './motor-control/motor-control.component'
     MessagesComponent,
     ProgressComponentComponent,
     SystemOverviewComponent,
-    MotorControlComponent
+    MotorControlComponent,
+    MotorConfigComponent,
+    RosConfigComponent
   ],
   imports: [
     BrowserModule,
