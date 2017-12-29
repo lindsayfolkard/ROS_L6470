@@ -34,9 +34,6 @@
               </button>
               <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
                 <li class="dropdown-item border-success" *ngFor="let driver of driverTypes" ><strong> {{driver}} </strong> </li>
-                <!-- <a class="dropdown-item border-success" ><strong> L6470 </strong></a>
-                <a class="dropdown-item" ><strong> L6472 </strong></a>
-                <a class="dropdown-item" ><strong> L6480 </strong></a> -->
               </ul>
             </div>
           </div>
@@ -47,15 +44,13 @@
             </div>
             <p class="text-success text-center mb-0 mt-0"> Interface</p>
             <select class="form-control border border-success outline-success txt-success">
-              <option class="txt-success"><p class="txt-success">SPI</p></option>
-              <option class="txt-success"><p class="txt-success">USB</p></option>
+              <option *ngFor="let driverInterface of driverInterfaces" class="txt-success"><p class="txt-success">{{driverInterface}}</p></option>
             </select>
 
             <p class="text-success text-center mb-0 mt-0"> Bus</p>
             <select class="form-control border border-success outline-success txt-success">
               <option class="txt-success"><p class="txt-success">0</p></option>
               <option class="txt-success"><p class="txt-success">1</p></option>
-              <option class="txt-success"><p class="txt-success">2</p></option>
             </select>
           </div>
 
@@ -65,9 +60,7 @@
             </div>
             <p class="text-success text-center mb-0 mt-0"> Driver Debug</p>
             <select class="form-control border border-success outline-success txt-success">
-              <option class="txt-success"><p class="txt-success">Nothing</p></option>
-              <option class="txt-success"><p class="txt-success">Only Actions</p></option>
-              <option class="txt-success"><p class="txt-success">Everything</p></option>
+              <option class="txt-success" *ngFor="let debugLevel of driverDebugLevels"><p class="txt-success">{{debugLevel}}</p></option>
             </select>
 
             <p class="text-success text-center mb-0 mt-0"> ROS Debug</p>
@@ -83,15 +76,15 @@
               <div class="card border-success w-100 mx-auto d-block" style="max-width: 20rem;">
                 <div class="card-header border-success text-center pt-1 pb-1 w-100"><b>Driver Config State</b></div>
                 <div class="card-body text-success pt-2 pb-2  w-100">
-                  <p class="card-title text-center">Configuration (Ok)</p>
+                  <p class="card-title text-center">{{rosConfig.driverConfigState}}</p>
                 </div>
               </div>
             </div>
             <div class="row mt-4 w-100 mx-auto d-block">
-              <button type="submit" class="btn btn-outline-success w-100 mx-auto d-block pt-3 pb-3" data-toggle="modal" data-target="#exampleModal">Re-Configure Driver</button>
+              <button type="submit" class="btn btn-outline-success w-100 mx-auto d-block pt-3 pb-3" data-toggle="modal" data-target="#exampleModal" (click)="reConfigureDriver()">Re-Configure Driver</button>
 
               <!-- Modal -->
-              <div class="modal fade border border-danger" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <!-- <div class="modal fade border border-danger" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-header text-white bg-danger text-center pt-1 pb-1">
@@ -109,7 +102,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
               <!-- End of Modal -->
             </div>
           </div>

@@ -1,8 +1,8 @@
-<div class="card row border border-primary ml-3 mr-3 pl-0 pr-0 mb-2">
+<div class="card row border border-primary ml-3 mr-3 pl-0 pr-0 mb-2" *ngFor="let config of motorConfigs">
 
   <div class="card-header row rounded text-white bg-primary o-hidden pb-2 mb-0 pt-2  pl-1 ml-0 pr-1 w-100" data-toggle="collapse" data-target="#collapseBody" aria-expanded="false" aria-controls="collapseBody">
     <!-- <img src="img/white-stepper-motor-512.png" width="20" height="20" class="d-inline-block align-top pb-0 mb-0 ml-4 mt-0" alt=""> -->
-    <b class="ml-2 mt-0"> Motor 1</b>
+    <b class="ml-2 mt-0"> Motor {{config.id}}</b>
   </div>
 
   <div class="card-body pl-0 pr-0 ml-0 mr-0 collapse" id="collapseBody">
@@ -22,7 +22,7 @@
             <strong class="text-primary text-center mt-1"> Stepper Motor </strong>
 
             <div class="card-body mt-0 pt-0 mb-0">
-              <img src="img/nema17.jpg" width="125" height="175" class="rounded mx-auto d-block">
+              <img src="./assets/img/nema17.jpg" width="125" height="175" class="rounded mx-auto d-block">
             </div>
 
             <div class="row ml-2 mb-2 mt-0 pr-0 mr-2 pb-2">
@@ -49,19 +49,13 @@
                the step mode is automatically switched to full-step two-phase on">
 
                   <label for="validationDefault05"><b>Full Step Threshold Speed</b></label>
-                  <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 500 (steps/s)" required>
-                  <div class="invalid-feedback">
-                    Please provide a valid zip.
-                  </div>
+                  <input [(ngModel)]="config.fullStepThresholdSpeed" type="scientific" class="form-control" id="validationDefault05" required>
               </div>
 
               <div class="row ml-2 mr-2 mt-2" data-toggle="tooltip" data-placement="top" title="The value used
               by the winding resistance thermal drift compensation system (see Section 7.6 on page 37).">
                   <label for="validationDefault05"><b>Thermal Drift Coefficient</b></label>
-                  <input type="scientific" class="form-control" id="validationDefault05" placeholder="i.e 4.5" required>
-                  <div class="invalid-feedback">
-                    Please provide a valid zip.
-                  </div>
+                  <input type="scientific" class="form-control" id="validationDefault05" [(ngModel)]="config.thermalDriftCoefficient" required>
               </div>
 
               <div class="row ml-2 mr-2 mt-2">

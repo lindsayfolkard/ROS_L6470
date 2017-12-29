@@ -19,6 +19,8 @@ export class RosConfigComponent implements OnInit {
   driverDebugLevels = DriverDebugLevel;
   driverInterfaces = DriverInterfaces;
 
+  // Configuration state
+
   //constructor(private configService: ConfigService) { }
 
   ngOnInit(){}
@@ -36,6 +38,10 @@ export class RosConfigComponent implements OnInit {
   }
 
   saveCfgFile(): void {
+
+  }
+
+  reConfigureDriver(): void {
 
   }
 
