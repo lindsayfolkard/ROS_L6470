@@ -44,5 +44,5 @@ export class OverallConfig {
   syncEnabled: boolean;
   oscillator: string;
   switchAction: string;
-  alarmStates: alarmStates;
+  alarmStates: AlarmStates;
 }
