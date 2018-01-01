@@ -29,6 +29,9 @@ class AbstractDriver
     virtual std::vector<Status> getStatus() = 0;
     virtual Status getStatus(int motor) = 0;
 
+    // Get status from every motor and clear the status flags...
+    virtual std::vector<Status> clearStatus() = 0;
+
     // Individual get functions if only very specific data needed
     virtual std::vector<bool> isBusy() = 0;
     virtual bool isBusy(int motor) = 0;

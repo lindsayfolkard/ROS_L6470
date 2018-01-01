@@ -17,6 +17,12 @@ SimDriver::getStatus(int motor){
     return Status();
 }
 
+std::vector<Status>
+SimDriver::clearStatus()
+{
+    return getStatus();
+}
+
 // Individual get functions if only very specific data needed
 std::vector<bool>
 SimDriver::isBusy(){

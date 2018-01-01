@@ -44,6 +44,9 @@ public:
     virtual std::vector<Status> getStatus() override;
     virtual Status getStatus(int motor) override;
 
+    // Gets status and clears the status flags
+    virtual std::vector<Status> clearStatus() override;
+
     // Individual get functions if only very specific data needed
     virtual std::vector<bool> isBusy() override;
     virtual bool isBusy(int motor) override;

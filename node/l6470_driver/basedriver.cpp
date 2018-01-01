@@ -65,6 +65,36 @@ BaseDriver::getStatus(int motor)
     return states[motor];
 }
 
+std::vector<Status>
+BaseDriver::clearStatus()
+{
+    if (commsDebugLevel_ >= CommsDebugOnlyActions)
+    {
+    std::cout << "++++++++++++++++ (CommsDebug) : Get Status ++++++++++++++++++++++" << std::endl << std::endl;
+    }
+
+    // Send the request
+    commsDriver_->SPIXfer(GET_STATUS);
+
+    // Get the responses
+    std::map<int,uint32_t> emptyMap;
+    std::vector<uint32_t> states = commsDriver_->SPIXfer(emptyMap,toBitLength(STATUS));
+
+    // Parse the responses
+    std::vector<Status> statusVector;
+    for (auto state : states)
+    {
+        statusVector.push_back(parseStatus(state));
+    }
+
+    if (commsDebugLevel_ >= CommsDebugOnlyActions)
+    {
+    std::cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl << std::endl;
+    }
+
+    return statusVector;
+}
+
 // Individual get functions if only very specific data needed
 std::vector<bool>
 BaseDriver::isBusy()

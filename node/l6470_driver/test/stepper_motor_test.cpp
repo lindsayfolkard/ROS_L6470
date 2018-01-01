@@ -23,14 +23,34 @@ using namespace std;
 int main (int argc, char ** argv)
 {
     // Create the stepper motor
-    Stepper_57BYGH51 stepper;
-    std::vector<StepperMotor> motors = {stepper,stepper,stepper};
+    Stepper_42BYGHW811 stepper;
+    std::vector<StepperMotor> motors = {stepper};
 
-//    // Instantiate the AutoDriver
-//    cout << "Try to instantiate the driver" << endl;
-//    //MultiDriver driver(motors,0,0,0,CommsDebugEverything); CommsDebugNothing
-//    MultiDriver driver(motors,0,0,0,CommsDebugEverything);
-//    cout << "Instantiated the driver!" << endl;
+    // Instantiate the AutoDriver
+    cout << "Try to instantiate the driver" << endl;
+    PowerStepDriver driver(motors, 0, CommsDebugEverything);
+    cout << "Instantiated the driver!" << endl;
+
+    // Read the config
+    cout << " Profile config" <<  driver.getProfileCfg(0) << endl;
+
+    ProfileCfg profile;
+    profile.acceleration=100;
+    profile.deceleration=120;
+    profile.maxSpeed=140;
+    profile.minSpeed=160;
+
+    cout << "Set new profule config : " << profile << endl;
+    driver.setProfileCfg(profile,0);
+
+    cout << " New profile config is : " << driver.getProfileCfg(0) << endl;
+    cout << "Status is : " << driver.getStatus()[0] << endl;
+
+
+    cout << "Clear the status : " << driver.clearStatus()[0] << endl;
+    // Enable drive
+    driver.getStatus();
+
 
 //    // Let's try to do some simple shit
 //    const auto start = std::chrono::steady_clock::now();
