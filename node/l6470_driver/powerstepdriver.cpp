@@ -59,6 +59,19 @@ PowerStepCfg::setVoltageModeCfg(CommsDriver &commsDriver, int motor)
     voltageModeCfg_.set(commsDriver,motor);
 }
 
+PowerStepCfg
+PowerStepDriver::getConfig(int motor)
+{
+    return PowerStepCfg(*commsDriver_,motor);
+}
+
+std::string toString (const PowerStepCfg &cfg)
+{
+    std::stringstream ss;
+    ss << "Common : " << std::endl << toString(cfg.commonCfg_) << std::endl;
+    ss << "TODO - the rest" << std::endl;
+}
+
 PowerStepDriver::PowerStepDriver(const std::vector<StepperMotor> &motors, int spiBus, CommsDebugLevel commsDebugLevel):
     BaseDriver(motors,PowerStep01,spiBus,commsDebugLevel)
 {

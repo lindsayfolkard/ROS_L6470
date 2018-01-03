@@ -24,6 +24,12 @@ public:
     VoltageModeCfg  voltageModeCfg_;
 };
 
+std::string toString (const PowerStepCfg &cfg);
+inline std::ostream& operator<<(std::ostream &os , const PowerStepCfg &cfg)
+{
+    os << toString(cfg);
+}
+
 class PowerStepDriver : public BaseDriver
 {
 public:

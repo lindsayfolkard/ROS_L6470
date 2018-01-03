@@ -49,13 +49,16 @@ int main (int argc, char ** argv)
 
     cout << "Clear the status : " << driver.clearStatus()[0] << endl;
     // Enable drive
-    driver.getStatus();
+    cout << "New status is : " << driver.getStatus()[0] << endl;
 
     cout << "||||||||||||||||||||||||||||||||||||||" << endl;
     cout << "Lets read some simple shit : " << endl;
     cout << "Pos = " << driver.getPos()[0] << "steps" << endl;
     cout << "Speed = " << driver.getSpeed()[0] << " steps/s" << endl;
     //cout << " = " << driver.g
+
+    // Let's try to read a config
+    cout << "Config : " << endl << driver.getConfig(0) << endl;
 
 
 //    // Let's try to do some simple shit
