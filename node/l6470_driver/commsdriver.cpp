@@ -92,7 +92,7 @@ CommsDriver::getParam(uint8_t paramRegister, uint8_t bitLength)
     if (commsDebugLevel_ >= CommsDebugOnlyActions)
     {
         std::cout << "___________________________________________" << std::endl;
-        std::cout << "(CommsDebug) : Get Param [" << paramRegister << "] " << std::endl << std::endl;
+        std::cout << "(CommsDebug) : Get Param [" << (ParamRegister) paramRegister << "] " << std::endl << std::endl;
     }
 
     // Send the param request
@@ -100,7 +100,7 @@ CommsDriver::getParam(uint8_t paramRegister, uint8_t bitLength)
 
     if (commsDebugLevel_ >= CommsDebugOnlyActions)
     {
-        std::cout << "(CommsDebug) : Got Param [" << paramRegister << "]" << std::endl;
+        std::cout << "(CommsDebug) : Got Param [" << (ParamRegister) paramRegister << "]" << std::endl;
         std::cout << "___________________________________________" << std::endl << std::endl;
     }
 
@@ -117,7 +117,7 @@ CommsDriver::getParam(uint8_t paramRegister, uint8_t bitLength, int motor)
     if (commsDebugLevel_ >= CommsDebugOnlyActions)
     {
         std::cout << "___________________________________________" << std::endl;
-        std::cout << "(CommsDebug) : Get Param [" << paramRegister << "] " << std::endl << std::endl;
+        std::cout << "(CommsDebug) : Get Param [" << (ParamRegister) paramRegister << "] " << std::endl << std::endl;
     }
 
     std::vector<uint32_t> values = getParam(paramRegister,bitLength);
