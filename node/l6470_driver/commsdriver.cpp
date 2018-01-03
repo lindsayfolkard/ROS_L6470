@@ -114,19 +114,7 @@ CommsDriver::getParam(uint8_t paramRegister, uint8_t bitLength, int motor)
 {
     checkMotorIsValid(motor);
 
-    if (commsDebugLevel_ >= CommsDebugOnlyActions)
-    {
-        std::cout << "___________________________________________" << std::endl;
-        std::cout << "(CommsDebug) : Get Param [" << (ParamRegister) paramRegister << "] " << std::endl << std::endl;
-    }
-
     std::vector<uint32_t> values = getParam(paramRegister,bitLength);
-
-    if (commsDebugLevel_ >= CommsDebugOnlyActions)
-    {
-        std::cout << "(CommsDebug) : Got Param [" << paramRegister << "] --> " << values[motor] << "(0x" << std::hex << paramRegister << std::dec << ")" << std::endl;
-        std::cout << "___________________________________________" << std::endl << std::endl;
-    }
 
     return values[motor];
 }
