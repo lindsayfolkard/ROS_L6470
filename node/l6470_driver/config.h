@@ -166,6 +166,7 @@ public:
 
     CommonConfig(const std::string &file) { readFromFile(file); }
     CommonConfig(){ setDefaults(); }
+    CommonConfig(CommsDriver &commsDriver , int motor);
     
     virtual void set(CommsDriver &commsDriver, int motor) override;
     virtual void readFromFile(const std::string &file) override;

@@ -25,6 +25,17 @@ int32_t toSignedInt(uint32_t value , int bitLength)
     return value;
 }
 
+std::string toString (const std::map<int,DataCommand> &commandMap)
+{
+    std::stringstream ss;
+
+    for (const auto &x : commandMap)
+    {
+        ss << "Motor " << x.first <<" --> [ cmd = " << x.second.cmd << " , flags = " << x.second.cmdFlags << " , data = " << x.second.data << " , bitLength = " << x.second.dataBitLength << "]" << std::endl;
+    }
+    return ss.str();
+}
+
 std::string toString(const RunCommand &x)
 {
     std::stringstream ss;

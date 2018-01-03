@@ -10,6 +10,7 @@ class PowerStepCfg : public AbstractConfig,
 public:
 
     PowerStepCfg (const CfgFile &cfgFile);
+    PowerStepCfg (CommsDriver &commsDriver , int motor);
 
     virtual void set(CommsDriver &commsDriver, int motor) override;
     virtual void readFromFile(const std::string &filePath) override;
@@ -31,6 +32,7 @@ public:
     PowerStepDriver(const std::vector<StepperMotor> &motors, std::vector<PowerStepCfg> &cfgs, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
 
     virtual void setConfig(const AbstractConfig &cfg , int motor) override;
+    PowerStepCfg getConfig(int motor);
 
 private:
 

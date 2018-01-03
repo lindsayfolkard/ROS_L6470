@@ -14,6 +14,11 @@ PowerStepCfg::PowerStepCfg (const CfgFile &cfgFile)
     //    currentModeCfg_ = CurrentModeCfg(cfgFile.currentModeConfigFile_);
 }
 
+PowerStepCfg::PowerStepCfg (CommsDriver &commsDriver , int motor)
+{
+    commonCfg_ = CommonConfig(commsDriver,motor);
+}
+
 void
 PowerStepCfg::set(CommsDriver &commsDriver, int motor)
 {

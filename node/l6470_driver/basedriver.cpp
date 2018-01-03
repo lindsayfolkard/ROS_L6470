@@ -8,7 +8,7 @@ BaseDriver::BaseDriver(const std::vector<StepperMotor> &motors, MotorDriverType 
     commsDebugLevel_(commsDebugLevel),
     motorDriverType_(motorDriverType)
 {
-    commsDriver_.reset(new CommsDriver(motors_.size(),spiBus));
+    commsDriver_.reset(new CommsDriver(motors_.size(),spiBus,commsDebugLevel));
 }
 
 void

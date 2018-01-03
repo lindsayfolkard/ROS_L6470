@@ -51,6 +51,12 @@ int main (int argc, char ** argv)
     // Enable drive
     driver.getStatus();
 
+    cout << "||||||||||||||||||||||||||||||||||||||" << endl;
+    cout << "Lets read some simple shit : " << endl;
+    cout << "Pos = " << driver.getPos()[0] << "steps" << endl;
+    cout << "Speed = " << driver.getSpeed()[0] << " steps/s" << endl;
+    //cout << " = " << driver.g
+
 
 //    // Let's try to do some simple shit
 //    const auto start = std::chrono::steady_clock::now();

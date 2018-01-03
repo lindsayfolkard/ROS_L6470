@@ -41,6 +41,12 @@ struct DataCommand
     const uint8_t  dataBitLength;
 };
 
+std::string toString (const std::map<int,DataCommand> &commandMap);
+inline std::ostream& operator<<(std::ostream& os,const std::map<int,DataCommand> &x)
+{
+    return os << toString(x);
+}
+
 struct RunCommand : public DataCommand
 {
     RunCommand(MotorSpinDirection _direction , float _stepsPerSec):

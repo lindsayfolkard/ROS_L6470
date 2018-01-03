@@ -182,35 +182,28 @@ CommonConfig::set(CommsDriver &commsDriver, int motor)
 
     // Set Alarm State
     setAlarmState(alarmState, commsDriver, motor);
+
+    // Set Full Step Threshold speed
+    commsDriver.setParam(FS_SPD,toBitLength(FS_SPD),fullStepThresholdSpeed,motor);
 }
 
-//CommonConfig
-//CommonConfig::getConfig(int motor)
-//{
-//    Config config;
 
-//    config.backEmfConfig = getBackEmfConfig(motor);
+CommonConfig::CommonConfig(CommsDriver &commsDriver , int motor)
+{
+    overCurrentThreshold = getOCThreshold(commsDriver , motor);
+    overCurrentDetection = getOCShutdown(commsDriver , motor);
+    stallThreshold       = getStallThreshold(commsDriver , motor);
 
-//    // config.thermalDriftCoefficient =
+    stepMode             = getStepMode(commsDriver , motor);
+    syncSelect           = getSyncSelect(commsDriver , motor);
+    syncEnable           = getSyncEnable(commsDriver , motor);
 
-//    config.overCurrentThreshold = getOCThreshold(motor);
-//    config.overCurrentDetection = getOCShutdown(motor);
-//    config.stallThreshold       = getStallThreshold(motor);
-
-//    config.stepMode             = getStepMode(motor);
-//    config.syncSelect           = getSyncSelect(motor);
-//    config.syncEnable           = getSyncEnable(motor);
-
-//    config.oscillatorSelect         = getOscMode(motor);
-//    config.switchConfiguration      = getSwitchMode(motor);
-//    config.slewRate                 = getSlewRate(motor);
-//    config.voltageCompensation      = getVoltageComp(motor);
-//    config.pwmFrequencyDivider      = getPWMFreqDivisor(motor);
-//    config.pwmFrequencyMultiplier   = getPWMFreqMultiplier(motor);
-//    config.alarmState               = getAlarmState(motor);
-
-//    return config;
-//}
+    oscillatorSelect         = getOscMode(commsDriver , motor);
+    switchConfiguration      = getSwitchMode(commsDriver , motor);
+    alarmState               = getAlarmState(commsDriver , motor);
+    //thermalDriftCoefficient = getTh
+    fullStepThresholdSpeed  = commsDriver.getParam(FS_SPD,toBitLength(FS_SPD),motor);
+}
 
 // Setup the SYNC/BUSY pin to be either SYNC or BUSY, and to a desired
 //  ticks per step level.

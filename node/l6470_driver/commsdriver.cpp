@@ -20,8 +20,9 @@ std::string toString(CommsDebugLevel commsDebugLevel)
     }
 }
 
-CommsDriver::CommsDriver(int numMotors, int spiBus) :
-    numMotors_(numMotors)
+CommsDriver::CommsDriver(int numMotors, int spiBus, CommsDebugLevel commsDebugLevel) :
+    numMotors_(numMotors),
+    commsDebugLevel_(commsDebugLevel)
 {
     // Try to initialise the mraa::SPI port
     SPI_.reset(new mraa::Spi(spiBus));
@@ -88,8 +89,20 @@ CommsDriver::getParam(uint8_t paramRegister, uint8_t bitLength)
     uint8_t sendByte=GET_PARAM;
     sendByte |= paramRegister;
 
+    if (commsDebugLevel_ >= CommsDebugOnlyActions)
+    {
+        std::cout << "___________________________________________" << std::endl;
+        std::cout << "(CommsDebug) : Get Param [" << paramRegister << "] " << std::endl << std::endl;
+    }
+
     // Send the param request
     SPIXfer(sendByte);
+
+    if (commsDebugLevel_ >= CommsDebugOnlyActions)
+    {
+        std::cout << "(CommsDebug) : Got Param [" << paramRegister << "]" << std::endl;
+        std::cout << "___________________________________________" << std::endl << std::endl;
+    }
 
     // Parse the response from multiple boards
     const std::map<int,uint32_t> emptyMap;
@@ -252,7 +265,8 @@ CommsDriver::sendCommands(const std::map <int,DataCommand> &dataCommands)
 
     if (commsDebugLevel_ >= CommsDebugOnlyActions)
     {
-        //std::cout << "(CommsDebug) : Send CommandMap --> " <<  std::endl;
+        std::cout << "///////////////////////////////////////////////////" << std::endl;
+        std::cout << "(CommsDebug) : Send CommandMap --> " << std::endl << dataCommands << std::endl;
     }
 
     // Send the go until commands
@@ -272,6 +286,11 @@ CommsDriver::sendCommands(const std::map <int,DataCommand> &dataCommands)
 
     // Send the required data
     SPIXfer(data,bitLength);
+
+    if (commsDebugLevel_ >= CommsDebugOnlyActions)
+    {
+        std::cout << "///////////////////////////////////////////////////" << std::endl;
+    }
 }
 
 // Assumed that no data is needed to be transferred
@@ -280,6 +299,7 @@ CommsDriver::sendCommands(const std::vector<int> &motors , uint8_t commandByte)
 {
     if (commsDebugLevel_ >= CommsDebugOnlyActions)
     {
+        std::cout << "///////////////////////////////////////////////////" << std::endl;
         std::cout << "(CommsDebug) : Send Command [0x" <<std::hex << (unsigned int) commandByte << std::dec << "] to ";// << toLineString(&motors[0],motors.size()) << std::endl;
     }
 
@@ -298,6 +318,11 @@ CommsDriver::sendCommands(const std::vector<int> &motors , uint8_t commandByte)
     }
 
     SPIXfer(commands,8 /*bitLength*/);
+
+    if (commsDebugLevel_ >= CommsDebugOnlyActions)
+    {
+        std::cout << "///////////////////////////////////////////////////" << std::endl;
+    }
 }
 
 void
@@ -309,6 +334,7 @@ CommsDriver::sendCommand(const DataCommand &dataCommand , int motor)
 
     if (commsDebugLevel_ >= CommsDebugOnlyActions)
     {
+        std::cout << "///////////////////////////////////////////////////" << std::endl;
         std::cout << "(CommsDebug) : SendCommand [" << dataCommand.cmd << "] to motor " << motor << std::endl;
     }
 
@@ -319,4 +345,9 @@ CommsDriver::sendCommand(const DataCommand &dataCommand , int motor)
     // Send the associated data needed for the command
     dataMap.insert(std::pair<int,uint32_t>(motor,dataCommand.data));
     SPIXfer(dataMap,dataCommand.dataBitLength);
+
+    if (commsDebugLevel_ >= CommsDebugOnlyActions)
+    {
+        std::cout << "///////////////////////////////////////////////////" << std::endl;
+    }
 }

@@ -20,8 +20,6 @@ inline std::ostream& operator<<(std::ostream& os, CommsDebugLevel x)
     return os << toString(x);
 }
 
-
-
 // CommsDriver
 // Description : A class to handle all communications to and from
 //               daisy chained stspin controllers (L647*,L648*,PowerStep01)
@@ -30,7 +28,7 @@ class CommsDriver
 {
 public:
 
-    CommsDriver(int numMotors , int spiBus = 0);
+    CommsDriver(int numMotors , int spiBus = 0 , CommsDebugLevel commsDebugLevel = CommsDebugNothing);
 
     // Sends requestValue to all motors
     std::vector<uint32_t> SPIXfer(uint8_t requestValue);
