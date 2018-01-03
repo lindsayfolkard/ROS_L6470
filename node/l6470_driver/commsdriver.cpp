@@ -48,7 +48,7 @@ CommsDriver::setParam(uint8_t paramRegister, uint8_t bitLength, std::map<int, ui
     if (commsDebugLevel_ >= CommsDebugOnlyActions)
     {
         std::cout << "||||||||||||||||||||||||||||||||||||||||||||||||||||||" << std::endl;
-        std::cout << "(CommsDebug) : Set Param [" << paramRegister << "] with map : "
+        std::cout << "(CommsDebug) : Set Param [" << (ParamRegister) paramRegister << "] with map : "
                   << std::endl << toMapString(values,toBitLength(paramRegister)) << std::endl;
     }
 
