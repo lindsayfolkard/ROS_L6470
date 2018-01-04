@@ -29,7 +29,28 @@ enum CurrentThreshold
     OCD_TH_4875m = 0x0C,
     OCD_TH_5250m = 0x0D,
     OCD_TH_5625m = 0x0E,
-    OCD_TH_6000m = 0x0F
+    OCD_TH_6000m = 0x0F,
+    OCD_TH_6375m = 0x10,
+    OCD_TH_6750m = 0x11,
+    OCD_TH_7125m = 0x12,
+    OCD_TH_7500m = 0x13,
+    OCD_TH_7875m = 0x14,
+    OCD_TH_8250m = 0x15,
+    OCD_TH_8625m = 0x16,
+    OCD_TH_9000m = 0x17,
+    OCD_TH_9375m = 0x18,
+    OCD_TH_9750m = 0x19,
+    OCD_TH_10125m = 0x1A,
+    OCD_TH_10500m = 0x1B,
+    OCD_TH_10875m = 0x1C,
+    OCD_TH_11250m = 0x1D,
+    OCD_TH_11625m = 0x1E,
+    OCD_TH_12000m = 0x1F,
+    OCD_TH_12375m = 0x21,
+    OCD_TH_12750m = 0x22,
+    OCD_TH_13125m = 0x23,
+    OCD_TH_13500m = 0x24,
+    OCD_TH_13875m = 0x25
 };
 
 boost::bimap <CurrentThreshold,std::string> getCurrentThresholdBiMap();

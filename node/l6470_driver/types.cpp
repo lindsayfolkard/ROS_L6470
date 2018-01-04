@@ -55,24 +55,46 @@ makeBiMap(std::initializer_list<typename boost::bimap<L, R>::value_type> list)
 
 boost::bimap <CurrentThreshold,std::string> getCurrentThresholdBiMap()
 {
-    boost::bimap <CurrentThreshold,std::string> map  = makeBiMap<CurrentThreshold,std::string>({
-        {OCD_TH_375m  , "375 ma"},
-        {OCD_TH_750m  , "750 ma"},
-        {OCD_TH_1125m , "1125 ma"},
-        {OCD_TH_1500m , "1500 ma"},
-        {OCD_TH_1875m , "1875 ma"},
-        {OCD_TH_2250m , "2250 ma"},
-        {OCD_TH_2625m , "2625 ma"},
-        {OCD_TH_3000m , "3000 ma"},
-        {OCD_TH_3375m , "3375 ma"},
-        {OCD_TH_3750m , "3750 ma"},
-        {OCD_TH_4125m , "4125 ma"},
-        {OCD_TH_4500m , "4500 ma"},
-        {OCD_TH_4875m , "4875 ma"},
-        {OCD_TH_5250m , "5250 ma"},
-        {OCD_TH_5625m , "5625 ma"},
-        {OCD_TH_6000m , "6000 ma"}
-    });
+    boost::bimap <CurrentThreshold,std::string> map  = makeBiMap<CurrentThreshold,std::string>(
+    {
+                    {OCD_TH_375m  , "375 ma"},
+                    {OCD_TH_750m  , "750 ma"},
+                    {OCD_TH_1125m , "1125 ma"},
+                    {OCD_TH_1500m , "1500 ma"},
+                    {OCD_TH_1875m , "1875 ma"},
+                    {OCD_TH_2250m , "2250 ma"},
+                    {OCD_TH_2625m , "2625 ma"},
+                    {OCD_TH_3000m , "3000 ma"},
+                    {OCD_TH_3375m , "3375 ma"},
+                    {OCD_TH_3750m , "3750 ma"},
+                    {OCD_TH_4125m , "4125 ma"},
+                    {OCD_TH_4500m , "4500 ma"},
+                    {OCD_TH_4875m , "4875 ma"},
+                    {OCD_TH_5250m , "5250 ma"},
+                    {OCD_TH_5625m , "5625 ma"},
+                    {OCD_TH_6000m , "6000 ma"},
+                    {OCD_TH_6375m , "6375 ma"},
+                    {OCD_TH_6750m , "6750 ma"},
+                    {OCD_TH_7125m , "7125 ma"},
+                    {OCD_TH_7500m , "7500 ma"},
+                    {OCD_TH_7875m , "7875 ma"},
+                    {OCD_TH_8250m , "8250 ma"},
+                    {OCD_TH_8625m , "8625 ma"},
+                    {OCD_TH_9000m , "9000 ma"},
+                    {OCD_TH_9375m , "9375 ma"},
+                    {OCD_TH_9750m , "9750 ma"},
+                    {OCD_TH_10125m , "10125 ma"},
+                    {OCD_TH_10500m , "10500 ma"},
+                    {OCD_TH_10875m , "10875 ma"},
+                    {OCD_TH_11250m , "11250 ma"},
+                    {OCD_TH_11625m , "11625 ma"},
+                    {OCD_TH_12000m , "12000 ma"},
+                    {OCD_TH_12375m , "12375 ma"},
+                    {OCD_TH_12750m , "12750 ma"},
+                    {OCD_TH_13125m , "13125 ma"},
+                    {OCD_TH_13500m , "13500 ma"}
+
+                });
     return map;
 }
 
