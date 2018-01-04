@@ -636,7 +636,7 @@ std::string toString(const CommonConfig &cfg)
     ss << "StepMode                : " << cfg.stepMode << std::endl;
     ss << "SyncSelect              : " << cfg.syncSelect << std::endl;
     ss << "SyncEnable              : " << (cfg.syncEnable ? "Yes" : "No") << std::endl;
-    ss << "ControlMode             : " << cfg.controlMode << std::endl;
+    ss << "ControlMode             : " << (int)cfg.controlMode << std::endl;
     ss << "OscillatorSelect        : " << cfg.oscillatorSelect << std::endl;
     ss << "SwitchConfiguration     : " << cfg.switchConfiguration << std::endl;
     ss << "OverCurrentDetection    : " << cfg.overCurrentDetection << std::endl;
