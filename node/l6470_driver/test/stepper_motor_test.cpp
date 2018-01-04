@@ -58,7 +58,8 @@ int main (int argc, char ** argv)
     //cout << " = " << driver.g
 
     // Let's try to read a config
-    cout << "Config : " << endl << driver.getConfig(0) << endl;
+    PowerStepCfg cfg = driver.getConfig(0);
+    cout << "Config : " << endl << cfg << endl;
 
 
 //    // Let's try to do some simple shit
