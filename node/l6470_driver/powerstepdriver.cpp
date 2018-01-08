@@ -9,9 +9,9 @@ PowerStepCfg::PowerStepCfg (const CfgFile &cfgFile)
         voltageModeCfg_ = VoltageModeCfg(cfgFile.voltageModeConfigFile_);
     else if (cfgFile.stepperMotorFile_ != "")
         voltageModeCfg_ = BackEmfConfigFromStepper(StepperMotor(cfgFile.stepperMotorFile_));
-
+    
     //if (cfgFile.currentModeConfigFile_ != "")
-    //    currentModeCfg_ = CurrentModeCfg(cfgFile.currentModeConfigFile_);
+      //  currentModeCfg_ = CurrentModeCfg(cfgFile.currentModeConfigFile_);
 }
 
 PowerStepCfg::PowerStepCfg (CommsDriver &commsDriver , int motor)
@@ -24,6 +24,7 @@ PowerStepCfg::set(CommsDriver &commsDriver, int motor)
 {
     commonCfg_.set(commsDriver,motor);
     currentModeCfg_.set(commsDriver,motor);
+    
     // default to voltage mode config
     voltageModeCfg_.set(commsDriver,motor);
 }
@@ -62,7 +63,9 @@ PowerStepCfg::setVoltageModeCfg(CommsDriver &commsDriver, int motor)
 PowerStepCfg
 PowerStepDriver::getConfig(int motor)
 {
-    return PowerStepCfg(*commsDriver_,motor);
+    PowerStepCfg retval;
+    return retval;
+    //return PowerStepCfg(*commsDriver_,motor);
 }
 
 std::string toString (const PowerStepCfg &cfg)
@@ -70,6 +73,7 @@ std::string toString (const PowerStepCfg &cfg)
     std::stringstream ss;
     ss << "Common : " << std::endl << toString(cfg.commonCfg_) << std::endl;
     ss << "TODO - the rest" << std::endl;
+    return ss.str();
 }
 
 PowerStepDriver::PowerStepDriver(const std::vector<StepperMotor> &motors, int spiBus, CommsDebugLevel commsDebugLevel):
@@ -90,7 +94,7 @@ PowerStepDriver::PowerStepDriver(const std::vector<StepperMotor> &motors, std::v
             cfg.voltageModeCfg_.set(*commsDriver_,motor);
         else
             cfg.currentModeCfg_.set(*commsDriver_,motor);
-
+	
         ++motor;
     }
 }

@@ -9,6 +9,7 @@ class PowerStepCfg : public AbstractConfig,
 
 public:
 
+    PowerStepCfg() {}
     PowerStepCfg (const CfgFile &cfgFile);
     PowerStepCfg (CommsDriver &commsDriver , int motor);
 
@@ -28,6 +29,7 @@ std::string toString (const PowerStepCfg &cfg);
 inline std::ostream& operator<<(std::ostream &os , const PowerStepCfg &cfg)
 {
     os << toString(cfg);
+    return os;
 }
 
 class PowerStepDriver : public BaseDriver

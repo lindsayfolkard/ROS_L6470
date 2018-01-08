@@ -640,8 +640,8 @@ std::string toString(const CommonConfig &cfg)
     ss << "OscillatorSelect        : " << cfg.oscillatorSelect << std::endl;
     ss << "SwitchConfiguration     : " << cfg.switchConfiguration << std::endl;
     ss << "OverCurrentDetection    : " << cfg.overCurrentDetection << std::endl;
-    ss << "AlarmState              : " << cfg.alarmState << std::endl;
-
+    ss << "AlarmState              : " << std::endl <<  cfg.alarmState << std::endl;
+    
     return ss.str();
 }
 

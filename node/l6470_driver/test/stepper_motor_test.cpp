@@ -58,9 +58,11 @@ int main (int argc, char ** argv)
     //cout << " = " << driver.g
 
     // Let's try to read a config
-    PowerStepCfg cfg = driver.getConfig(0);
+    const PowerStepCfg cfg = driver.getConfig(0);
     cout << "Config : " << endl << cfg << endl;
-
+    
+    //cout << " Set a cfg with a few different values" << endl;
+    //cfg.
 
 //    // Let's try to do some simple shit
 //    const auto start = std::chrono::steady_clock::now();
