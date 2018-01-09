@@ -63,9 +63,7 @@ PowerStepCfg::setVoltageModeCfg(CommsDriver &commsDriver, int motor)
 PowerStepCfg
 PowerStepDriver::getConfig(int motor)
 {
-    PowerStepCfg retval;
-    return retval;
-    //return PowerStepCfg(*commsDriver_,motor);
+    return PowerStepCfg(*commsDriver_,motor);
 }
 
 std::string toString (const PowerStepCfg &cfg)
