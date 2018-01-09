@@ -34,7 +34,7 @@ public:
     /// Profile Configuration Commands
     ////////////////////////////////////////
 
-    virtual void setConfig(const AbstractConfig &config , int motor) override ;
+    virtual void setConfig(AbstractConfig &config , int motor) override ;
 
     // Profile is different, this we want to set efficiently since it is real-time critical
     virtual void setProfileCfg(const std::map<int,ProfileCfg> &cfgs) override ;

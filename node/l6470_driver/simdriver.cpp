@@ -72,7 +72,7 @@ SimDriver::getMark(int motor){
 /// Profile Configuration Commands
 ////////////////////////////////////////
 
-void SimDriver::setConfig(const AbstractConfig &config , int motor){
+void SimDriver::setConfig(AbstractConfig &config , int motor){
 }
 
 // Profile is different, this we want to set efficiently since it is real-time critical

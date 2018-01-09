@@ -49,7 +49,7 @@ class AbstractDriver
     /// Profile Configuration Commands
     ////////////////////////////////////////
 
-    virtual void setConfig(const AbstractConfig &config , int motor) = 0;
+    virtual void setConfig(AbstractConfig &config , int motor) = 0;
 
     // Profile is different, this we want to set efficiently since it is real-time critical
     virtual void setProfileCfg(const std::map<int,ProfileCfg> &cfgs) = 0;

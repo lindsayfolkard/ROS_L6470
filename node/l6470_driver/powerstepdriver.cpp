@@ -23,10 +23,10 @@ void
 PowerStepCfg::set(CommsDriver &commsDriver, int motor)
 {
     commonCfg_.set(commsDriver,motor);
-    currentModeCfg_.set(commsDriver,motor);
+    //currentModeCfg_.set(commsDriver,motor);
     
     // default to voltage mode config
-    voltageModeCfg_.set(commsDriver,motor);
+    //voltageModeCfg_.set(commsDriver,motor);
 }
 
 void
@@ -43,9 +43,9 @@ PowerStepCfg::writeToFile(const std::string &cfgFilePath)
 }
 
 void
-PowerStepDriver::setConfig(const AbstractConfig &cfg , int motor)
+PowerStepDriver::setConfig(AbstractConfig &cfg , int motor)
 {
-    // TODO
+    cfg.set(*commsDriver_,motor);
 }
 
 void
