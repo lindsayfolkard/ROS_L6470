@@ -168,23 +168,27 @@ CommonConfig::set(CommsDriver &commsDriver, int motor)
     //checkMotorIsValid(motor);
 
     // Current Thresholds
-    setOCThreshold(overCurrentThreshold, commsDriver, motor);
-    setStallThreshold(stallThreshold, commsDriver, motor);
-    setOCShutdown(overCurrentDetection, commsDriver, motor);
+        setOCThreshold(overCurrentThreshold, commsDriver, motor);
+    //    setStallThreshold(stallThreshold, commsDriver, motor);
+    //    setOCShutdown(overCurrentDetection, commsDriver, motor);
 
-    // Step Mode
-    setStepMode(stepMode, commsDriver, motor);
-    setSyncSelect(syncSelect, syncEnable, commsDriver, motor);
+    //    // Step Mode
+    //    setStepMode(stepMode, commsDriver, motor);
+    //    setSyncSelect(syncSelect, syncEnable, commsDriver, motor);
 
-    // Set Oscillator related configs
-    setOscMode(oscillatorSelect, commsDriver, motor);
-    setSwitchMode(switchConfiguration, commsDriver, motor);
+    //    // Set Oscillator related configs
+    //    setOscMode(oscillatorSelect, commsDriver, motor);
+    //    setSwitchMode(switchConfiguration, commsDriver, motor);
 
-    // Set Alarm State
-    setAlarmState(alarmState, commsDriver, motor);
+    //    // Set Alarm State
+    //    setAlarmState(alarmState, commsDriver, motor);
 
     // Set Full Step Threshold speed
+    std::cout << "Debug - Lets try to set the FS_SPD parameter" << fullStepThresholdSpeed << std::endl;
     commsDriver.setParam(FS_SPD,toBitLength(FS_SPD),fullStepThresholdSpeed,motor);
+    std::cout << "I think I have set the parameter" << std::endl;
+    std::cout << "Get the parameter" << std::endl;
+    std::cout << commsDriver.getParam(FS_SPD,toBitLength(FS_SPD),motor) << std::endl;
 }
 
 
@@ -317,7 +321,9 @@ CommonConfig::setFullSpeed(float stepsPerSecond, CommsDriver &commsDriver, int m
 void
 CommonConfig::setOCThreshold(CurrentThreshold ocThreshold, CommsDriver &commsDriver, int motor)
 {
+    std::cout << "Debug - try to set ocThreshold to " << ocThreshold << std::endl;
     commsDriver.setParam(OCD_TH, toBitLength(OCD_TH), 0x0F & ocThreshold, motor);
+    std::cout << "Debug - read new ocThreshold as " << commsDriver.getParam(OCD_TH,toBitLength(OCD_TH),motor) << std::endl;
 }
 
 CurrentThreshold
