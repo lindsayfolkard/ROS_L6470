@@ -58,11 +58,25 @@ int main (int argc, char ** argv)
     //cout << " = " << driver.g
 
     // Let's try to read a config
-    const PowerStepCfg cfg = driver.getConfig(0);
+    PowerStepCfg cfg = driver.getConfig(0);
     cout << "Config : " << endl << cfg << endl;
     
-    //cout << " Set a cfg with a few different values" << endl;
-    //cfg.
+    cout << " Set a cfg with a few different values" << endl;
+    cfg.commonCfg_.alarmState.switchTurnOnEnabled=false;
+    cfg.commonCfg_.alarmState.underVoltageEnabled=false;
+    cfg.commonCfg_.controlMode=VoltageControlMode;
+    cfg.commonCfg_.oscillatorSelect=CONFIG_INT_16MHZ_OSCOUT_2MHZ;
+    cfg.commonCfg_.fullStepThresholdSpeed=500;
+    cfg.commonCfg_.stallThreshold=OCD_TH_6375m;
+    cout << "Desired new config " << cfg << endl;
+
+    cout << "Set the config" << endl;
+
+    driver.setConfig(cfg,0);
+
+    cout << "Config is set" << endl;
+    cout << "Reread the config " << endl;
+    cout << "New Config is " << driver.getConfig(0) << endl;
 
 //    // Let's try to do some simple shit
 //    const auto start = std::chrono::steady_clock::now();
