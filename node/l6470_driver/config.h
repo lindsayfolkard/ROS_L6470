@@ -171,6 +171,7 @@ public:
     virtual void set(CommsDriver &commsDriver, int motor) override;
     virtual void readFromFile(const std::string &file) override;
     virtual void writeToFile(const std::string &cfgFilePath) override;
+    void unitTest(CommsDriver &commsDriver, int motor);
 
     int fullStepThresholdSpeed;
     int thermalDriftCoefficient;

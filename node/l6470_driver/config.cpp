@@ -169,28 +169,99 @@ CommonConfig::set(CommsDriver &commsDriver, int motor)
 
     // Current Thresholds
     setOCThreshold(overCurrentThreshold, commsDriver, motor);
+    usleep(1000);
     setStallThreshold(stallThreshold, commsDriver, motor);
+    usleep(1000);
     setOCShutdown(overCurrentDetection, commsDriver, motor);
+    usleep(1000);
 
     // Step Mode
     setStepMode(stepMode, commsDriver, motor);
+    usleep(1000);
     setSyncSelect(syncSelect, syncEnable, commsDriver, motor);
+    usleep(1000);
 
     // Set Oscillator related configs
     setOscMode(oscillatorSelect, commsDriver, motor);
+    usleep(1000);
     setSwitchMode(switchConfiguration, commsDriver, motor);
+    usleep(1000);
 
     // Set Alarm State
     setAlarmState(alarmState, commsDriver, motor);
+    usleep(1000);
 
-    // Set Full Step Threshold speed
-    //std::cout << "Debug - Lets try to set the FS_SPD parameter" << fullStepThresholdSpeed << std::endl;
     commsDriver.setParam(FS_SPD,toBitLength(FS_SPD),fullStepThresholdSpeed,motor);
-    //std::cout << "I think I have set the parameter" << std::endl;
-    //std::cout << "Get the parameter" << std::endl;
-    //std::cout << commsDriver.getParam(FS_SPD,toBitLength(FS_SPD),motor) << std::endl;
+    usleep(1000);
+
+//    // Set Full Step Threshold speed
+    commsDriver.SPIXfer(0,0);
+    commsDriver.SPIXfer(0,0);
+    commsDriver.SPIXfer(0,0);
+    commsDriver.SPIXfer(0,0);
+    commsDriver.SPIXfer(0,0);
+    commsDriver.SPIXfer(0,0);
+//    usleep(5000);
+//    std::cout << "Debug - Lets try to set the FS_SPD parameter" << fullStepThresholdSpeed << std::endl;
+//    commsDriver.setParam(FS_SPD,toBitLength(FS_SPD),fullStepThresholdSpeed,motor);
+//    commsDriver.SPIXfer(0,0);
+//    commsDriver.SPIXfer(0,0);
+//    commsDriver.SPIXfer(0,0);
+//    commsDriver.SPIXfer(0,0);
+//    commsDriver.SPIXfer(0,0);
+//    commsDriver.SPIXfer(0,0);
+//    usleep(5000);
+//    std::cout << "Debug - let's do some more shit" << std::endl;
+//    std::cout << "I think I have set the parameter" << std::endl;
+//    std::cout << "Get the parameter" << std::endl;
+//    std::cout << commsDriver.getParam(FS_SPD,toBitLength(FS_SPD),motor) << std::endl;
+//    commsDriver.SPIXfer(0,0);
+//    commsDriver.SPIXfer(0,0);
+//    commsDriver.SPIXfer(0,0);
+//    commsDriver.SPIXfer(0,0);
+//    commsDriver.SPIXfer(0,0);
+//    commsDriver.SPIXfer(0,0);
+//    usleep(5000);
+//    std::cout << commsDriver.getParam(FS_SPD,toBitLength(FS_SPD),motor) << std::endl;
+
 }
 
+template <typename T> void testAllCombinations (CommsDriver &commsDriver, int motor , boost::bimap<T,std::string> &biMap , ParamRegister paramRegister)
+{
+    bool passed=true;
+    std::cout << "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" << std::endl;
+    std::cout << "Test commms for setting " << paramRegister << std::endl;
+    std::cout << "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" << std::endl;
+
+    for (auto it = biMap.begin(); it != biMap.end() ; ++it)
+    {
+        std::cout << "Set to " << it->right << " , ";
+        commsDriver.setParam(paramRegister,toBitLength(paramRegister),it->left,motor);
+        const T value = static_cast<T>(commsDriver.getParam(paramRegister,toBitLength(paramRegister),motor));
+        std::cout << "read " << value;
+        if (value != it->left)
+        {
+            passed=false;
+            std::cout << " --> Failed!" << std::endl;
+        }
+        else
+        {
+            std::cout << " --> Passed!" << std::endl;
+        }
+    }
+
+    std::cout << "Test for setting " << paramRegister << (passed ? "Passed" : "Failed!") << std::endl;
+    std::cout << "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" << std::endl;
+
+}
+
+void CommonConfig::unitTest(CommsDriver &commsDriver, int motor)
+{
+    // Let's just manually do this shit...
+    boost::bimap <CurrentThreshold,std::string> currentThresholdMap = getCurrentThresholdBiMap();
+    testAllCombinations<CurrentThreshold>(commsDriver,motor,currentThresholdMap,OCD_TH);
+
+}
 
 CommonConfig::CommonConfig(CommsDriver &commsDriver , int motor)
 {

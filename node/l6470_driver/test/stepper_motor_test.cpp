@@ -31,52 +31,53 @@ int main (int argc, char ** argv)
     PowerStepDriver driver(motors, 0, CommsDebugEverything);
     cout << "Instantiated the driver!" << endl;
 
-    // Read the config
-    cout << " Profile config" <<  driver.getProfileCfg(0) << endl;
+    // Lets try and run the config test
 
-    ProfileCfg profile;
-    profile.acceleration=100;
-    profile.deceleration=120;
-    profile.maxSpeed=140;
-    profile.minSpeed=160;
+    //    // Read the config
+    //    cout << " Profile config" <<  driver.getProfileCfg(0) << endl;
 
-    cout << "Set new profule config : " << profile << endl;
-    driver.setProfileCfg(profile,0);
+    //    ProfileCfg profile;
+    //    profile.acceleration=100;
+    //    profile.deceleration=120;
+    //    profile.maxSpeed=140;
+    //    profile.minSpeed=160;
 
-    cout << " New profile config is : " << driver.getProfileCfg(0) << endl;
-    cout << "Status is : " << driver.getStatus()[0] << endl;
+    //    cout << "Set new profule config : " << profile << endl;
+    //    driver.setProfileCfg(profile,0);
 
+    //    cout << " New profile config is : " << driver.getProfileCfg(0) << endl;
+    //    cout << "Status is : " << driver.getStatus()[0] << endl;
 
-    cout << "Clear the status : " << driver.clearStatus()[0] << endl;
-    // Enable drive
-    cout << "New status is : " << driver.getStatus()[0] << endl;
+    //    cout << "Clear the status : " << driver.clearStatus()[0] << endl;
+    //    // Enable drive
+    //    cout << "New status is : " << driver.getStatus(0) << endl;
 
-    cout << "||||||||||||||||||||||||||||||||||||||" << endl;
-    cout << "Lets read some simple shit : " << endl;
-    cout << "Pos = " << driver.getPos()[0] << "steps" << endl;
-    cout << "Speed = " << driver.getSpeed()[0] << " steps/s" << endl;
-    //cout << " = " << driver.g
+    //    cout << "||||||||||||||||||||||||||||||||||||||" << endl;
+    //    cout << "Lets read some simple shit : " << endl;
+    //    cout << "Pos = " << driver.getPos(0)<< "steps" << endl;
+    //    cout << "Speed = " << driver.getSpeed(0) << " steps/s" << endl;
+    //    //cout << " = " << driver.g
 
-    // Let's try to read a config
-    PowerStepCfg cfg = driver.getConfig(0);
-    cout << "Config : " << endl << cfg << endl;
-    
-    cout << " Set a cfg with a few different values" << endl;
-    cfg.commonCfg_.alarmState.switchTurnOnEnabled=false;
-    cfg.commonCfg_.alarmState.underVoltageEnabled=false;
-    cfg.commonCfg_.controlMode=VoltageControlMode;
-    cfg.commonCfg_.oscillatorSelect=CONFIG_INT_16MHZ_OSCOUT_2MHZ;
-    cfg.commonCfg_.fullStepThresholdSpeed=500;
-    cfg.commonCfg_.stallThreshold=OCD_TH_6375m;
-    cout << "Desired new config " << cfg << endl;
+    //    // Let's try to read a config
+    //    PowerStepCfg cfg = driver.getConfig(0);
+    //    cout << "Config : " << endl << cfg << endl;
 
-    cout << "Set the config" << endl;
+    //    cout << " Set a cfg with a few different values" << endl;
+    //    cfg.commonCfg_.alarmState.switchTurnOnEnabled=false;
+    //    cfg.commonCfg_.alarmState.underVoltageEnabled=false;
+    //    cfg.commonCfg_.controlMode=VoltageControlMode;
+    //    cfg.commonCfg_.oscillatorSelect=CONFIG_INT_16MHZ_OSCOUT_2MHZ;
+    //    cfg.commonCfg_.fullStepThresholdSpeed=500;
+    //    cfg.commonCfg_.stallThreshold=OCD_TH_6375m;
+    //    cout << "Desired new config " << cfg << endl;
 
-    driver.setConfig(cfg,0);
+    //    cout << "Set the config" << endl;
 
-    cout << "Config is set" << endl;
-    cout << "Reread the config " << endl;
-    cout << "New Config is " << driver.getConfig(0) << endl;
+    //    driver.setConfig(cfg,0);
+
+    //    cout << "Config is set" << endl;
+    //    cout << "Reread the config " << endl;
+    //    cout << "New Config is " << driver.getConfig(0) << endl;
 
 //    // Let's try to do some simple shit
 //    const auto start = std::chrono::steady_clock::now();
