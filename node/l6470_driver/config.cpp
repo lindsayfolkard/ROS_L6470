@@ -266,16 +266,20 @@ template <typename T> void testAllCombinations (CommsDriver &commsDriver, int mo
         if (value != it->left)
         {
             passed=false;
-            std::cout << " --> Failed!" << std::endl;
+            std::cout << " : " << addColour("Failed!",Red) << std::endl;
         }
         else
         {
-            std::cout << " --> Passed!" << std::endl;
+            std::cout << " : " << addColour("Passed!" ,Green)<< std::endl;
         }
     }
 
-    std::cout << "Test for setting " << paramRegister << (passed ? "Passed" : "Failed!") << std::endl;
-    std::cout << "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" << std::endl;
+    std::cout << "Test for setting " << paramRegister << " : ";
+    if (passed)
+        std::cout << addColour("Passed",Green) << std::endl;
+    else
+        std::cout << addColour("Failed!",Red) << std::endl;
+    std::cout << "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" << std::endl << std::endl;
 
 }
 
