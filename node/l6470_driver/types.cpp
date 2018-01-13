@@ -88,11 +88,11 @@ boost::bimap <CurrentThreshold,std::string> getCurrentThresholdBiMap()
                     {OCD_TH_10875m , "10875 ma"},
                     {OCD_TH_11250m , "11250 ma"},
                     {OCD_TH_11625m , "11625 ma"},
-                    {OCD_TH_12000m , "12000 ma"},
+                    {OCD_TH_12000m , "12000 ma"}/*,
                     {OCD_TH_12375m , "12375 ma"},
                     {OCD_TH_12750m , "12750 ma"},
                     {OCD_TH_13125m , "13125 ma"},
-                    {OCD_TH_13500m , "13500 ma"}
+                    {OCD_TH_13500m , "13500 ma"}*/
 
                 });
     return map;

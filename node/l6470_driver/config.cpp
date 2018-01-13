@@ -226,6 +226,30 @@ CommonConfig::set(CommsDriver &commsDriver, int motor)
 
 }
 
+enum Colour {
+    Red,
+    Blue,
+    Green,
+    Yellow,
+    Orange
+};
+
+std::string addColour(const std::string &str, Colour colour)
+{
+    if (colour == Red)
+        return "033[1;31mbold" + str + "\033[0m";
+    else if (colour == Green)
+        return "033[1;32mbold" + str + "\033[0m";
+    else if (colour == Blue)
+        return "033[1;34mbold" + str + "\033[0m";
+    else if (colour == Yellow)
+        return "033[1;33mbold" + str + "\033[0m";
+    else if (colour == Orange)
+        return "033[1;35mbold" + str + "\033[0m";
+    else
+        return str;
+}
+
 template <typename T> void testAllCombinations (CommsDriver &commsDriver, int motor , boost::bimap<T,std::string> &biMap , ParamRegister paramRegister)
 {
     bool passed=true;
@@ -257,9 +281,20 @@ template <typename T> void testAllCombinations (CommsDriver &commsDriver, int mo
 
 void CommonConfig::unitTest(CommsDriver &commsDriver, int motor)
 {
+
+    // OverCurrentThreshold
     // Let's just manually do this shit...
     boost::bimap <CurrentThreshold,std::string> currentThresholdMap = getCurrentThresholdBiMap();
     testAllCombinations<CurrentThreshold>(commsDriver,motor,currentThresholdMap,OCD_TH);
+
+    // StallThreshold
+    testAllCombinations<CurrentThreshold>(commsDriver,motor,currentThresholdMap,STALL_TH);
+
+    // StepMode
+    //testAllCombinations<StepMode>(commsDriver,motor,getStepModeBiMap(),STEP_MODE)
+
+    // OscillatorSelect
+
 
 }
 
