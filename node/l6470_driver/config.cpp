@@ -237,31 +237,35 @@ enum Colour {
 std::string addColour(const std::string &str, Colour colour)
 {
     if (colour == Red)
-        return "033[1;31mbold" + str + "\033[0m";
+        return "\033[31m" + str + "\033[0m";
     else if (colour == Green)
-        return "033[1;32mbold" + str + "\033[0m";
+        return "\033[32m" + str + "\033[0m";
     else if (colour == Blue)
-        return "033[1;34mbold" + str + "\033[0m";
+        return "\033[34m" + str + "\033[0m";
     else if (colour == Yellow)
-        return "033[1;33mbold" + str + "\033[0m";
+        return "\033[33m" + str + "\033[0m";
     else if (colour == Orange)
-        return "033[1;35mbold" + str + "\033[0m";
+        return "\033[35m"  + str + "\033[0m";
     else
         return str;
 }
 
-template <typename T> void testAllCombinations (CommsDriver &commsDriver, int motor , boost::bimap<T,std::string> &biMap , ParamRegister paramRegister)
+template <typename T> void testAllCombinations (CommsDriver &commsDriver, int motor , boost::bimap<T,std::string> &biMap ,
+                                                std::function<void(T value, CommsDriver &commsDriver, int motor)> setFunction ,
+                                                std::function<T (CommsDriver &commsDriver,int motor)> getFunction)
 {
     bool passed=true;
     std::cout << "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" << std::endl;
-    std::cout << "Test commms for setting " << paramRegister << std::endl;
+    std::cout << "Test commms for setting " ;//<< paramRegister << std::endl;
     std::cout << "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" << std::endl;
 
     for (auto it = biMap.begin(); it != biMap.end() ; ++it)
     {
         std::cout << "Set to " << it->right << " , ";
-        commsDriver.setParam(paramRegister,toBitLength(paramRegister),it->left,motor);
-        const T value = static_cast<T>(commsDriver.getParam(paramRegister,toBitLength(paramRegister),motor));
+        setFunction(it->left,commsDriver,motor);
+        const T value = getFunction(commsDriver,motor);
+        //commsDriver.setParam(paramRegister,toBitLength(paramRegister),it->left,motor);
+        //const T value = static_cast<T>(commsDriver.getParam(paramRegister,toBitLength(paramRegister),motor));
         std::cout << "read " << value;
         if (value != it->left)
         {
@@ -274,7 +278,7 @@ template <typename T> void testAllCombinations (CommsDriver &commsDriver, int mo
         }
     }
 
-    std::cout << "Test for setting " << paramRegister << " : ";
+    std::cout << "Test for setting " ;//<< paramRegister << " : ";
     if (passed)
         std::cout << addColour("Passed",Green) << std::endl;
     else
@@ -289,10 +293,10 @@ void CommonConfig::unitTest(CommsDriver &commsDriver, int motor)
     // OverCurrentThreshold
     // Let's just manually do this shit...
     boost::bimap <CurrentThreshold,std::string> currentThresholdMap = getCurrentThresholdBiMap();
-    testAllCombinations<CurrentThreshold>(commsDriver,motor,currentThresholdMap,OCD_TH);
+    testAllCombinations<CurrentThreshold>(commsDriver,motor,currentThresholdMap,setOCThreshold,getOCThreshold);
 
     // StallThreshold
-    testAllCombinations<CurrentThreshold>(commsDriver,motor,currentThresholdMap,STALL_TH);
+    //testAllCombinations<CurrentThreshold>(commsDriver,motor,currentThresholdMap,STALL_TH);
 
     // StepMode
     //testAllCombinations<StepMode>(commsDriver,motor,getStepModeBiMap(),STEP_MODE)

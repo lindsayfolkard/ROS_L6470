@@ -197,7 +197,7 @@ private:
 
     void setDefaults();
     
-    void setOCThreshold(CurrentThreshold ocThreshold, CommsDriver &commsDriver, int motor );
+    static void setOCThreshold(CurrentThreshold ocThreshold, CommsDriver &commsDriver, int motor );
     void setStallThreshold(CurrentThreshold stallCurrent, CommsDriver &commsDriver, int motor );
     void setStepMode(StepMode stepMode, CommsDriver &commsDriver, int motor );
     void setSyncSelect( SyncSelect syncSelect, bool syncEnable, CommsDriver &commsDriver, int motor );
@@ -208,7 +208,7 @@ private:
     void setFullSpeed(float stepsPerSecond, CommsDriver &commsDriver, int motor );
     void setLoSpdOpt(bool enable, CommsDriver &commsDriver, int motor );
 
-    CurrentThreshold    getOCThreshold(CommsDriver &commsDriver, int motor);
+    static CurrentThreshold    getOCThreshold(CommsDriver &commsDriver, int motor);
     CurrentThreshold    getStallThreshold(CommsDriver &commsDriver, int motor);
     StepMode            getStepMode(CommsDriver &commsDriver, int motor );
     SyncSelect          getSyncSelect(CommsDriver &commsDriver, int motor );
