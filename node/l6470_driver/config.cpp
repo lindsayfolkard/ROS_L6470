@@ -2,6 +2,7 @@
 #include <fstream>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include "types.h"
 
 AbstractConfig::~AbstractConfig(){}
 
@@ -251,12 +252,13 @@ std::string addColour(const std::string &str, Colour colour)
 }
 
 template <typename T> void testAllCombinations (CommsDriver &commsDriver, int motor , boost::bimap<T,std::string> &biMap ,
+                                                const std::string &paramDescr,
                                                 std::function<void(T value, CommsDriver &commsDriver, int motor)> setFunction ,
                                                 std::function<T (CommsDriver &commsDriver,int motor)> getFunction)
 {
     bool passed=true;
     std::cout << "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" << std::endl;
-    std::cout << "Test commms for setting " ;//<< paramRegister << std::endl;
+    std::cout << "Test commms for setting " << paramDescr << std::endl;
     std::cout << "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" << std::endl;
 
     for (auto it = biMap.begin(); it != biMap.end() ; ++it)
@@ -278,7 +280,7 @@ template <typename T> void testAllCombinations (CommsDriver &commsDriver, int mo
         }
     }
 
-    std::cout << "Test for setting " ;//<< paramRegister << " : ";
+    std::cout << "Test for setting " << paramDescr << " : ";
     if (passed)
         std::cout << addColour("Passed",Green) << std::endl;
     else
@@ -293,16 +295,31 @@ void CommonConfig::unitTest(CommsDriver &commsDriver, int motor)
     // OverCurrentThreshold
     // Let's just manually do this shit...
     boost::bimap <CurrentThreshold,std::string> currentThresholdMap = getCurrentThresholdBiMap();
-    testAllCombinations<CurrentThreshold>(commsDriver,motor,currentThresholdMap,setOCThreshold,getOCThreshold);
+    testAllCombinations<CurrentThreshold>(commsDriver,motor,currentThresholdMap,"OCThreshold",setOCThreshold,getOCThreshold);
 
     // StallThreshold
-    //testAllCombinations<CurrentThreshold>(commsDriver,motor,currentThresholdMap,STALL_TH);
+    testAllCombinations<CurrentThreshold>(commsDriver,motor,currentThresholdMap,"StallThreshold",setStallThreshold,getStallThreshold);
 
     // StepMode
-    //testAllCombinations<StepMode>(commsDriver,motor,getStepModeBiMap(),STEP_MODE)
+    boost::bimap<StepMode,std::string> stepModeBimap = getStepModeBiMap();
+    testAllCombinations<StepMode>(commsDriver,motor,stepModeBimap,"StepMode",setStepMode,getStepMode);
+
+    // SyncSelect
+    boost::bimap<SyncSelect,std::string> syncSelectBimap = getSyncSelectBiMap();
+    std::function <void (SyncSelect s, CommsDriver &commsDriver, int motor)> setSync= [] (SyncSelect s, CommsDriver &commsDriver, int motor ) { return setSyncSelect(s,true,commsDriver,motor);};
+    testAllCombinations<SyncSelect>(commsDriver,motor,syncSelectBimap,"SyncSelect",setSync,getSyncSelect);
 
     // OscillatorSelect
+    boost::bimap<OscillatorSelect,std::string> oscillatorSelectMap = getOscillatorSelectBiMap();
+    testAllCombinations<OscillatorSelect>(commsDriver,motor,oscillatorSelectMap,"OscillatorSelect",setOscMode,getOscMode);
 
+    // Switch Configuration
+
+    // AlarmState ?
+
+    // FullStepThreshold Speed
+    boost::bimap<int,std::string> fsMap = makeBiMap<int,std::string>({{100,"100"},{200,"200"},{300,"300"},{400,"400"},{500,"500"},{600,"600"},{700,"700"}});
+    testAllCombinations<int>(commsDriver,motor,fsMap,"FullStepSpeed",setFullSpeed,getFullSpeed);
 
 }
 
@@ -426,6 +443,13 @@ CommonConfig::setFullSpeed(float stepsPerSecond, CommsDriver &commsDriver, int m
     commsDriver.setParam(FS_SPD, toBitLength(FS_SPD), integerSpeed, motor);
 }
 
+
+int
+CommonConfig::getFullSpeed(CommsDriver &commsDriver, int motor)
+{
+    return commsDriver.getParam(FS_SPD, toBitLength(FS_SPD), motor);
+}
+
 //float
 //CommonConfig::getFullSpeed(CommsDriver &commsDriver, int motor)
 //{
@@ -436,7 +460,8 @@ void
 CommonConfig::setOCThreshold(CurrentThreshold ocThreshold, CommsDriver &commsDriver, int motor)
 {
     //std::cout << "Debug - try to set ocThreshold to " << ocThreshold << std::endl;
-    commsDriver.setParam(OCD_TH, toBitLength(OCD_TH), 0x0F & ocThreshold, motor);
+    //commsDriver.setParam(OCD_TH, toBitLength(OCD_TH), 0x0F & ocThreshold, motor);
+    commsDriver.setParam(OCD_TH, toBitLength(OCD_TH), ocThreshold, motor);
     //std::cout << "Debug - read new ocThreshold as " << commsDriver.getParam(OCD_TH,toBitLength(OCD_TH),motor) << std::endl;
 }
 

@@ -198,26 +198,27 @@ private:
     void setDefaults();
     
     static void setOCThreshold(CurrentThreshold ocThreshold, CommsDriver &commsDriver, int motor );
-    void setStallThreshold(CurrentThreshold stallCurrent, CommsDriver &commsDriver, int motor );
-    void setStepMode(StepMode stepMode, CommsDriver &commsDriver, int motor );
-    void setSyncSelect( SyncSelect syncSelect, bool syncEnable, CommsDriver &commsDriver, int motor );
-    void setOscMode(OscillatorSelect oscillatorMode, CommsDriver &commsDriver, int motor );
-    void setOCShutdown(OverCurrentDetection overCurrentDetection, CommsDriver &commsDriver, int motor );
-    void setSwitchMode(SwitchConfiguration switchMode, CommsDriver &commsDriver, int motor );
-    void setAlarmState(AlarmState alarmState, CommsDriver &commsDriver, int motor );
-    void setFullSpeed(float stepsPerSecond, CommsDriver &commsDriver, int motor );
-    void setLoSpdOpt(bool enable, CommsDriver &commsDriver, int motor );
+    static void setStallThreshold(CurrentThreshold stallCurrent, CommsDriver &commsDriver, int motor );
+    static void setStepMode(StepMode stepMode, CommsDriver &commsDriver, int motor );
+    static void setSyncSelect( SyncSelect syncSelect, bool syncEnable, CommsDriver &commsDriver, int motor );
+    static void setOscMode(OscillatorSelect oscillatorMode, CommsDriver &commsDriver, int motor );
+    static void setOCShutdown(OverCurrentDetection overCurrentDetection, CommsDriver &commsDriver, int motor );
+    static void setSwitchMode(SwitchConfiguration switchMode, CommsDriver &commsDriver, int motor );
+    static void setAlarmState(AlarmState alarmState, CommsDriver &commsDriver, int motor );
+    static void setFullSpeed(float stepsPerSecond, CommsDriver &commsDriver, int motor );
+    static void setLoSpdOpt(bool enable, CommsDriver &commsDriver, int motor );
 
-    static CurrentThreshold    getOCThreshold(CommsDriver &commsDriver, int motor);
-    CurrentThreshold    getStallThreshold(CommsDriver &commsDriver, int motor);
-    StepMode            getStepMode(CommsDriver &commsDriver, int motor );
-    SyncSelect          getSyncSelect(CommsDriver &commsDriver, int motor );
-    OscillatorSelect    getOscMode(CommsDriver &commsDriver, int motor );
-    SwitchConfiguration getSwitchMode(CommsDriver &commsDriver, int motor );
-    OverCurrentDetection getOCShutdown(CommsDriver &commsDriver, int motor );
-    AlarmState          getAlarmState(CommsDriver &commsDriver, int motor );
-    bool                getSyncEnable(CommsDriver &commsDriver, int motor );
-    bool                getLoSpdOpt( CommsDriver &commsDriver, int motor );
+    static CurrentThreshold     getOCThreshold(CommsDriver &commsDriver, int motor);
+    static CurrentThreshold     getStallThreshold(CommsDriver &commsDriver, int motor);
+    static StepMode             getStepMode(CommsDriver &commsDriver, int motor );
+    static SyncSelect           getSyncSelect(CommsDriver &commsDriver, int motor );
+    static OscillatorSelect     getOscMode(CommsDriver &commsDriver, int motor );
+    static SwitchConfiguration  getSwitchMode(CommsDriver &commsDriver, int motor );
+    static OverCurrentDetection getOCShutdown(CommsDriver &commsDriver, int motor );
+    static AlarmState           getAlarmState(CommsDriver &commsDriver, int motor );
+    static bool                 getSyncEnable(CommsDriver &commsDriver, int motor );
+    static bool                 getLoSpdOpt(CommsDriver &commsDriver, int motor );
+    static int                  getFullSpeed(CommsDriver &commsDriver, int motor);
 
 };
 

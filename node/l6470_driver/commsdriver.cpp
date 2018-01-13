@@ -4,7 +4,6 @@
 #include <map>
 #include <vector>
 
-
 std::string toString(CommsDebugLevel commsDebugLevel)
 {
     switch (commsDebugLevel)

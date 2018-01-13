@@ -46,13 +46,6 @@ std::string toLineString(const std::vector<uint8_t> &data)
     return toLineString(&data[0],data.size());
 }
 
-template <typename L, typename R>
-boost::bimap<L, R>
-makeBiMap(std::initializer_list<typename boost::bimap<L, R>::value_type> list)
-{
-    return boost::bimap<L, R>(list.begin(), list.end());
-}
-
 boost::bimap <CurrentThreshold,std::string> getCurrentThresholdBiMap()
 {
     boost::bimap <CurrentThreshold,std::string> map  = makeBiMap<CurrentThreshold,std::string>(

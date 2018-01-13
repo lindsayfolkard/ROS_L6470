@@ -9,6 +9,13 @@ std::string toMapString(const std::map <int,uint32_t> &values , uint8_t bitLengt
 std::string toLineString(uint8_t *buffer , uint8_t length);
 std::string toLineString(const std::vector<uint8_t> &data);
 
+template <typename L, typename R>
+boost::bimap<L, R>
+makeBiMap(std::initializer_list<typename boost::bimap<L, R>::value_type> list)
+{
+    return boost::bimap<L, R>(list.begin(), list.end());
+}
+
 // constant definitions for overcurrent thresholds. Write these values to 
 //  register OCD_TH to set the level at which an overcurrent even occurs.
 #define CONFIG_OC_THRESOLD_REG 0XF
