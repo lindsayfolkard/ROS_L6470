@@ -702,6 +702,49 @@ VoltageModeCfg::set(CommsDriver &commsDriver, int motor)
     setVoltageComp(voltageCompensation, commsDriver, motor);
 }
 
+boost::bimap<uint8_t,std::string> makeNumBiMap(uint8_t startVal , uint8_t endVal)
+{
+    boost::bimap<uint8_t,std::string> retVal;
+    for (uint8_t i = startVal ; i <= endVal ; ++i)
+    {
+        retVal.insert(bm_type::value_type(i, std::to_string(i)));
+    }
+    return retVal;
+}
+
+void
+VoltageModeCfg::unitTest(CommsDriver &commsDriver, int motor)
+{
+
+    // PWM Frequency Multiplier
+    boost::bimap <PwmFrequencyMultiplier,std::string> pwmMultBiMap = getPwmFrequencyMultiplierBiMap();
+    //testAllCombinations<PwmFrequencyMultiplier> (commsDriver,motor,pwmMultBiMap,"PWMFrequencyMultipler",setPw)
+
+    // PWM Frequency Divider
+    // TODO
+
+    // Slew Rate
+    boost::bimap<SlewRate,std::string> slewRateBiMap = getSlewRateBiMap();
+    testAllCombinations<SlewRate> (commsDriver,motor,slewRateBiMap,"SlewRate",setSlewRate,getSlewRate);
+
+    // Voltage Compensation
+    boost::bimap <VoltageCompensation,std::string> voltageCompBimap = getVoltageCompensationBiMap();
+    testAllCombinations<VoltageCompensation> (commsDriver,motor,voltageCompBimap,setVoltageComp,getVoltageComp);
+
+    // KVal's
+    boost::bimap <uint8_t,std::string> defaultBiMap = makeNumBiMap(0x00,0xFF);
+    testAllCombinations<uint8_t>(commsDriver,motor,defaultBiMap,"HoldingKVal",setHoldKVAL,getHoldKVAL);
+    testAllCombinations<uint8_t>(commsDriver,motor,defaultBiMap,"ConstantSpeedKVal",setRunKVAL,getRunKVAL);
+    testAllCombinations<uint8_t>(commsDriver,motor,defaultBiMap,"AccelStartingKVal",setAccKVAL,getAccKVAL);
+    testAllCombinations<uint8_t>(commsDriver,motor,defaultBiMap,"DecelStartingKVal",setDecKVAL,getDecKVAL);
+
+    // Other Params (TODO)
+    //    uint32_t intersectSpeed;
+    //    uint32_t startSlope;
+    //    uint32_t accelFinalSlope;
+    //    uint32_t decelFinalSlope;
+}
+
 //VoltageModeCfg
 //VoltageModeCfg::getBackEmfConfig(int motor)
 //{

@@ -9,6 +9,7 @@ public:
     virtual ~AbstractConfig() = 0;
     virtual void set(CommsDriver &commsDriver, int motor) = 0;
     virtual void readFromFile(const std::string &filePath) = 0;
+    virtual void unitTest(CommsDriver &commsDriver, int motor) = 0;
 };
 
 class WriteableConfig {
@@ -81,6 +82,7 @@ public:
     virtual void set(CommsDriver &commsDriver, int motor) override;
     virtual void readFromFile(const std::string &filePath) override;
     virtual void writeToFile(const std::string &filePath) override;
+    virtual void unitTest(CommsDriver &commsDriver, int motor) override;
 
     uint8_t tvalHold;
     uint8_t tvalRun;
@@ -104,12 +106,12 @@ class VoltageModeCfg : public AbstractConfig,
 public:
 
     VoltageModeCfg();
-    //VoltageModeCfg()
     VoltageModeCfg(const std::string &file);
     
     virtual void set(CommsDriver &commsDriver, int motor) override;
     virtual void readFromFile(const std::string &file) override;
     virtual void writeToFile(const std::string &cfgFilePath) override;
+    virtual void unitTest(CommsDriver &commsDriver, int motor) override;
 
     uint8_t holdingKVal;
     uint8_t constantSpeedKVal;
@@ -171,7 +173,7 @@ public:
     virtual void set(CommsDriver &commsDriver, int motor) override;
     virtual void readFromFile(const std::string &file) override;
     virtual void writeToFile(const std::string &cfgFilePath) override;
-    void unitTest(CommsDriver &commsDriver, int motor);
+    virtual void unitTest(CommsDriver &commsDriver, int motor) override;
 
     int fullStepThresholdSpeed;
     int thermalDriftCoefficient;
