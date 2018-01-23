@@ -447,7 +447,8 @@ CommonConfig::setFullSpeed(float stepsPerSecond, CommsDriver &commsDriver, int m
 int
 CommonConfig::getFullSpeed(CommsDriver &commsDriver, int motor)
 {
-    return commsDriver.getParam(FS_SPD, toBitLength(FS_SPD), motor);
+    commsDriver.getParam(FS_SPD, toBitLength(FS_SPD), motor);
+    return FSParse(commsDriver.getParam(FS_SPD, toBitLength(FS_SPD), motor));
 }
 
 //float
@@ -468,20 +469,20 @@ CommonConfig::setOCThreshold(CurrentThreshold ocThreshold, CommsDriver &commsDri
 CurrentThreshold
 CommonConfig::getOCThreshold(CommsDriver &commsDriver, int motor)
 {
-    return static_cast<CurrentThreshold> (commsDriver.getParam(OCD_TH, toBitLength(OCD_TH), motor) & CONFIG_OC_THRESOLD_REG);
+    return static_cast<CurrentThreshold> (commsDriver.getParam(OCD_TH, toBitLength(OCD_TH), motor));
 }
 
 void
 CommonConfig::setStallThreshold(CurrentThreshold stallCurrent, CommsDriver &commsDriver, int motor)
 {
-    commsDriver.setParam(STALL_TH, toBitLength(STALL_TH), 0x0F & stallCurrent, motor);
+    commsDriver.setParam(STALL_TH, toBitLength(STALL_TH), stallCurrent, motor);
 }
 
 CurrentThreshold
 CommonConfig::getStallThreshold(CommsDriver &commsDriver, int motor)
 {
     const uint32_t stallThresholdMask=0xFF; // TODO - fix!!
-    return static_cast<CurrentThreshold> (commsDriver.getParam(STALL_TH, toBitLength(STALL_TH), motor) & stallThresholdMask);
+    return static_cast<CurrentThreshold> (commsDriver.getParam(STALL_TH, toBitLength(STALL_TH), motor));
 }
 
 // Single bit- do we shutdown the drivers on overcurrent or not?
