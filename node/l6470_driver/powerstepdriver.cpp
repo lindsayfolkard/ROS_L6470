@@ -43,6 +43,13 @@ PowerStepCfg::writeToFile(const std::string &cfgFilePath)
 }
 
 void
+PowerStepCfg::unitTest(CommsDriver &commsDriver, int motor)
+{
+    commonCfg_.unitTest(commsDriver,motor);
+    voltageModeCfg_.unitTest(commsDriver,motor);
+}
+
+void
 PowerStepDriver::setConfig(AbstractConfig &cfg , int motor)
 {
     cfg.set(*commsDriver_,motor);

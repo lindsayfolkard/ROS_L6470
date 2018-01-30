@@ -134,23 +134,25 @@ private:
     void setDefaults();
     
     // probs can just be external methods in their own namespace but fuck it
-    void setAccKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor );
-    void setDecKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor );
-    void setRunKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor );
-    void setHoldKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor );
-    void setVoltageComp(VoltageCompensation vsCompMode, CommsDriver &commsDriver, int motor );
-    void setPWMFreq(PwmFrequencyDivider divider, PwmFrequencyMultiplier multiplier,  CommsDriver &commsDriver, int motor );
-    void setSlewRate(SlewRate slewRate, CommsDriver &commsDriver, int motor );
+    static void setAccKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor );
+    static void setDecKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor );
+    static void setRunKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor );
+    static void setHoldKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor );
+    static void setVoltageComp(VoltageCompensation vsCompMode, CommsDriver &commsDriver, int motor );
+    static void setPWMFreq(PwmFrequencyDivider divider, PwmFrequencyMultiplier multiplier,  CommsDriver &commsDriver, int motor );
+    static void setPWMFreqDivider(PwmFrequencyDivider divider, CommsDriver &commsDriver, int motor);
+    static void setPWMFreqMultiplier(PwmFrequencyMultiplier multiplier, CommsDriver &commsDriver, int motor);
+    static void setSlewRate(SlewRate slewRate, CommsDriver &commsDriver, int motor );
 
-    uint8_t getAccKVAL(CommsDriver &commsDriver, int motor );
-    uint8_t getDecKVAL(CommsDriver &commsDriver, int motor );
-    uint8_t getRunKVAL(CommsDriver &commsDriver, int motor );
-    uint8_t getHoldKVAL(CommsDriver &commsDriver, int motor );
+    static uint8_t getAccKVAL(CommsDriver &commsDriver, int motor );
+    static uint8_t getDecKVAL(CommsDriver &commsDriver, int motor );
+    static uint8_t getRunKVAL(CommsDriver &commsDriver, int motor );
+    static uint8_t getHoldKVAL(CommsDriver &commsDriver, int motor );
 
-    PwmFrequencyDivider	   getPWMFreqDivisor(CommsDriver &commsDriver, int motor );
-    PwmFrequencyMultiplier getPWMFreqMultiplier(CommsDriver &commsDriver, int motor );
-    VoltageCompensation	   getVoltageComp(CommsDriver &commsDriver, int motor );
-    SlewRate            getSlewRate(CommsDriver &commsDriver, int motor );
+    static PwmFrequencyDivider	   getPWMFreqDivisor(CommsDriver &commsDriver, int motor );
+    static PwmFrequencyMultiplier getPWMFreqMultiplier(CommsDriver &commsDriver, int motor );
+    static VoltageCompensation	   getVoltageComp(CommsDriver &commsDriver, int motor );
+    static SlewRate            getSlewRate(CommsDriver &commsDriver, int motor );
 };
 
 std::string toString(const VoltageModeCfg &backEmfConfig);

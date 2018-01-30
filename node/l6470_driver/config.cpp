@@ -2,6 +2,7 @@
 #include <fstream>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <boost/bimap.hpp>
 #include "types.h"
 
 AbstractConfig::~AbstractConfig(){}
@@ -117,15 +118,18 @@ OverallCfg::writeToFile(const std::string &baseFile)
 std::string
 toString(const OverallCfg &cfg)
 {
-    std::cout << "ControllerType  : " << cfg.controllerType_  << std::endl;
-    std::cout << "CommsDebugLevel : " << cfg.commsDebugLevel_ << std::endl;
+    std::stringstream ss;
+    ss << "ControllerType  : " << cfg.controllerType_  << std::endl;
+    ss << "CommsDebugLevel : " << cfg.commsDebugLevel_ << std::endl;
 
     int count=1;
     for (const auto &file : cfg.cfgFiles_)
     {
-        std::cout << "Motor " << count << " : " << file.stepperMotorFile_ << " , " << file.commonConfigFile_ << std::endl;
+        ss << "Motor " << count << " : " << file.stepperMotorFile_ << " , " << file.commonConfigFile_ << std::endl;
         ++count;
     }
+
+    return ss.str();
 }
 
 //////////////////////////////////
@@ -287,6 +291,39 @@ template <typename T> void testAllCombinations (CommsDriver &commsDriver, int mo
         std::cout << addColour("Failed!",Red) << std::endl;
     std::cout << "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" << std::endl << std::endl;
 
+}
+
+void testAllCombinations (CommsDriver &driver, int motor , ParamRegister paramRegister)
+{
+    bool passed=true;
+    std::cout << "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" << std::endl;
+    std::cout << "Test commms for setting " << paramRegister << std::endl;
+    std::cout << "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" << std::endl;
+
+    const int maxVal = pow(2,toBitLength(paramRegister));
+    for (int i = 0 ; i < maxVal ; ++i)
+    {
+        std::cout << "Set to " << i << " , ";
+        driver.setParam(paramRegister,toBitLength(paramRegister),i,motor);
+        int value = driver.getParam(paramRegister,toBitLength(paramRegister),motor);
+        std::cout << "read " << (int) value;
+        if (value != i)
+        {
+            passed=false;
+            std::cout << " : " << addColour("Failed!",Red) << std::endl;
+        }
+        else
+        {
+            std::cout << " : " << addColour("Passed!" ,Green)<< std::endl;
+        }
+    }
+
+    std::cout << "Test for setting " << paramRegister << " : ";
+    if (passed)
+        std::cout << addColour("Passed",Green) << std::endl;
+    else
+        std::cout << addColour("Failed!",Red) << std::endl;
+    std::cout << "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" << std::endl << std::endl;
 }
 
 void CommonConfig::unitTest(CommsDriver &commsDriver, int motor)
@@ -578,6 +615,19 @@ VoltageModeCfg::setPWMFreq(PwmFrequencyDivider divider, PwmFrequencyMultiplier m
     commsDriver.setParam(CONFIG, toBitLength(CONFIG), configVal , motor);
 }
 
+void
+VoltageModeCfg::setPWMFreqDivider(PwmFrequencyDivider divider, CommsDriver &commsDriver, int motor)
+{
+    PwmFrequencyMultiplier pwmFrequencyMultiplier = getPWMFreqMultiplier(commsDriver,motor);
+    setPWMFreq(divider,pwmFrequencyMultiplier,commsDriver,motor);
+}
+void
+VoltageModeCfg::setPWMFreqMultiplier(PwmFrequencyMultiplier multiplier, CommsDriver &commsDriver, int motor)
+{
+    PwmFrequencyDivider divider = getPWMFreqDivisor(commsDriver,motor);
+    setPWMFreq(divider,multiplier,commsDriver,motor);
+}
+
 PwmFrequencyDivider
 VoltageModeCfg::getPWMFreqDivisor(CommsDriver &commsDriver, int motor)
 {
@@ -707,7 +757,7 @@ boost::bimap<uint8_t,std::string> makeNumBiMap(uint8_t startVal , uint8_t endVal
     boost::bimap<uint8_t,std::string> retVal;
     for (uint8_t i = startVal ; i <= endVal ; ++i)
     {
-        retVal.insert(bm_type::value_type(i, std::to_string(i)));
+        retVal.insert({i, std::to_string(i)});
     }
     return retVal;
 }
@@ -715,13 +765,13 @@ boost::bimap<uint8_t,std::string> makeNumBiMap(uint8_t startVal , uint8_t endVal
 void
 VoltageModeCfg::unitTest(CommsDriver &commsDriver, int motor)
 {
-
     // PWM Frequency Multiplier
     boost::bimap <PwmFrequencyMultiplier,std::string> pwmMultBiMap = getPwmFrequencyMultiplierBiMap();
-    //testAllCombinations<PwmFrequencyMultiplier> (commsDriver,motor,pwmMultBiMap,"PWMFrequencyMultipler",setPw)
+    testAllCombinations<PwmFrequencyMultiplier> (commsDriver,motor,pwmMultBiMap,"PWMFrequencyMultipler",setPWMFreqMultiplier,getPWMFreqMultiplier);
 
     // PWM Frequency Divider
-    // TODO
+    boost::bimap <PwmFrequencyDivider,std::string> pwmDivBiMap = getPwmFrequencyDividerBiMap();
+    testAllCombinations<PwmFrequencyDivider> (commsDriver,motor,pwmDivBiMap,"PWMFrequencyDivider",setPWMFreqDivider,getPWMFreqDivisor);
 
     // Slew Rate
     boost::bimap<SlewRate,std::string> slewRateBiMap = getSlewRateBiMap();
@@ -729,7 +779,7 @@ VoltageModeCfg::unitTest(CommsDriver &commsDriver, int motor)
 
     // Voltage Compensation
     boost::bimap <VoltageCompensation,std::string> voltageCompBimap = getVoltageCompensationBiMap();
-    testAllCombinations<VoltageCompensation> (commsDriver,motor,voltageCompBimap,setVoltageComp,getVoltageComp);
+    testAllCombinations<VoltageCompensation> (commsDriver,motor,voltageCompBimap,"VoltageComp",setVoltageComp,getVoltageComp);
 
     // KVal's
     boost::bimap <uint8_t,std::string> defaultBiMap = makeNumBiMap(0x00,0xFF);
@@ -738,11 +788,11 @@ VoltageModeCfg::unitTest(CommsDriver &commsDriver, int motor)
     testAllCombinations<uint8_t>(commsDriver,motor,defaultBiMap,"AccelStartingKVal",setAccKVAL,getAccKVAL);
     testAllCombinations<uint8_t>(commsDriver,motor,defaultBiMap,"DecelStartingKVal",setDecKVAL,getDecKVAL);
 
-    // Other Params (TODO)
-    //    uint32_t intersectSpeed;
-    //    uint32_t startSlope;
-    //    uint32_t accelFinalSlope;
-    //    uint32_t decelFinalSlope;
+    // Other Params
+    testAllCombinations(commsDriver,motor,INT_SPD);
+    testAllCombinations(commsDriver,motor,ST_SLP);
+    testAllCombinations(commsDriver,motor,FN_SLP_ACC);
+    testAllCombinations(commsDriver,motor,FN_SLP_DEC);
 }
 
 //VoltageModeCfg
@@ -804,6 +854,13 @@ CurrentModeCfg::set(CommsDriver &commsDriver, int motor)
     assert(!"set is not currently implemented for CurrentModeCfg");
 }
 
+
+void
+CurrentModeCfg::unitTest(CommsDriver &commsDriver, int motor)
+{
+    assert(!"Current mode config unit test not yet implemented");
+    // do nothing
+}
 ///////////////////////////////////////////////////////////////////
 //////////// END of Current Mode Config ///////////////////////////
 ///////////////////////////////////////////////////////////////////

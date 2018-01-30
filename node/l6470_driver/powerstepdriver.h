@@ -16,6 +16,7 @@ public:
     virtual void set(CommsDriver &commsDriver, int motor) override;
     virtual void readFromFile(const std::string &filePath) override;
     virtual void writeToFile(const std::string &cfgFilePath) override;
+    virtual void unitTest(CommsDriver &commsDriver, int motor) override;
 
     void    setCurrentModeCfg(CommsDriver &commsDriver, int motor);
     void    setVoltageModeCfg(CommsDriver &commsDriver, int motor);
