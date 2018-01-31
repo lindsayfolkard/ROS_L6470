@@ -10,6 +10,6 @@ int main(int argc, char **argv)
     CommonConfig cfg;
     cfg.unitTest(commsDriver,0);
 
-    VoltageModeCfg cfg;
-    cfg.unitTest(commsDriver,0);
+    VoltageModeCfg voltageModeCfg;
+    voltageModeCfg.unitTest(commsDriver,0);
 }
