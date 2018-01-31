@@ -50,10 +50,12 @@ int main (int argc, char ** argv)
 
     // Let's try to go to a position
     GoToCommand goToCommand(10000);
-    driver.goTo(goToCommand);
+    driver.goTo(goToCommand,0);
     while (1)
     {
-        cout << "Motor position is : " << driver.getPos() << endl;
+        cout << "Motor position is : " << driver.getPos(0) << endl;
+        usleep(1000);
+        cout << "Status is :"  << driver.getStatus(0) << endl;
         usleep(5000);
     }
 
