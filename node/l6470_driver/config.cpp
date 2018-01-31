@@ -757,7 +757,7 @@ VoltageModeCfg::set(CommsDriver &commsDriver, int motor)
 boost::bimap<uint8_t,std::string> makeNumBiMap(uint8_t startVal , uint8_t endVal)
 {
     boost::bimap<uint8_t,std::string> retVal;
-    for (uint8_t i = startVal ; i <= endVal ; ++i)
+    for (int i = startVal ; i <= endVal ; ++i)
     {
         retVal.insert({i, std::to_string(i)});
     }
