@@ -712,7 +712,7 @@ VoltageModeCfg::getDecKVAL(CommsDriver &commsDriver, int motor)
 void
 VoltageModeCfg::setRunKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor)
 {
-    commsDriver.setParam(KVAL_RUN, kvalInput, toBitLength(KVAL_RUN), motor);
+    commsDriver.setParam(KVAL_RUN, toBitLength(KVAL_RUN),kvalInput, motor);
 }
 
 uint8_t
@@ -724,7 +724,7 @@ VoltageModeCfg::getRunKVAL(CommsDriver &commsDriver, int motor)
 void
 VoltageModeCfg::setHoldKVAL(uint8_t kvalInput, CommsDriver &commsDriver, int motor)
 {
-    commsDriver.setParam(KVAL_HOLD, kvalInput, toBitLength(KVAL_HOLD), motor);
+    commsDriver.setParam(KVAL_HOLD, toBitLength(KVAL_HOLD), kvalInput, motor);
 }
 
 uint8_t
