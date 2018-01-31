@@ -19,6 +19,15 @@ PowerStepCfg::PowerStepCfg (CommsDriver &commsDriver , int motor)
     commonCfg_ = CommonConfig(commsDriver,motor);
 }
 
+PowerStepCfg::PowerStepCfg (const CommonConfig   &commonConfig,
+                            const CurrentModeCfg &currentModeConfig,
+                            const VoltageModeCfg &voltageModeConfig):
+    commonCfg_(commonConfig),
+    currentModeCfg_(currentModeConfig),
+    voltageModeCfg_(voltageModeConfig)
+{}
+
+
 void
 PowerStepCfg::set(CommsDriver &commsDriver, int motor)
 {

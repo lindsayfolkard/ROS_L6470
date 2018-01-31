@@ -12,4 +12,6 @@ int main(int argc, char **argv)
 
     VoltageModeCfg voltageModeCfg;
     voltageModeCfg.unitTest(commsDriver,0);
+
+    // TODO - current mode config
 }

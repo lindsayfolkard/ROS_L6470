@@ -303,21 +303,21 @@ void testAllCombinations (CommsDriver &driver, int motor , ParamRegister paramRe
     const int maxVal = pow(2,toBitLength(paramRegister));
     for (int i = 0 ; i < maxVal ; ++i)
     {
-        std::cout << "Set to " << i << " , ";
+        //std::cout << "Set to " << i << " , ";
         driver.setParam(paramRegister,toBitLength(paramRegister),i,motor);
-        usleep(1000);
+        //usleep(1000);
         int value = driver.getParam(paramRegister,toBitLength(paramRegister),motor);
-        std::cout << "read " << (int) value;
+        //std::cout << "read " << (int) value;
         if (value != i)
         {
             passed=false;
-            std::cout << " : " << addColour("Failed!",Red) << std::endl;
+            //std::cout << " : " << addColour("Failed!",Red) << std::endl;
         }
-        else
-        {
-            std::cout << " : " << addColour("Passed!" ,Green)<< std::endl;
-        }
-        usleep(1000);
+        //        else
+        //        {
+        //            std::cout << " : " << addColour("Passed!" ,Green)<< std::endl;
+        //        }
+        //usleep(1000);
     }
 
     std::cout << "Test for setting " << paramRegister << " : ";

@@ -11,6 +11,9 @@ public:
 
     PowerStepCfg() {}
     PowerStepCfg (const CfgFile &cfgFile);
+    PowerStepCfg (const CommonConfig   &commonConfig,
+                  const CurrentModeCfg &currentModeConfig,
+                  const VoltageModeCfg &voltageModeConfig);
     PowerStepCfg (CommsDriver &commsDriver , int motor);
 
     virtual void set(CommsDriver &commsDriver, int motor) override;
