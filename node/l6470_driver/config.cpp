@@ -305,6 +305,7 @@ void testAllCombinations (CommsDriver &driver, int motor , ParamRegister paramRe
     {
         std::cout << "Set to " << i << " , ";
         driver.setParam(paramRegister,toBitLength(paramRegister),i,motor);
+        usleep(1000);
         int value = driver.getParam(paramRegister,toBitLength(paramRegister),motor);
         std::cout << "read " << (int) value;
         if (value != i)
@@ -316,6 +317,7 @@ void testAllCombinations (CommsDriver &driver, int motor , ParamRegister paramRe
         {
             std::cout << " : " << addColour("Passed!" ,Green)<< std::endl;
         }
+        usleep(1000);
     }
 
     std::cout << "Test for setting " << paramRegister << " : ";

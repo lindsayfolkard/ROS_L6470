@@ -9,4 +9,7 @@ int main(int argc, char **argv)
     // Run the Common Config unit test
     CommonConfig cfg;
     cfg.unitTest(commsDriver,0);
+
+    VoltageModeCfg cfg;
+    cfg.unitTest(commsDriver,0);
 }
