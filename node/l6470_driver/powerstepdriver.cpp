@@ -99,7 +99,7 @@ PowerStepDriver::PowerStepDriver(const std::vector<StepperMotor> &motors, std::v
     PowerStepDriver(motors,spiBus,commsDebugLevel)
 {
     // configure the stepper motor drivers as required
-    int motor=1;
+    int motor=0;
     for (PowerStepCfg &cfg : cfgs)
     {
         cfg.commonCfg_.set(*commsDriver_,motor);

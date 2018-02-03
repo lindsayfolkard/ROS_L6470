@@ -24,12 +24,15 @@ int main (int argc, char ** argv)
     std::vector<PowerStepCfg> cfgs = {powerStepConfig};
     // Instantiate the AutoDriver
     cout << "Try to instantiate the driver" << endl;
-    PowerStepDriver driver(motors,cfgs,0,CommsDebugOnlyActions);
+    PowerStepDriver driver(motors,cfgs,0,CommsDebugNothing);
     cout << "Instantiated the driver!" << endl;
 
     // Lets try and get the status
     usleep(1000);
     cout << "Status is " << driver.getStatus(0) << endl;
+    usleep(1000);
+    cout << "Status after clearing is : " << driver.clearStatus()[0] << endl;
+    usleep(1000);
 
     // Get the position
     usleep(1000);
@@ -40,9 +43,10 @@ int main (int argc, char ** argv)
     cout << "Initial speed = " << driver.getSpeed(0) << endl;
 
     // Lets zero the position
-    cout << "Set position to 0";
+    const int startingPosition = 100;
+    cout << "Set position to " << startingPosition;
     usleep(1000);
-    driver.setPos(0,0);
+    driver.setPos(startingPosition,0);
 
     // Get the position
     usleep(1000);
@@ -56,7 +60,8 @@ int main (int argc, char ** argv)
         cout << "Motor position is : " << driver.getPos(0) << endl;
         usleep(1000);
         cout << "Status is :"  << driver.getStatus(0) << endl;
-        usleep(5000);
+        driver.clearStatus();
+        usleep(20000);
     }
 
     //    // Read the config
