@@ -53,16 +53,30 @@ int main (int argc, char ** argv)
     cout << "Position = " << driver.getPos(0);
 
     // Let's try to go to a position
-    GoToCommand goToCommand(10000);
-    driver.goTo(goToCommand,0);
+//    GoToCommand goToCommand(10000);
+//    cout << "Pos, converted is " << (int)goToCommand.pos;
+//    driver.goTo(goToCommand,0);
+
+    RunCommand runCommand(Reverse,300);
     while (1)
     {
+        cout << "========================================" << endl;
         cout << "Motor position is : " << driver.getPos(0) << endl;
         usleep(1000);
         cout << "Status is :"  << driver.getStatus(0) << endl;
+        cout << "========================================" << endl << endl;
         driver.clearStatus();
-        usleep(20000);
+        sleep(1);
     }
+
+    //    while (1)
+    //    {
+    //        cout << "Motor position is : " << driver.getPos(0) << endl;
+    //        usleep(1000);
+    //        cout << "Status is :"  << driver.getStatus(0) << endl;
+    //        driver.clearStatus();
+    //        usleep(20000);
+    //    }
 
     //    // Read the config
     //    cout << " Profile config" <<  driver.getProfileCfg(0) << endl;
