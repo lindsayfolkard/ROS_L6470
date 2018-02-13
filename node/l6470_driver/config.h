@@ -211,6 +211,7 @@ private:
     static void setAlarmState(AlarmState alarmState, CommsDriver &commsDriver, int motor );
     static void setFullSpeed(float stepsPerSecond, CommsDriver &commsDriver, int motor );
     static void setLoSpdOpt(bool enable, CommsDriver &commsDriver, int motor );
+    static void setControlMode (ControlMode controlMode, CommsDriver &commsDriver, int motor );
 
     static CurrentThreshold     getOCThreshold(CommsDriver &commsDriver, int motor);
     static CurrentThreshold     getStallThreshold(CommsDriver &commsDriver, int motor);
@@ -223,6 +224,7 @@ private:
     static bool                 getSyncEnable(CommsDriver &commsDriver, int motor );
     static bool                 getLoSpdOpt(CommsDriver &commsDriver, int motor );
     static int                  getFullSpeed(CommsDriver &commsDriver, int motor);
+    static ControlMode          getControlMode(CommsDriver &commsDriver, int motor);
 
 };
 

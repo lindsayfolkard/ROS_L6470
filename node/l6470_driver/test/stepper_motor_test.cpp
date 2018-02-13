@@ -58,15 +58,20 @@ int main (int argc, char ** argv)
 //    driver.goTo(goToCommand,0);
 
     RunCommand runCommand(Reverse,300);
+    driver.run(runCommand,0);
+
     while (1)
     {
         cout << "========================================" << endl;
         cout << "Motor position is : " << driver.getPos(0) << endl;
+        cout << "Motor speed is : " << driver.getSpeed(0) << endl;
         usleep(1000);
         cout << "Status is :"  << driver.getStatus(0) << endl;
+        cout << "Status from clearStatus is " << driver.clearStatus()[0] << endl;
         cout << "========================================" << endl << endl;
-        driver.clearStatus();
-        sleep(1);
+        cout << "press any key to continue : ";
+        char c;
+        cin >> c;
     }
 
     //    while (1)

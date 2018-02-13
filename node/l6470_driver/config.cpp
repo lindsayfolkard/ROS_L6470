@@ -142,8 +142,8 @@ CommonConfig::setDefaults()
     fullStepThresholdSpeed=900;
     thermalDriftCoefficient=0;
 
-    overCurrentThreshold=OCD_TH_6000m;
-    stallThreshold=OCD_TH_6000m;
+    overCurrentThreshold=OCD_TH_3000m;
+    stallThreshold=OCD_TH_3000m;
 
     // STEP_MODE register settings
     stepMode=STEP_SEL_1_16;
@@ -206,6 +206,12 @@ CommonConfig::set(CommsDriver &commsDriver, int motor)
     commsDriver.SPIXfer(0,0);
     commsDriver.SPIXfer(0,0);
     commsDriver.SPIXfer(0,0);
+
+    // Set the control mode
+    usleep(1000);
+    setControlMode(controlMode, commsDriver, motor);
+    usleep(1000);
+
 //    usleep(5000);
 //    std::cout << "Debug - Lets try to set the FS_SPD parameter" << fullStepThresholdSpeed << std::endl;
 //    commsDriver.setParam(FS_SPD,toBitLength(FS_SPD),fullStepThresholdSpeed,motor);
@@ -356,6 +362,10 @@ void CommonConfig::unitTest(CommsDriver &commsDriver, int motor)
 
     // AlarmState ?
 
+    // Control Mode
+    boost::bimap<ControlMode,std::string> controlMap = getControlModeBiMap();
+    testAllCombinations<ControlMode>(commsDriver,motor,controlMap,"ControlMode",setControlMode,getControlMode);
+
     // FullStepThreshold Speed
     boost::bimap<int,std::string> fsMap = makeBiMap<int,std::string>({{100,"100"},{200,"200"},{300,"300"},{400,"400"},{500,"500"},{600,"600"},{700,"700"}});
     testAllCombinations<int>(commsDriver,motor,fsMap,"FullStepSpeed",setFullSpeed,getFullSpeed);
@@ -379,6 +389,30 @@ CommonConfig::CommonConfig(CommsDriver &commsDriver , int motor)
     fullStepThresholdSpeed  = commsDriver.getParam(FS_SPD,toBitLength(FS_SPD),motor);
 }
 
+void
+CommonConfig::setControlMode(ControlMode controlMode, CommsDriver &commsDriver, int motor)
+{
+    // Only some of these bits are useful (the lower three). We'll extract the
+    //  current contents, clear those three bits, then set them accordingly.
+    const uint8_t stepModeMask = 0xF8;
+    uint8_t stepModeConfig = (uint8_t)commsDriver.getParam(STEP_MODE,toBitLength(STEP_MODE),motor);
+    stepModeConfig &= stepModeMask;
+
+    // Now we can OR in the new bit settings. Mask the argument so we don't
+    //  accidentally the other bits, if the user sends us a non-legit value.
+    const uint8_t controlModeMask = 0x08;
+    stepModeConfig |= (controlMode&controlModeMask);
+
+    // Now push the change to the chip.
+    commsDriver.setParam(STEP_MODE, toBitLength(STEP_MODE), (uint32_t)stepModeConfig , motor);
+}
+
+ControlMode
+CommonConfig::getControlMode(CommsDriver &commsDriver,int motor)
+{
+    const uint8_t controlModeMask = 0x08;
+    return static_cast<ControlMode> (commsDriver.getParam(STEP_MODE,toBitLength(STEP_MODE),motor)&controlModeMask);
+}
 // Setup the SYNC/BUSY pin to be either SYNC or BUSY, and to a desired
 //  ticks per step level.
 void

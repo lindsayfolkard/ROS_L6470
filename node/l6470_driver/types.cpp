@@ -442,19 +442,32 @@ parseStatus(uint16_t statusValue)
     std::cout << "Debug - status value is 0x" << std::hex << (int) statusValue
               << std::dec << " - " << (int) statusValue << std::endl;
     Status status;
+    // HighZ - active high
     status.isHighZ = statusValue & STATUS_HIZ;
-    status.isBusy  = statusValue & STATUS_BUSY;
+
+    // Busy - active low
+    status.isBusy  = !(statusValue & STATUS_BUSY);
+
+    // Switch state - low = open , high = closed
     status.isSwitchClosed = (statusValue & STATUS_SW_F);
+
+    // SwitchEvent --> active high
     status.switchEventDetected = statusValue & STATUS_SW_EVN;
 
-    status.performedLastCommand = (statusValue & STATUS_NOTPERF_CMD);
+    // active low
+    status.performedLastCommand = !(statusValue & STATUS_NOTPERF_CMD);
     status.lastCommandInvalid   = statusValue & STATUS_WRONG_CMD;
 
+    // active high - slightly different mapping, but this will work
     status.hasThermalWarning = (statusValue & STATUS_TH_WRN);
     status.isInThermalShutdown = (statusValue & STATUS_TH_SD);
-    status.overCurrentDetected = (statusValue & STATUS_OCD);
-    status.stallDetectedPhaseA = statusValue & STATUS_STEP_LOSS_A;
-    status.stallDetectedPhaseB = statusValue & STATUS_STEP_LOSS_B;
+
+    // OCD --> active low
+    status.overCurrentDetected = !(statusValue & STATUS_OCD);
+
+    // Stall --> active low
+    status.stallDetectedPhaseA = !(statusValue & STATUS_STEP_LOSS_A);
+    status.stallDetectedPhaseB = !(statusValue & STATUS_STEP_LOSS_B);
 
     status.spinDirection = static_cast <MotorSpinDirection> (statusValue & STATUS_DIR);
     status.motorStatus   = static_cast <MotorStatus> (statusValue & STATUS_MOT_STATUS);
