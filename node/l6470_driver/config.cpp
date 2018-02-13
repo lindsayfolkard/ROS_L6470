@@ -394,13 +394,13 @@ CommonConfig::setControlMode(ControlMode controlMode, CommsDriver &commsDriver, 
 {
     // Only some of these bits are useful (the lower three). We'll extract the
     //  current contents, clear those three bits, then set them accordingly.
-    const uint8_t stepModeMask = 0xF8;
+    const uint8_t controlModeMask = 0x08;
+    const uint8_t stepModeMask = !(0xFF&controlModeMask);
     uint8_t stepModeConfig = (uint8_t)commsDriver.getParam(STEP_MODE,toBitLength(STEP_MODE),motor);
     stepModeConfig &= stepModeMask;
 
     // Now we can OR in the new bit settings. Mask the argument so we don't
     //  accidentally the other bits, if the user sends us a non-legit value.
-    const uint8_t controlModeMask = 0x08;
     stepModeConfig |= (controlMode&controlModeMask);
 
     // Now push the change to the chip.

@@ -43,7 +43,7 @@ int main (int argc, char ** argv)
     cout << "Initial speed = " << driver.getSpeed(0) << endl;
 
     // Lets zero the position
-    const int startingPosition = 100;
+    const int startingPosition = 0;
     cout << "Set position to " << startingPosition;
     usleep(1000);
     driver.setPos(startingPosition,0);
@@ -65,9 +65,8 @@ int main (int argc, char ** argv)
         cout << "========================================" << endl;
         cout << "Motor position is : " << driver.getPos(0) << endl;
         cout << "Motor speed is : " << driver.getSpeed(0) << endl;
-        usleep(1000);
-        cout << "Status is :"  << driver.getStatus(0) << endl;
-        cout << "Status from clearStatus is " << driver.clearStatus()[0] << endl;
+        //cout << "Status is :"  << driver.getStatus(0) << endl;
+        cout << "Status from clearStatus is " << endl << driver.clearStatus()[0] << endl;
         cout << "========================================" << endl << endl;
         cout << "press any key to continue : ";
         char c;
