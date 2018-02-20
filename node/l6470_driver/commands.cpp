@@ -128,6 +128,10 @@ int toBitLength(char paramRegister)
         retVal = 12;
         break;
 
+    case GATE_CFG1:
+        retVal = 11;
+        break;
+
     case MAX_SPEED:
     case FS_SPD:
         retVal = 10;
@@ -150,6 +154,7 @@ int toBitLength(char paramRegister)
     case STALL_TH:
     case STEP_MODE:
     case ALARM_EN:
+    case GATE_CFG2:
         retVal = 8;
         break;
     }

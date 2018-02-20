@@ -387,6 +387,8 @@ CommonConfig::CommonConfig(CommsDriver &commsDriver , int motor)
     alarmState               = getAlarmState(commsDriver , motor);
     //thermalDriftCoefficient = getTh
     fullStepThresholdSpeed  = commsDriver.getParam(FS_SPD,toBitLength(FS_SPD),motor);
+    gateConfig1 = getGateConfig1(commsDriver,motor);
+    gateConfig2 = getGateConfig2(commsDriver,motor);
 }
 
 void
@@ -869,9 +871,86 @@ CommonConfig::getLoSpdOpt(CommsDriver &commsDriver, int motor)
     return (bool) ((commsDriver.getParam(MIN_SPEED, toBitLength(MIN_SPEED), motor) & 0x00001000) != 0);
 }
 
+namespace
+{
+    const uint16_t bit_mask_3 = 0x07;
+    const uint16_t bit_mask_4 = 0x0F;
+
+    // Config 1 variables
+    const int gateCurrentShift     = 5;
+    const int gateCurrentLength    = 3;
+    const uint16_t gateCurrentMask = bit_mask_3 << gateCurrentShift;
+
+    const int gateTBoostShift     = 8;
+    const int gateTBoostLength    = 3;
+    const uint16_t gateTBoostMask = bit_mask_3 << gateTBoostShift;
+
+    const int gateTccShift     = 0;
+    const int gateTccLength    = 4;
+    const uint16_t gateTccMask = bit_mask_4 << gateTccShift;
+
+    const int gateWd_En_Shift  = 11;
+    const int gateWd_En_Length =  1;
+    const uint16_t wd_enMask   = 0x01 << gateWd_En_Shift;
+
+    // Config 2 variables
+
+    const uint8_t gateDeadTimeShift = 0;
+    const uint8_t gateDeadTimeMask  = 0x0F;
+
+    const uint8_t gateTBlankShift  = 5;
+    const uint8_t gateTBlankMask   = (0xFF^0x0F);
+}
+
+GateConfig1
+CommonConfig::getGateConfig1(CommsDriver &commsDriver, int motor)
+{
+    uint16_t result = commsDriver.getParam(GATE_CFG1,toBitLength(GATE_CFG1),motor);
+
+    GateConfig1 gateConfig1;
+    gateConfig1.gateCurrent = static_cast<GateCurrent>(result&gateCurrentMask);
+    gateConfig1.gateTBoost  = static_cast<GateTBoost> (result&gateTBoostMask);
+    gateConfig1.gateTcc     = static_cast<GateTcc>    (result&gateTccMask);
+    gateConfig1.wd_en       = static_cast<bool>       (result&wd_enMask);
+
+    return gateConfig1;
+}
+
+void
+CommonConfig::setGateConfig1(const GateConfig1 &gateConfig1, CommsDriver &commsDriver, int motor)
+{
+    uint16_t data = ((gateConfig1.gateCurrent & bit_mask_3) << gateCurrentShift) |
+                    ((gateConfig1.gateTBoost & bit_mask_3)  << gateTBoostMask)   |
+                    ((gateConfig1.gateTcc & bit_mask_4)     << gateTccShift)     |
+                    ((gateConfig1.wd_en   & 0x01)           << gateWd_En_Shift);
+
+    commsDriver.setParam(GATE_CFG1,toBitLength(GATE_CFG1),data,motor);
+}
+
+GateConfig2
+CommonConfig::getGateConfig2(CommsDriver &commsDriver, int motor)
+{
+    uint8_t result = commsDriver.getParam(GATE_CFG2,toBitLength(GATE_CFG2),motor);
+
+    GateConfig2 gateConfig2;
+    gateConfig2.gateDeadTime = static_cast<GateDeadTime>(result&gateDeadTimeMask);
+    gateConfig2.gateTBlank   = static_cast<GateTBlank>  (result&gateTBlankMask);
+
+    return gateConfig2;
+}
+
+void
+CommonConfig::setGateConfig2(const GateConfig2 &gateConfig2, CommsDriver &commsDriver, int motor)
+{
+    uint8_t data = ((gateConfig2.gateDeadTime & bit_mask_3) << gateDeadTimeShift) |
+                   ((gateConfig2.gateTBlank   & bit_mask_4) << gateTBlankShift);
+
+    commsDriver.setParam(GATE_CFG2,toBitLength(GATE_CFG2),data,motor);
+}
+
 
 ///////////////////////////////////////////////////////////////////
-/////////// END Of Voltage Mode Config ////////////////////////////
+/////////// END Of Common Config ////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
 
@@ -923,6 +1002,8 @@ std::string toString(const CommonConfig &cfg)
     ss << "SwitchConfiguration     : " << cfg.switchConfiguration << std::endl;
     ss << "OverCurrentDetection    : " << cfg.overCurrentDetection << std::endl;
     ss << "AlarmState              : " << std::endl <<  cfg.alarmState << std::endl;
+    ss << "GateConfig1             : " << cfg.gateConfig1 << std::endl;
+    ss << "GateConfig2             : " << cfg.gateConfig2 << std::endl;
     
     return ss.str();
 }

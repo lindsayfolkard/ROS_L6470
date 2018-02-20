@@ -57,21 +57,21 @@ int main (int argc, char ** argv)
 //    cout << "Pos, converted is " << (int)goToCommand.pos;
 //    driver.goTo(goToCommand,0);
 
-    RunCommand runCommand(Reverse,300);
-    driver.run(runCommand,0);
+    //    RunCommand runCommand(Reverse,300);
+    //    driver.run(runCommand,0);
 
-    while (1)
-    {
-        cout << "========================================" << endl;
-        cout << "Motor position is : " << driver.getPos(0) << endl;
-        cout << "Motor speed is : " << driver.getSpeed(0) << endl;
-        //cout << "Status is :"  << driver.getStatus(0) << endl;
-        cout << "Status from clearStatus is " << endl << driver.clearStatus()[0] << endl;
-        cout << "========================================" << endl << endl;
-        cout << "press any key to continue : ";
-        char c;
-        cin >> c;
-    }
+    //    while (1)
+    //    {
+    //        cout << "========================================" << endl;
+    //        cout << "Motor position is : " << driver.getPos(0) << endl;
+    //        cout << "Motor speed is : " << driver.getSpeed(0) << endl;
+    //        //cout << "Status is :"  << driver.getStatus(0) << endl;
+    //        cout << "Status from clearStatus is " << endl << driver.clearStatus()[0] << endl;
+    //        cout << "========================================" << endl << endl;
+    //        cout << "press any key to continue : ";
+    //        char c;
+    //        cin >> c;
+    //    }
 
     //    while (1)
     //    {

@@ -475,6 +475,188 @@ parseStatus(uint16_t statusValue)
     return status;
 }
 
+boost::bimap<GateCurrent,std::string>
+getGateCurrentBiMap()
+{
+    boost::bimap<GateCurrent,std::string> map = makeBiMap<GateCurrent,std::string>
+    ({
+
+    { GateCurrent_2ma , "GateCurrent_2ma"},
+    { GateCurrent_4ma , "GateCurrent_4ma"},
+    { GateCurrent_8ma , "GateCurrent_8ma"},
+    { GateCurrent_16ma, "GateCurrent_16ma"},
+    { GateCurrent_24ma, "GateCurrent_24ma"},
+    { GateCurrent_32ma, "GateCurrent_32ma"},
+    { GateCurrent_64ma, "GateCurrent_64ma"},
+    { GateCurrent_96ma, "GateCurrent_96ma"}
+    });
+
+    return map;
+}
+
+std::string
+toString(GateCurrent x)
+{
+    return getGateCurrentBiMap().left.at(x);
+}
+
+boost::bimap<GateTcc,std::string>
+getGateTccBiMap()
+{
+    boost::bimap<GateTcc,std::string> map = makeBiMap<GateTcc,std::string>
+    ({
+         {GateTcc_125ns  , "GateTcc_125ns"  },
+         {GateTcc_250ns  , "GateTcc_250ns"  },
+         {GateTcc_375ns  , "GateTcc_375ns"  },
+         {GateTcc_500ns  , "GateTcc_500ns"  },
+         {GateTcc_625ns  , "GateTcc_625ns"  },
+         {GateTcc_750ns  , "GateTcc_750ns"  },
+         {GateTcc_875ns  , "GateTcc_875ns"  },
+         {GateTcc_1000ns , "GateTcc_1000ns" },
+         {GateTcc_1125ns , "GateTcc_1125ns" },
+         {GateTcc_1250ns , "GateTcc_1250ns" },
+         {GateTcc_1375ns , "GateTcc_1375ns" },
+         {GateTcc_1500ns , "GateTcc_1500ns" },
+         {GateTcc_1625ns , "GateTcc_1625ns" },
+         {GateTcc_1750ns , "GateTcc_1750ns" },
+         {GateTcc_1875ns , "GateTcc_1875ns" },
+         {GateTcc_2000ns , "GateTcc_2000ns" },
+         {GateTcc_2125ns , "GateTcc_2125ns" },
+         {GateTcc_2250ns , "GateTcc_2250ns" },
+         {GateTcc_2375ns , "GateTcc_2375ns" },
+         {GateTcc_2500ns , "GateTcc_2500ns" },
+         {GateTcc_2625ns , "GateTcc_2625ns" },
+         {GateTcc_2750ns , "GateTcc_2750ns" },
+         {GateTcc_2875ns , "GateTcc_2875ns" },
+         {GateTcc_3000ns , "GateTcc_3000ns" },
+         {GateTcc_3125ns , "GateTcc_3125ns" },
+         {GateTcc_3250ns , "GateTcc_3250ns" },
+         {GateTcc_3375ns , "GateTcc_3375ns" },
+         {GateTcc_3500ns , "GateTcc_3500ns" },
+         {GateTcc_3625ns , "GateTcc_3625ns" },
+         {GateTcc_3750ns , "GateTcc_3750ns" },
+         {GateTcc_3875ns , "GateTcc_3875ns" },
+         {GateTcc_4000ns , "GateTcc_4000ns" }
+     });
+
+    return map;
+}
+
+std::string toString(GateTcc x)
+{
+    return getGateTccBiMap().left.at(x);
+}
+
+boost::bimap<GateTBoost,std::string>
+getGateTBoostBiMap()
+{
+    boost::bimap<GateTBoost,std::string> map = makeBiMap<GateTBoost,std::string>
+    ({
+        {GateTBoost_0ns    , "GateTBoost_0ns"    },
+        {GateTBoost_62_5ns , "GateTBoost_62_5ns" }, // different with clock frequency !, 16MHZ
+        {GateTBoost_125ns  , "GateTBoost_125ns"  },
+        {GateTBoost_250ns  , "GateTBoost_250ns"  },
+        {GateTBoost_375ns  , "GateTBoost_250ns"  },
+        {GateTBoost_500ns  , "GateTBoost_250ns"  },
+        {GateTBoost_750ns  , "GateTBoost_250ns"  },
+        {GateTBoost_1000ns , "GateTBoost_250ns"  }
+     });
+    return map;
+}
+
+std::string toString(GateTBoost x)
+{
+    return getGateTBoostBiMap().left.at(x);
+}
+
+std::string
+toString(GateConfig1 x)
+{
+    std::stringstream ss;
+    ss << "GateCurrent : " << x.gateCurrent << ","
+       << "GateTBoost : "  << x.gateTBoost << ","
+       << "GateTcc : "     << x.gateTcc << ","
+       << "wd_en : "       << (x.wd_en ? "Yes" : "No");
+    return ss.str();
+}
+
+boost::bimap<GateDeadTime,std::string> getGateDeadTimeBiMap()
+{
+    boost::bimap<GateDeadTime,std::string> map = makeBiMap<GateDeadTime,std::string>
+    ({
+        {GateDeadTime_125ns ,  "GateDeadTime_125ns" },
+        {GateDeadTime_250ns ,  "GateDeadTime_250ns" },
+        {GateDeadTime_375ns ,  "GateDeadTime_375ns" },
+        {GateDeadTime_500ns ,  "GateDeadTime_500ns" },
+        {GateDeadTime_625ns ,  "GateDeadTime_625ns" },
+        {GateDeadTime_750ns ,  "GateDeadTime_750ns" },
+        {GateDeadTime_875ns ,  "GateDeadTime_875ns" },
+        {GateDeadTime_1000ns , "GateDeadTime_1000ns" },
+        {GateDeadTime_1125ns , "GateDeadTime_1125ns" },
+        {GateDeadTime_1250ns , "GateDeadTime_1250ns" },
+        {GateDeadTime_1375ns , "GateDeadTime_1375ns" },
+        {GateDeadTime_1500ns , "GateDeadTime_1500ns" },
+        {GateDeadTime_1625ns , "GateDeadTime_1625ns" },
+        {GateDeadTime_1750ns , "GateDeadTime_1750ns" },
+        {GateDeadTime_1875ns , "GateDeadTime_1875ns" },
+        {GateDeadTime_2000ns , "GateDeadTime_2000ns" },
+        {GateDeadTime_2125ns , "GateDeadTime_2125ns" },
+        {GateDeadTime_2250ns , "GateDeadTime_2250ns" },
+        {GateDeadTime_2375ns , "GateDeadTime_2375ns" },
+        {GateDeadTime_2500ns , "GateDeadTime_2500ns" },
+        {GateDeadTime_2625ns , "GateDeadTime_2625ns" },
+        {GateDeadTime_2750ns , "GateDeadTime_2750ns" },
+        {GateDeadTime_2875ns , "GateDeadTime_2875ns" },
+        {GateDeadTime_3000ns , "GateDeadTime_3000ns" },
+        {GateDeadTime_3125ns , "GateDeadTime_3125ns" },
+        {GateDeadTime_3250ns , "GateDeadTime_3250ns" },
+        {GateDeadTime_3375ns , "GateDeadTime_3375ns" },
+        {GateDeadTime_3500ns , "GateDeadTime_3500ns" },
+        {GateDeadTime_3625ns , "GateDeadTime_3625ns" },
+        {GateDeadTime_3750ns , "GateDeadTime_3750ns" },
+        {GateDeadTime_3875ns , "GateDeadTime_3875ns" },
+        {GateDeadTime_4000ns , "GateDeadTime_4000ns" }
+     });
+    return map;
+}
+
+std::string
+toString(GateDeadTime x)
+{
+    return getGateDeadTimeBiMap().left.at(x);
+}
+
+boost::bimap<GateTBlank,std::string>
+getGateTBlankBiMap()
+{
+    boost::bimap<GateTBlank,std::string> map = makeBiMap<GateTBlank,std::string>
+    ({
+        {GateTBlank_125ns  , "GateTBlank_125ns"},
+        {GateTBlank_250ns  , "GateTBlank_250ns"},
+        {GateTBlank_375ns  , "GateTBlank_375ns"},
+        {GateTBlank_500ns  , "GateTBlank_500ns"},
+        {GateTBlank_625ns  , "GateTBlank_625ns"},
+        {GateTBlank_750ns  , "GateTBlank_750ns"},
+        {GateTBlank_875ns  , "GateTBlank_875ns"},
+        {GateTBlank_1000ns , "GateTBlank_1000ns"}
+     });
+    return map;
+}
+
+std::string toString(GateTBlank x)
+{
+    return getGateTBlankBiMap().left.at(x);
+}
+
+std::string
+toString(GateConfig2 x)
+{
+    std::stringstream ss;
+    ss << "GateDeadTime : " << x.gateDeadTime << ","
+       << "GateTBlank : " << x.gateTBlank;
+    return ss.str();
+}
+
 std::string toString(Command command)
 {
     switch (command)

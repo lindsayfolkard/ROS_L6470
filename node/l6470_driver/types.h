@@ -383,6 +383,187 @@ inline std::ostream& operator<<(std::ostream& os,Status x)
 }
 Status parseStatus (uint16_t statusValue);
 
+///
+/// Gate Configuration Registers (PowerStep01 only)
+///
+
+// The IGATE parameter selects the sink/source current used by gate driving circuitry to
+// charge/discharge the respective gate during commutations. S
+enum GateCurrent
+{
+    GateCurrent_2ma  = 0x00,
+    GateCurrent_4ma  = 0x01,
+    GateCurrent_8ma  = 0x02,
+    GateCurrent_16ma = 0x03,
+    GateCurrent_24ma = 0x04,
+    GateCurrent_32ma = 0x05,
+    GateCurrent_64ma = 0x06,
+    GateCurrent_96ma = 0x07
+};
+
+boost::bimap<GateCurrent,std::string> getGateCurrentBiMap();
+std::string toString(GateCurrent x);
+inline std::ostream& operator<<(std::ostream& os, GateCurrent x)
+{
+    return os << toString(x);
+}
+
+// The TCC parameter defines the duration of constant current phase
+// during gate turn-on and turn-off sequences
+enum GateTcc
+{
+    GateTcc_125ns,
+    GateTcc_250ns,
+    GateTcc_375ns,
+    GateTcc_500ns,
+    GateTcc_625ns,
+    GateTcc_750ns,
+    GateTcc_875ns,
+    GateTcc_1000ns,
+    GateTcc_1125ns,
+    GateTcc_1250ns,
+    GateTcc_1375ns,
+    GateTcc_1500ns,
+    GateTcc_1625ns,
+    GateTcc_1750ns,
+    GateTcc_1875ns,
+    GateTcc_2000ns,
+    GateTcc_2125ns,
+    GateTcc_2250ns,
+    GateTcc_2375ns,
+    GateTcc_2500ns,
+    GateTcc_2625ns,
+    GateTcc_2750ns,
+    GateTcc_2875ns,
+    GateTcc_3000ns,
+    GateTcc_3125ns,
+    GateTcc_3250ns,
+    GateTcc_3375ns,
+    GateTcc_3500ns,
+    GateTcc_3625ns,
+    GateTcc_3750ns,
+    GateTcc_3875ns,
+    GateTcc_4000ns,
+};
+
+boost::bimap<GateTcc,std::string> getGateTccBiMap();
+std::string toString(GateTcc x);
+inline std::ostream& operator<<(std::ostream& os, GateTcc x)
+{
+    return os << toString(x);
+}
+
+enum GateTBoost
+{
+    GateTBoost_0ns    = 0x00,
+    GateTBoost_62_5ns = 0x01, // different with clock frequency != 16MHZ
+    GateTBoost_125ns  = 0x02,
+    GateTBoost_250ns  = 0x03,
+    GateTBoost_375ns  = 0x04,
+    GateTBoost_500ns  = 0x05,
+    GateTBoost_750ns  = 0x06,
+    GateTBoost_1000ns = 0x07
+};
+
+boost::bimap<GateTBoost,std::string> getGateTBoostBiMap();
+std::string toString(GateTBoost x);
+inline std::ostream& operator<<(std::ostream& os, GateTBoost x)
+{
+    return os << toString(x);
+}
+
+struct GateConfig1
+{
+    GateCurrent gateCurrent;
+    GateTcc     gateTcc;
+    GateTBoost  gateTBoost;
+    bool        wd_en;
+};
+
+std::string toString(GateConfig1 x);
+inline std::ostream& operator<<(std::ostream& os, const GateConfig1 &x)
+{
+    return os << toString(x);
+}
+
+///
+/// GateConfig2 Settings
+///
+
+enum GateDeadTime
+{
+    GateDeadTime_125ns = 1,
+    GateDeadTime_250ns = 2,
+    GateDeadTime_375ns = 3,
+    GateDeadTime_500ns = 4,
+    GateDeadTime_625ns = 5,
+    GateDeadTime_750ns = 6,
+    GateDeadTime_875ns = 7,
+    GateDeadTime_1000ns = 8,
+    GateDeadTime_1125ns = 9,
+    GateDeadTime_1250ns = 10,
+    GateDeadTime_1375ns = 11,
+    GateDeadTime_1500ns = 12,
+    GateDeadTime_1625ns = 13,
+    GateDeadTime_1750ns = 14,
+    GateDeadTime_1875ns = 15,
+    GateDeadTime_2000ns = 16,
+    GateDeadTime_2125ns = 17,
+    GateDeadTime_2250ns = 18,
+    GateDeadTime_2375ns = 19,
+    GateDeadTime_2500ns = 20,
+    GateDeadTime_2625ns = 21,
+    GateDeadTime_2750ns = 22,
+    GateDeadTime_2875ns = 23,
+    GateDeadTime_3000ns = 24,
+    GateDeadTime_3125ns = 25,
+    GateDeadTime_3250ns = 26,
+    GateDeadTime_3375ns = 27,
+    GateDeadTime_3500ns = 28,
+    GateDeadTime_3625ns = 29,
+    GateDeadTime_3750ns = 30,
+    GateDeadTime_3875ns = 31,
+    GateDeadTime_4000ns = 32
+};
+
+boost::bimap<GateDeadTime,std::string> getGateDeadTimeBiMap();
+std::string toString(GateDeadTime x);
+inline std::ostream& operator<<(std::ostream& os, GateDeadTime x)
+{
+    return os << toString(x);
+}
+
+enum GateTBlank
+{
+    GateTBlank_125ns  = 0x01,
+    GateTBlank_250ns  = 0x02,
+    GateTBlank_375ns  = 0x03,
+    GateTBlank_500ns  = 0x04,
+    GateTBlank_625ns  = 0x05,
+    GateTBlank_750ns  = 0x06,
+    GateTBlank_875ns  = 0x07,
+    GateTBlank_1000ns = 0x08
+};
+
+boost::bimap<GateTBlank,std::string> getGateTBlankBiMap();
+std::string toString(GateTBlank x);
+inline std::ostream& operator<<(std::ostream& os, GateTBlank x)
+{
+    return os << toString(x);
+}
+
+struct GateConfig2
+{
+    GateDeadTime gateDeadTime;
+    GateTBlank   gateTBlank;
+};
+
+std::string toString(GateConfig2 x);
+inline std::ostream& operator<<(std::ostream& os, GateConfig2 x)
+{
+    return os << toString(x);
+}
+
 // Register address redefines.
 //  See the Param_Handler() function for more info about these.
 enum ParamRegister
@@ -395,7 +576,6 @@ enum ParamRegister
     DECEL                 = 0x06,
     MAX_SPEED             = 0x07,
     MIN_SPEED             = 0x08,
-    FS_SPD                = 0x15,
     KVAL_HOLD             = 0x09,
     KVAL_RUN              = 0x0A,
     KVAL_ACC              = 0x0B,
@@ -408,10 +588,13 @@ enum ParamRegister
     ADC_OUT               = 0x12,
     OCD_TH                = 0x13,
     STALL_TH              = 0x14,
+    FS_SPD                = 0x15,
     STEP_MODE             = 0x16,
     ALARM_EN              = 0x17,
-    CONFIG                = 0x18,
-    STATUS                = 0x19
+    GATE_CFG1             = 0x18,
+    GATE_CFG2             = 0x19,
+    CONFIG                = 0x1A, // different on l6470
+    STATUS                = 0x1B  // different on l6470
 };
 std::string toString(ParamRegister paramRegister);
 inline std::ostream& operator<<(std::ostream& os,ParamRegister x)

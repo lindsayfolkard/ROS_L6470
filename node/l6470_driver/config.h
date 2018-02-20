@@ -180,6 +180,7 @@ public:
     int fullStepThresholdSpeed;
     int thermalDriftCoefficient;
 
+    // Current Thresholds
     CurrentThreshold overCurrentThreshold;
     CurrentThreshold stallThreshold;
 
@@ -197,6 +198,10 @@ public:
     // Alarm Register Settings
     AlarmState alarmState;
 
+    // Gate Configuration settings (PowerStep01 only)
+    GateConfig1 gateConfig1;
+    GateConfig2 gateConfig2;
+
 private:
 
     void setDefaults();
@@ -212,6 +217,8 @@ private:
     static void setFullSpeed(float stepsPerSecond, CommsDriver &commsDriver, int motor );
     static void setLoSpdOpt(bool enable, CommsDriver &commsDriver, int motor );
     static void setControlMode (ControlMode controlMode, CommsDriver &commsDriver, int motor );
+    static void setGateConfig1(const GateConfig1 &gateConfig1, CommsDriver &commsDriver, int motor);
+    static void setGateConfig2(const GateConfig2 &gateConfig2, CommsDriver &commsDriver, int motor);
 
     static CurrentThreshold     getOCThreshold(CommsDriver &commsDriver, int motor);
     static CurrentThreshold     getStallThreshold(CommsDriver &commsDriver, int motor);
@@ -225,6 +232,8 @@ private:
     static bool                 getLoSpdOpt(CommsDriver &commsDriver, int motor );
     static int                  getFullSpeed(CommsDriver &commsDriver, int motor);
     static ControlMode          getControlMode(CommsDriver &commsDriver, int motor);
+    static GateConfig1          getGateConfig1(CommsDriver &commsDriver, int motor);
+    static GateConfig2          getGateConfig2(CommsDriver &commsDriver, int motor);
 
 };
 
