@@ -24,9 +24,15 @@ int main (int argc, char ** argv)
     std::vector<PowerStepCfg> cfgs = {powerStepConfig};
     // Instantiate the AutoDriver
     cout << "Try to instantiate the driver" << endl;
-    PowerStepDriver driver(motors,cfgs,0,CommsDebugNothing);
+    //PowerStepDriver driver(motors,cfgs,0,CommsDebugNothing);
     cout << "Instantiated the driver!" << endl;
 
+    // Let's try to get the commonconfig
+    CommsDriver commsDriver(1);
+    CommonConfig readCommonConfig(commsDriver,0);
+    std::cout << " Common config is :" << std::endl << readCommonConfig << std::endl;
+
+/*
     // Lets try and get the status
     usleep(1000);
     cout << "Status is " << driver.getStatus(0) << endl;
@@ -43,7 +49,7 @@ int main (int argc, char ** argv)
     cout << "Initial speed = " << driver.getSpeed(0) << endl;
 
     // Lets zero the position
-    const int startingPosition = 0;
+    const int startingPosition = 100;
     cout << "Set position to " << startingPosition;
     usleep(1000);
     driver.setPos(startingPosition,0);
@@ -51,7 +57,7 @@ int main (int argc, char ** argv)
     // Get the position
     usleep(1000);
     cout << "Position = " << driver.getPos(0);
-
+*/
     // Let's try to go to a position
 //    GoToCommand goToCommand(10000);
 //    cout << "Pos, converted is " << (int)goToCommand.pos;

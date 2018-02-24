@@ -370,6 +370,11 @@ void CommonConfig::unitTest(CommsDriver &commsDriver, int motor)
     boost::bimap<int,std::string> fsMap = makeBiMap<int,std::string>({{100,"100"},{200,"200"},{300,"300"},{400,"400"},{500,"500"},{600,"600"},{700,"700"}});
     testAllCombinations<int>(commsDriver,motor,fsMap,"FullStepSpeed",setFullSpeed,getFullSpeed);
 
+    // GateConfig1
+    //boost::bimap<GateCurrent,std::string> gateCurrentMap = getGateCurrentBiMap();
+    //boost::bimap<GateTBoost,std::string>  gateTBoostMap  = getGateTBoostBiMap();
+    //boost::bimap<GateTcc,std::string>     gateTccMap     = getGateTccBiMap();
+    //boost::bimap<bool,std::string>        wd_en_map      = makeBimap<bool,std::string>({{true,"wd enabled"},{false,"wd disabled"}});
 }
 
 CommonConfig::CommonConfig(CommsDriver &commsDriver , int motor)

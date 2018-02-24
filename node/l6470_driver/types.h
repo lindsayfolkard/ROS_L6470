@@ -474,10 +474,11 @@ inline std::ostream& operator<<(std::ostream& os, GateTBoost x)
 
 struct GateConfig1
 {
-    GateCurrent gateCurrent;
-    GateTcc     gateTcc;
-    GateTBoost  gateTBoost;
-    bool        wd_en;
+    // TODO - get the default values that are likely to be best (either from doc or controller itself)
+    GateCurrent gateCurrent = GateCurrent_16ma;
+    GateTcc     gateTcc     = GateTcc_2000ns;
+    GateTBoost  gateTBoost  = GateTBoost_375ns ;
+    bool        wd_en       = false;
 };
 
 std::string toString(GateConfig1 x);
@@ -554,8 +555,9 @@ inline std::ostream& operator<<(std::ostream& os, GateTBlank x)
 
 struct GateConfig2
 {
-    GateDeadTime gateDeadTime;
-    GateTBlank   gateTBlank;
+    // #TODO - get some good defaults
+    GateDeadTime gateDeadTime = GateDeadTime_2000ns;
+    GateTBlank   gateTBlank   = GateTBlank_500ns;
 };
 
 std::string toString(GateConfig2 x);
