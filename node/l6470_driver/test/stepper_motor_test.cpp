@@ -24,27 +24,26 @@ int main (int argc, char ** argv)
     std::vector<PowerStepCfg> cfgs = {powerStepConfig};
     // Instantiate the AutoDriver
     cout << "Try to instantiate the driver" << endl;
-    //PowerStepDriver driver(motors,cfgs,0,CommsDebugNothing);
+    PowerStepDriver driver(motors,cfgs,0,CommsDebugNothing);
     cout << "Instantiated the driver!" << endl;
 
     // Let's try to get the commonconfig
-    CommsDriver commsDriver(1);
-    CommonConfig readCommonConfig(commsDriver,0);
-    std::cout << " Common config is :" << std::endl << readCommonConfig << std::endl;
+    //CommsDriver commsDriver(1);
+    //CommonConfig readCommonConfig(commsDriver,0);
+    //std::cout << " Common config is :" << std::endl << readCommonConfig << std::endl;
 
 
-    // Lets try to set the commonconfig
-    CommonConfig cfg;
-    cfg.gateConfig1.gateCurrent=GateCurrent_8ma;
-    cfg.gateConfig1.wd_en=true;
-    cfg.gateConfig2.gateTBlank = GateTBlank_500ns;
-    cfg.set(commsDriver,0);
+    // Lets try to set the default commonconfig
+    //CommonConfig cfg;
+    //cfg.gateConfig1.gateCurrent=GateCurrent_8ma;
+    //cfg.gateConfig1.wd_en=true;
+    //cfg.gateConfig2.gateTBlank = GateTBlank_500ns;
+    //cfg.set(commsDriver,0);
 
     // Let's read this muthafcker back and see what has happened
-    CommonConfig updatedConfig(commsDriver,0);
-    std::cout << " Config read back is : " << std::endl << updatedConfig << std::endl;
+    //CommonConfig updatedConfig(commsDriver,0);
+    //std::cout << " Config read back is : " << std::endl << updatedConfig << std::endl;
 
-/*
     // Lets try and get the status
     usleep(1000);
     cout << "Status is " << driver.getStatus(0) << endl;
@@ -69,7 +68,25 @@ int main (int argc, char ** argv)
     // Get the position
     usleep(1000);
     cout << "Position = " << driver.getPos(0);
-*/
+
+    // Let's try to move
+    GoToCommand goToCommand(10000);
+    cout << "Pos, converted is " << (int)goToCommand.pos;
+    driver.goTo(goToCommand,0);
+
+    while (1)
+    {
+        cout << "========================================" << endl;
+        cout << "Motor position is : " << driver.getPos(0) << endl;
+        cout << "Motor speed is : " << driver.getSpeed(0) << endl;
+        //cout << "Status is :"  << driver.getStatus(0) << endl;
+        cout << "Status from clearStatus is " << endl << driver.clearStatus()[0] << endl;
+        cout << "========================================" << endl << endl;
+        cout << "press any key to continue : ";
+        char c;
+        cin >> c;
+    }
+
     // Let's try to go to a position
 //    GoToCommand goToCommand(10000);
 //    cout << "Pos, converted is " << (int)goToCommand.pos;
