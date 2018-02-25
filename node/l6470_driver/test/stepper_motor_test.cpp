@@ -20,7 +20,10 @@ int main (int argc, char ** argv)
     VoltageModeCfg voltageModeCfg = BackEmfConfigFromStepper(stepper);
     CurrentModeCfg currentModeCfg;
     CommonConfig   commonConfig;
+    commonConfig.overCurrentThreshold = OCD_TH_4500m;
     PowerStepCfg powerStepConfig(commonConfig,currentModeCfg,voltageModeCfg);
+    std::cout << "Set config to : " << powerStepConfig << std::endl;
+
     std::vector<PowerStepCfg> cfgs = {powerStepConfig};
     // Instantiate the AutoDriver
     cout << "Try to instantiate the driver" << endl;
@@ -61,14 +64,14 @@ int main (int argc, char ** argv)
     cout << "Initial speed = " << driver.getSpeed(0) << endl;
 
     // Lets zero the position
-    const int startingPosition = 100;
+    const int startingPosition = 0;
     cout << "Set position to " << startingPosition;
     usleep(1000);
     driver.setPos(startingPosition,0);
 
     // Get the position
     usleep(1000);
-    int gets;
+    int gets=0;
     const int maxGets=100;
     while (gets < maxGets)
     {
@@ -80,7 +83,7 @@ int main (int argc, char ** argv)
     //    GoToCommand goToCommand(10000);
     //    cout << "Pos, converted is " << (int)goToCommand.pos;
     //    driver.goTo(goToCommand,0);
-    RunCommand runCommand(Forward,700);
+    RunCommand runCommand(Reverse,700);
     driver.run(runCommand,0);
     cout << "Run Command is : " << runCommand << std::endl;
 

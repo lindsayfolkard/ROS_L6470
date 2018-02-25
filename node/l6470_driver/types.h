@@ -374,6 +374,8 @@ inline std::ostream& operator<<(std::ostream& os,MotorStatus x)
 #define STATUS_STEP_LOSS_B             0x4000 // Stall detected on B bridge
 #define STATUS_SCK_MOD                 0x8000 // Step clock mode is active
 
+#define DIR_SHIFT 4
+#define MOT_STATUS_SHIFT 5
 // Easier higher up to deal with a status struct of bools as opposed to bit&
 struct Status
 {

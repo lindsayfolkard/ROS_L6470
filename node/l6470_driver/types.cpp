@@ -469,8 +469,8 @@ parseStatus(uint16_t statusValue)
     status.stallDetectedPhaseA = !(statusValue & STATUS_STEP_LOSS_A);
     status.stallDetectedPhaseB = !(statusValue & STATUS_STEP_LOSS_B);
 
-    status.spinDirection = static_cast <MotorSpinDirection> (statusValue & STATUS_DIR);
-    status.motorStatus   = static_cast <MotorStatus> (statusValue & STATUS_MOT_STATUS);
+    status.spinDirection = static_cast <MotorSpinDirection> ((statusValue & STATUS_DIR)>>DIR_SHIFT);
+    status.motorStatus   = static_cast <MotorStatus> ((statusValue & STATUS_MOT_STATUS)>>MOT_STATUS_SHIFT);
 
     return status;
 }

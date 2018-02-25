@@ -18,9 +18,14 @@ uint32_t toTwosComplementUint(int32_t value , int bitLength)
 
 int32_t toSignedInt(uint32_t value , int bitLength)
 {
+    // Mask out any other bullshit ?? Hack
+    value &= (0xFFFFFFFF >> (32-bitLength));
+
     if (value& (0x01 << bitLength))
     {
-        return -((uint32_t)(~value+1)&(0xFFFFFFFF >> (32-bitLength)));
+        // hack
+        return -(~value+1);//&(0xFFFFFFFF >> (32-bitLength)));
+            //return -((uint32_t)(~value+1)&(0xFFFFFFFF >> (32-bitLength)));
     }
     return value;
 }
