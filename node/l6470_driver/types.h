@@ -67,6 +67,33 @@ inline std::ostream& operator<<(std::ostream& os, CurrentThreshold currentThresh
     return os << toString(currentThreshold);
 }
 
+enum ThermalDriftCompensation
+{
+    ThermalDrift_1 = 0,
+    ThermalDrift_1_03125 = 1,
+    ThermalDrift_1_0625 = 2,
+    ThermalDrift_1_09375 = 3,
+    ThermalDrift_1_125 = 4,
+    ThermalDrift_1_15625 = 5,
+    ThermalDrift_1_1875 = 6,
+    ThermalDrift_1_21875 = 7,
+    ThermalDrift_1_25 = 8,
+    ThermalDrift_1_28125 = 9,
+    ThermalDrift_1_3125 = 10,
+    ThermalDrift_1_34375 = 11,
+    ThermalDrift_1_375 = 12,
+    ThermalDrift_1_40625 = 13,
+    ThermalDrift_1_4375 = 14,
+    ThermalDrift_1_46875 = 15
+};
+
+boost::bimap<ThermalDriftCompensation,std::string> getThermalDriftCompensationBiMap();
+std::string toString(ThermalDriftCompensation thermalDriftCompensation);
+inline std::ostream& operator<<(std::ostream& os, ThermalDriftCompensation x)
+{
+    return os << toString(x);
+}
+
 // STEP_MODE option values.
 // First comes the "microsteps per step" options...
 #define STEP_MODE_STEP_SEL 0x07  // Mask for these bits only.

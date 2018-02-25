@@ -123,11 +123,12 @@ public:
     uint32_t accelFinalSlope;
     uint32_t decelFinalSlope;
 
-    SlewRate               slewRate;
-    VoltageCompensation    voltageCompensation;
-    PwmFrequencyMultiplier pwmFrequencyMultiplier;
-    PwmFrequencyDivider    pwmFrequencyDivider;
-    bool                   enableLowSpeedOptimisation;
+    ThermalDriftCompensation thermalDriftCompensation;
+    SlewRate                 slewRate;
+    VoltageCompensation      voltageCompensation;
+    PwmFrequencyMultiplier   pwmFrequencyMultiplier;
+    PwmFrequencyDivider      pwmFrequencyDivider;
+    bool                     enableLowSpeedOptimisation;
 
 private:
 
@@ -143,16 +144,18 @@ private:
     static void setPWMFreqDivider(PwmFrequencyDivider divider, CommsDriver &commsDriver, int motor);
     static void setPWMFreqMultiplier(PwmFrequencyMultiplier multiplier, CommsDriver &commsDriver, int motor);
     static void setSlewRate(SlewRate slewRate, CommsDriver &commsDriver, int motor );
+    static void setThermalDriftCompensation(ThermalDriftCompensation thermalDriftCompensation, CommsDriver &commsDriver, int motor);
 
     static uint8_t getAccKVAL(CommsDriver &commsDriver, int motor );
     static uint8_t getDecKVAL(CommsDriver &commsDriver, int motor );
     static uint8_t getRunKVAL(CommsDriver &commsDriver, int motor );
     static uint8_t getHoldKVAL(CommsDriver &commsDriver, int motor );
 
-    static PwmFrequencyDivider	   getPWMFreqDivisor(CommsDriver &commsDriver, int motor );
-    static PwmFrequencyMultiplier getPWMFreqMultiplier(CommsDriver &commsDriver, int motor );
-    static VoltageCompensation	   getVoltageComp(CommsDriver &commsDriver, int motor );
-    static SlewRate            getSlewRate(CommsDriver &commsDriver, int motor );
+    static ThermalDriftCompensation getThermalDriftCompensation(CommsDriver &commsDriver, int motor);
+    static PwmFrequencyDivider	    getPWMFreqDivisor(CommsDriver &commsDriver, int motor );
+    static PwmFrequencyMultiplier   getPWMFreqMultiplier(CommsDriver &commsDriver, int motor );
+    static VoltageCompensation	    getVoltageComp(CommsDriver &commsDriver, int motor );
+    static SlewRate                 getSlewRate(CommsDriver &commsDriver, int motor );
 };
 
 std::string toString(const VoltageModeCfg &backEmfConfig);
@@ -178,7 +181,6 @@ public:
     virtual void unitTest(CommsDriver &commsDriver, int motor) override;
 
     int fullStepThresholdSpeed;
-    int thermalDriftCoefficient;
 
     // Current Thresholds
     CurrentThreshold overCurrentThreshold;

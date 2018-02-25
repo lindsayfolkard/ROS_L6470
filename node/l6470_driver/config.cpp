@@ -140,7 +140,6 @@ void
 CommonConfig::setDefaults()
 {
     fullStepThresholdSpeed=900;
-    thermalDriftCoefficient=0;
 
     overCurrentThreshold=OCD_TH_3000m;
     stallThreshold=OCD_TH_3000m;
@@ -690,6 +689,18 @@ VoltageModeCfg::getPWMFreqMultiplier(CommsDriver &commsDriver, int motor)
     return static_cast<PwmFrequencyMultiplier> (commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor) & CONFIG_F_PWM_DEC);
 }
 
+void
+VoltageModeCfg::setThermalDriftCompensation(ThermalDriftCompensation thermalDriftCompensation, CommsDriver &commsDriver, int motor)
+{
+    commsDriver.setParam(K_THERM,toBitLength(K_THERM),(uint8_t)thermalDriftCompensation,motor);
+}
+
+ThermalDriftCompensation
+getThermalDriftCompensation(CommsDriver &commsDriver, int motor)
+{
+    return static_cast<ThermalDriftCompensation> (commsDriver.getParam(K_THERM,toBitLength(K_THERM),motor));
+}
+
 // Slew rate of the output in V/us. Can be 180, 290, or 530.
 void
 VoltageModeCfg::setSlewRate(SlewRate slewRate, CommsDriver &commsDriver, int motor)
@@ -797,6 +808,7 @@ VoltageModeCfg::set(CommsDriver &commsDriver, int motor)
     commsDriver.setParam(FN_SLP_DEC,toBitLength(FN_SLP_DEC),decelFinalSlope, motor);
 
     // PWM Configs
+    setThermalDriftCompensation(thermalDriftCompensation,commsDriver,motor);
     setPWMFreq(pwmFrequencyDivider, pwmFrequencyMultiplier, commsDriver, motor);
     setSlewRate(slewRate, commsDriver, motor);
     setVoltageComp(voltageCompensation, commsDriver, motor);
@@ -1006,13 +1018,12 @@ std::string toString(const CommonConfig &cfg)
     std::stringstream ss;
 
     ss << "FullStepThresholdSpeed  : " << cfg.fullStepThresholdSpeed << " steps/s" << std::endl;
-    ss << "ThermalDriftCoefficient : " << cfg.thermalDriftCoefficient << std::endl;
     ss << "OverCurrentThreshold    : " << cfg.overCurrentThreshold << std::endl;
     ss << "StallThreshold          : " << cfg.stallThreshold << std::endl;
     ss << "StepMode                : " << cfg.stepMode << std::endl;
     ss << "SyncSelect              : " << cfg.syncSelect << std::endl;
     ss << "SyncEnable              : " << (cfg.syncEnable ? "Yes" : "No") << std::endl;
-    ss << "ControlMode             : " << (int)cfg.controlMode << std::endl;
+    ss << "ControlMode             : " << cfg.controlMode << std::endl;
     ss << "OscillatorSelect        : " << cfg.oscillatorSelect << std::endl;
     ss << "SwitchConfiguration     : " << cfg.switchConfiguration << std::endl;
     ss << "OverCurrentDetection    : " << cfg.overCurrentDetection << std::endl;
@@ -1136,7 +1147,6 @@ CommonConfig::readFromFile(const std::string &file)
         pt::read_json(file,root);
 
         fullStepThresholdSpeed  = root.get<int>("fullStepThresholdSpeed");
-        thermalDriftCoefficient = root.get<int>("thermalDriftCoefficient");
 
         tryReadConfig<CurrentThreshold>(root.get<std::string>("overCurrentThreshold"), getCurrentThresholdBiMap(), overCurrentThreshold);
         tryReadConfig<CurrentThreshold>(root.get<std::string>("stallThreshold"), getCurrentThresholdBiMap(),stallThreshold);
@@ -1174,7 +1184,6 @@ CommonConfig::writeToFile(const std::string &cfgFilePath)
     pt::ptree root;
 
     root.put("fullStepThresholdSpeed",fullStepThresholdSpeed);
-    root.put("thermalDriftCoefficient",thermalDriftCoefficient);
 
     root.put("overCurrentThreshold",toString(overCurrentThreshold));
     root.put("stallThreshold",toString(stallThreshold));

@@ -475,6 +475,38 @@ parseStatus(uint16_t statusValue)
     return status;
 }
 
+boost::bimap<ThermalDriftCompensation,std::string>
+getThermalDriftCompensationBiMap()
+{
+    boost::bimap<ThermalDriftCompensation,std::string> map = makeBiMap<ThermalDriftCompensation,std::string>
+    ({
+        {ThermalDrift_1 , "ThermalDrift_1" },
+        {ThermalDrift_1_03125 , "ThermalDrift_1_03125" },
+        {ThermalDrift_1_0625 , "ThermalDrift_1_0625" },
+        {ThermalDrift_1_09375 , "ThermalDrift_1_09375" },
+        {ThermalDrift_1_125 , "ThermalDrift_1_125" },
+        {ThermalDrift_1_15625 , "ThermalDrift_1_15625" },
+        {ThermalDrift_1_1875 , "ThermalDrift_1_1875" },
+        {ThermalDrift_1_21875 , "ThermalDrift_1_21875" },
+        {ThermalDrift_1_25 , "ThermalDrift_1_25" },
+        {ThermalDrift_1_28125 , "ThermalDrift_1_28125" },
+        {ThermalDrift_1_3125 , "ThermalDrift_1_3125" },
+        {ThermalDrift_1_34375 , "ThermalDrift_1_34375" },
+        {ThermalDrift_1_375 , "ThermalDrift_1_375" },
+        {ThermalDrift_1_40625 , "ThermalDrift_1_40625" },
+        {ThermalDrift_1_4375 , "ThermalDrift_1_4375" },
+        {ThermalDrift_1_46875 , "ThermalDrift_1_46875" }
+     });
+
+     return map;
+}
+
+std::string
+toString(ThermalDriftCompensation thermalDriftCompensation)
+{
+    return getThermalDriftCompensationBiMap().left.at(thermalDriftCompensation);
+}
+
 boost::bimap<GateCurrent,std::string>
 getGateCurrentBiMap()
 {
@@ -573,10 +605,16 @@ std::string
 toString(GateConfig1 x)
 {
     std::stringstream ss;
-    ss << "GateCurrent : " << x.gateCurrent << "(0x" << std::hex << (int)x.gateCurrent << "),"  << std::dec
-       << "GateTBoost : "  << x.gateTBoost  << "(0x" << std::hex << (int)x.gateTBoost << "),"   << std::dec
-       << "GateTcc : "     << x.gateTcc     << "(0x" << std::hex << (int)x.gateTcc << "),"      << std::dec
+//    ss << "GateCurrent : " << x.gateCurrent << "(0x" << std::hex << (int)x.gateCurrent << "),"  << std::dec
+//       << "GateTBoost : "  << x.gateTBoost  << "(0x" << std::hex << (int)x.gateTBoost << "),"   << std::dec
+//       << "GateTcc : "     << x.gateTcc     << "(0x" << std::hex << (int)x.gateTcc << "),"      << std::dec
+//       << "wd_en : "       << (x.wd_en ? "Yes" : "No");
+
+    ss << "GateCurrent : " << "(0x" << std::hex << (int)x.gateCurrent << "),"  << std::dec
+       << "GateTBoost : "  << "(0x" << std::hex << (int)x.gateTBoost << "),"   << std::dec
+       << "GateTcc : "     << "(0x" << std::hex << (int)x.gateTcc << "),"      << std::dec
        << "wd_en : "       << (x.wd_en ? "Yes" : "No");
+
     return ss.str();
 }
 
@@ -652,8 +690,8 @@ std::string
 toString(GateConfig2 x)
 {
     std::stringstream ss;
-    ss << "GateDeadTime : " << x.gateDeadTime << "(0x" << (int) x.gateDeadTime << ")," << std::dec
-       << "GateTBlank : "   << x.gateTBlank   << "(0x" << (int) x.gateTBlank << ")" << std::dec;
+    ss << "GateDeadTime : " << "(0x" << (int) x.gateDeadTime << ")," << std::dec
+       << "GateTBlank : "   << "(0x" << (int) x.gateTBlank << ")" << std::dec;
     return ss.str();
 }
 
