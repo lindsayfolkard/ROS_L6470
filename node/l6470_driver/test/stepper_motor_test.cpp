@@ -25,6 +25,7 @@ int main (int argc, char ** argv)
     // Instantiate the AutoDriver
     cout << "Try to instantiate the driver" << endl;
     PowerStepDriver driver(motors,cfgs,0,CommsDebugNothing);
+    driver.softHiZ(0);
     cout << "Instantiated the driver!" << endl;
 
     // Let's try to get the commonconfig
