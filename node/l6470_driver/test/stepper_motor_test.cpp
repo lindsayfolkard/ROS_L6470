@@ -70,9 +70,12 @@ int main (int argc, char ** argv)
     cout << "Position = " << driver.getPos(0);
 
     // Let's try to move
-    GoToCommand goToCommand(10000);
-    cout << "Pos, converted is " << (int)goToCommand.pos;
-    driver.goTo(goToCommand,0);
+    //    GoToCommand goToCommand(10000);
+    //    cout << "Pos, converted is " << (int)goToCommand.pos;
+    //    driver.goTo(goToCommand,0);
+    RunCommand runCommand(Forward,300);
+    driver.run(runCommand,0);
+    cout << "Run Command is : " << runCommand << std::endl;
 
     while (1)
     {
@@ -82,9 +85,7 @@ int main (int argc, char ** argv)
         //cout << "Status is :"  << driver.getStatus(0) << endl;
         cout << "Status from clearStatus is " << endl << driver.clearStatus()[0] << endl;
         cout << "========================================" << endl << endl;
-        cout << "press any key to continue : ";
-        char c;
-        cin >> c;
+        sleep(1);
     }
 
     // Let's try to go to a position

@@ -180,8 +180,11 @@ CommsDriver::SPIXfer(const std::map<int, uint32_t> &data , int bitLength)
         // I presume the L6470 also responds in big-endian format
         for (int j=0; j < numMotors_;++j)
         {
+            // Hack - was not commented
             recvData[j] = recvData[j] << 8;
             recvData[j] |= byteRecvPacket[j];
+
+            // Hack - was commented
             //recvData[j] |= (byteRecvPacket[j] >> (i*8));
         }
     }

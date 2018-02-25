@@ -26,14 +26,6 @@ public:
     /////////////////////////
 
     BaseDriver(const std::vector<StepperMotor> &motors, MotorDriverType motorDriverType, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
-    //BaseDriver(const std::vector<StepperMotor> &motors, const std::vector<Config> &cfgs, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
-    
-//    //////////////////////////
-//    /// Configuration Commands
-//    //////////////////////////
-
-//    void setConfig(const Config &cfg , int motor);
-//    void getConfig(Config &cfg);
 
     /////////////////////////
     /// Status Commands

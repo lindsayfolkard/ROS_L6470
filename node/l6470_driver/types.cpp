@@ -459,8 +459,8 @@ parseStatus(uint16_t statusValue)
     status.lastCommandInvalid   = statusValue & STATUS_WRONG_CMD;
 
     // active high - slightly different mapping, but this will work
-    status.hasThermalWarning = (statusValue & STATUS_TH_WRN);
-    status.isInThermalShutdown = (statusValue & STATUS_TH_SD);
+    status.hasThermalWarning    = (statusValue & STATUS_TH_WRN);
+    status.isInThermalShutdown  = (statusValue & STATUS_TH_SD);
 
     // OCD --> active low
     status.overCurrentDetected = !(statusValue & STATUS_OCD);

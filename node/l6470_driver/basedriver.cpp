@@ -34,10 +34,6 @@ BaseDriver::getStatus()
 	std::cout << "++++++++++++++++ (CommsDebug) : Get Status ++++++++++++++++++++++" << std::endl << std::endl;
     }
 
-    // Send the request
-    // TODO - change to the command being sent (will clear any error flags)???
-    //commsDriver_->getParam(GET_STATUS);
-
     // Get the responses
     //std::map<int,uint32_t> emptyMap;
     std::vector<uint32_t> states = commsDriver_->getParam(STATUS,toBitLength(STATUS));
@@ -127,7 +123,9 @@ std::vector<int32_t> BaseDriver::getPos()
         //  it's set, set all the bits ABOVE 21 in order for the value to maintain
         //  its appropriate sign.
         //if (element & 0x00200000) element |= 0xffc00000;
-        convertedPositions.push_back(toSignedInt(element,toBitLength(ABS_POS)));
+        // hack
+        convertedPositions.push_back(element);
+        //convertedPositions.push_back(toSignedInt(element,toBitLength(ABS_POS)));
     }
     return convertedPositions;
 }
