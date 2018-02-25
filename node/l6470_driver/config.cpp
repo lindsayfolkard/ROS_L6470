@@ -911,6 +911,7 @@ GateConfig1
 CommonConfig::getGateConfig1(CommsDriver &commsDriver, int motor)
 {
     uint16_t result = commsDriver.getParam(GATE_CFG1,toBitLength(GATE_CFG1),motor);
+    std::cout << "Debug - gate config 1 result is " << (int) result << std::endl;
 
     GateConfig1 gateConfig1;
     gateConfig1.gateCurrent = static_cast<GateCurrent>(result&gateCurrentMask);
@@ -936,6 +937,8 @@ GateConfig2
 CommonConfig::getGateConfig2(CommsDriver &commsDriver, int motor)
 {
     uint8_t result = commsDriver.getParam(GATE_CFG2,toBitLength(GATE_CFG2),motor);
+
+    std::cout << "Debug - gate config 2 result is " << (int) result << std::endl;
 
     GateConfig2 gateConfig2;
     gateConfig2.gateDeadTime = static_cast<GateDeadTime>(result&gateDeadTimeMask);

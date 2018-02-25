@@ -32,6 +32,16 @@ int main (int argc, char ** argv)
     CommonConfig readCommonConfig(commsDriver,0);
     std::cout << " Common config is :" << std::endl << readCommonConfig << std::endl;
 
+
+    // Lets try to set the commonconfig
+    CommonConfig cfg;
+    cfg.gateConfig1.gateCurrent=GateCurrent_8ma;
+    cfg.set(commsDriver,0);
+
+    // Let's read this muthafcker back and see what has happened
+    CommonConfig updatedConfig(commsDriver,0);
+    std::cout << " Config read back is : " << std::endl << updatedConfig << std::endl;
+
 /*
     // Lets try and get the status
     usleep(1000);

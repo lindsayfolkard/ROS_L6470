@@ -573,9 +573,9 @@ std::string
 toString(GateConfig1 x)
 {
     std::stringstream ss;
-    ss << "GateCurrent : " << x.gateCurrent << ","
-       << "GateTBoost : "  << x.gateTBoost << ","
-       << "GateTcc : "     << x.gateTcc << ","
+    ss << "GateCurrent : " << (int)x.gateCurrent << ","
+       << "GateTBoost : "  << (int)x.gateTBoost << ","
+       << "GateTcc : "     << (int)x.gateTcc << ","
        << "wd_en : "       << (x.wd_en ? "Yes" : "No");
     return ss.str();
 }
