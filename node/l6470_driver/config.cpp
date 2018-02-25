@@ -199,7 +199,7 @@ CommonConfig::set(CommsDriver &commsDriver, int motor)
     commsDriver.setParam(FS_SPD,toBitLength(FS_SPD),fullStepThresholdSpeed,motor);
     usleep(1000);
 
-//    // Set Full Step Threshold speed
+    // Set Full Step Threshold speed
     commsDriver.SPIXfer(0,0);
     commsDriver.SPIXfer(0,0);
     commsDriver.SPIXfer(0,0);
@@ -211,6 +211,11 @@ CommonConfig::set(CommsDriver &commsDriver, int motor)
     usleep(1000);
     setControlMode(controlMode, commsDriver, motor);
     usleep(1000);
+
+    // Set the Gate config structs
+    setGateConfig1(gateConfig1,commsDriver,motor);
+    setGateConfig2(gateConfig2,commsDriver,motor);
+
 
 //    usleep(5000);
 //    std::cout << "Debug - Lets try to set the FS_SPD parameter" << fullStepThresholdSpeed << std::endl;
@@ -390,7 +395,9 @@ CommonConfig::CommonConfig(CommsDriver &commsDriver , int motor)
     oscillatorSelect         = getOscMode(commsDriver , motor);
     switchConfiguration      = getSwitchMode(commsDriver , motor);
     alarmState               = getAlarmState(commsDriver , motor);
-    //thermalDriftCoefficient = getTh
+
+    controlMode  = getControlMode(commsDriver,motor);
+
     fullStepThresholdSpeed  = commsDriver.getParam(FS_SPD,toBitLength(FS_SPD),motor);
     gateConfig1 = getGateConfig1(commsDriver,motor);
     gateConfig2 = getGateConfig2(commsDriver,motor);

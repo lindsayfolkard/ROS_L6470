@@ -573,9 +573,9 @@ std::string
 toString(GateConfig1 x)
 {
     std::stringstream ss;
-    ss << "GateCurrent : " << (int)x.gateCurrent << ","
-       << "GateTBoost : "  << (int)x.gateTBoost << ","
-       << "GateTcc : "     << (int)x.gateTcc << ","
+    ss << "GateCurrent : " << x.gateCurrent << "(0x" << std::hex << (int)x.gateCurrent << "),"  << std::dec
+       << "GateTBoost : "  << x.gateTBoost  << "(0x" << std::hex << (int)x.gateTBoost << "),"   << std::dec
+       << "GateTcc : "     << x.gateTcc     << "(0x" << std::hex << (int)x.gateTcc << "),"      << std::dec
        << "wd_en : "       << (x.wd_en ? "Yes" : "No");
     return ss.str();
 }
@@ -652,8 +652,8 @@ std::string
 toString(GateConfig2 x)
 {
     std::stringstream ss;
-    ss << "GateDeadTime : " << x.gateDeadTime << ","
-       << "GateTBlank : " << x.gateTBlank;
+    ss << "GateDeadTime : " << x.gateDeadTime << "(0x" << (int) x.gateDeadTime << ")," << std::dec
+       << "GateTBlank : "   << x.gateTBlank   << "(0x" << (int) x.gateTBlank << ")" << std::dec;
     return ss.str();
 }
 

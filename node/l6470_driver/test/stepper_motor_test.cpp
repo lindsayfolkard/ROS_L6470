@@ -36,6 +36,8 @@ int main (int argc, char ** argv)
     // Lets try to set the commonconfig
     CommonConfig cfg;
     cfg.gateConfig1.gateCurrent=GateCurrent_8ma;
+    cfg.gateConfig1.wd_en=true;
+    cfg.gateConfig2.gateTBlank = GateTBlank_500ns;
     cfg.set(commsDriver,0);
 
     // Let's read this muthafcker back and see what has happened
