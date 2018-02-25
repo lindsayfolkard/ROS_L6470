@@ -80,7 +80,7 @@ int main (int argc, char ** argv)
     //    GoToCommand goToCommand(10000);
     //    cout << "Pos, converted is " << (int)goToCommand.pos;
     //    driver.goTo(goToCommand,0);
-    RunCommand runCommand(Reverse,700);
+    RunCommand runCommand(Forward,700);
     driver.run(runCommand,0);
     cout << "Run Command is : " << runCommand << std::endl;
 
