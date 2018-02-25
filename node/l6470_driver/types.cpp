@@ -390,7 +390,7 @@ std::string toString (MotorSpinDirection motorSpinDirection)
     {
     case Forward      : return "Forward";
     case Reverse      : return "Reverse";
-    default	      : return "";
+    default           : return "dir ? - " + std::to_string((int)motorSpinDirection);
         //default: assert(!"Invalid argument");
     }
 }

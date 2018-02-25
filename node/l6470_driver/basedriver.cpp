@@ -124,8 +124,9 @@ std::vector<int32_t> BaseDriver::getPos()
         //  its appropriate sign.
         //if (element & 0x00200000) element |= 0xffc00000;
         // hack
-        convertedPositions.push_back(element);
-        //convertedPositions.push_back(toSignedInt(element,toBitLength(ABS_POS)));
+        //convertedPositions.push_back(element);
+        std::cout << "Debug - element ins position vector is : " << (int) element << std::endl;
+        convertedPositions.push_back(toSignedInt(element,toBitLength(ABS_POS)));
     }
     return convertedPositions;
 }

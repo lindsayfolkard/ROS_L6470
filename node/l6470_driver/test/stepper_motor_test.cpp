@@ -68,8 +68,14 @@ int main (int argc, char ** argv)
 
     // Get the position
     usleep(1000);
-    cout << "Position = " << driver.getPos(0);
-
+    int gets;
+    const int maxGets=100;
+    while (gets < maxGets)
+    {
+        cout << "Position = " << driver.getPos(0);
+        usleep(5000);
+        ++gets;
+    }
     // Let's try to move
     //    GoToCommand goToCommand(10000);
     //    cout << "Pos, converted is " << (int)goToCommand.pos;
