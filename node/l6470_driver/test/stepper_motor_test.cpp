@@ -32,6 +32,19 @@ int main (int argc, char ** argv)
     sleep(4);
     cout << "Instantiated the driver!" << endl;
 
+    // Lets create a profile config
+    ProfileCfg profileConfig;
+    profileConfig.acceleration = 100;
+    profileConfig.deceleration = 140;
+    profileConfig.maxSpeed = 1000;
+    profileConfig.minSpeed = 140;
+
+    std::cout << "Default profile is : " << driver.getProfileCfg(0) << std::endl;
+
+    std::cout << "Set a new profile config " << profileConfig << std::endl;
+
+    driver.setProfileCfg(profileConfig,0);
+
     // Let's try to get the commonconfig
     //CommsDriver commsDriver(1);
     //CommonConfig readCommonConfig(commsDriver,0);
@@ -92,11 +105,16 @@ int main (int argc, char ** argv)
     //    GoToCommand goToCommand(10000);
     //    cout << "Pos, converted is " << (int)goToCommand.pos;
     //    driver.goTo(goToCommand,0);
-    /*RunCommand runCommand(Reverse,700);
+    RunCommand runCommand(Forward,50);
     driver.run(runCommand,0);
     cout << "Run Command is : " << runCommand << std::endl;
 
-    while (1)
+    int count=0;
+    const int speedIncrement=50;
+    const int maxSpeed=900;
+    const int speedInterval=5;
+    int speed=50;
+    while (speed < maxSpeed)
     {
         cout << "========================================" << endl;
         cout << "Motor position is : " << driver.getPos(0) << endl;
@@ -105,9 +123,16 @@ int main (int argc, char ** argv)
         cout << "Status from clearStatus is " << endl << driver.clearStatus()[0] << endl;
         cout << "========================================" << endl << endl;
         sleep(1);
+
+        if (count > speedInterval)
+        {
+            count=0;
+            RunCommand runCommand(Forward,speed+=speedIncrement);
+            driver.run(runCommand,0);
+            cout << "Run Command is : " << runCommand << std::endl;
+        }
     }
 
-    */
     // Let's try to go to a position
 //    GoToCommand goToCommand(10000);
 //    cout << "Pos, converted is " << (int)goToCommand.pos;

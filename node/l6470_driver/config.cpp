@@ -145,7 +145,7 @@ CommonConfig::setDefaults()
     stallThreshold=OCD_TH_3000m;
 
     // STEP_MODE register settings
-    stepMode=STEP_SEL_1_16;
+    stepMode=STEP_SEL_1_128;
     syncSelect=SYNC_SEL_16;
     controlMode=VoltageControlMode; // Voltage or current (NB: some chips will generally support one or the other)
     syncEnable=true;
