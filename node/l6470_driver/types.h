@@ -341,7 +341,7 @@ inline std::ostream& operator<<(std::ostream& os,MotorSpinDirection x)
 }
 
 // Status register motor status field
-#define STATUS_MOT_STATUS                0x0060      // field mask
+// field mask
 enum MotorStatus
 {
     STATUS_MOT_STATUS_STOPPED        = (0x0000)<<13, // Motor stopped
@@ -361,18 +361,19 @@ inline std::ostream& operator<<(std::ostream& os,MotorStatus x)
 #define STATUS_BUSY                    0x0002 // mirrors BUSY pin
 #define STATUS_SW_F                    0x0004 // low when switch open, high when closed
 #define STATUS_SW_EVN                  0x0008 // active high, set on switch falling edge,
-//  cleared by reading STATUS
 #define STATUS_DIR                     0x0010 // Indicates current motor direction.
-//  High is FWD, Low is REV.
+#define STATUS_MOT_STATUS              0x0060
+
 #define STATUS_NOTPERF_CMD             0x0080 // Last command not performed.
-#define STATUS_WRONG_CMD               0x0100 // Last command not valid.
+#define STATUS_SCK_MOD                 0x0100 // Step clock mode is active
+
 #define STATUS_UVLO                    0x0200 // Undervoltage lockout is active
-#define STATUS_TH_WRN                  0x0400 // Thermal warning
-#define STATUS_TH_SD                   0x0800 // Thermal shutdown
-#define STATUS_OCD                     0x1000 // Overcurrent detected
-#define STATUS_STEP_LOSS_A             0x2000 // Stall detected on A bridge
-#define STATUS_STEP_LOSS_B             0x4000 // Stall detected on B bridge
-#define STATUS_SCK_MOD                 0x8000 // Step clock mode is active
+#define STATUS_UVLO_ADC                0x0400 // Undervotlage adc event
+#define STATUS_TH_WRN                  0x0800 // Thermal warning
+#define STATUS_TH_SD                   0x1000 // Thermal shutdown
+#define STATUS_OCD                     0x2000 // Overcurrent detected
+#define STATUS_STEP_LOSS_A             0x4000 // Stall detected on A bridge
+#define STATUS_STEP_LOSS_B             0x8000 // Stall detected on B bridge
 
 #define DIR_SHIFT 4
 #define MOT_STATUS_SHIFT 5
@@ -386,14 +387,17 @@ struct Status
     bool switchEventDetected;
     bool stepClockActive;
 
-    // Command Execution State
-    bool performedLastCommand;
-    bool lastCommandInvalid;
-
     // Fault States
+    bool commandError;
+
+    bool underVoltageLockout;
+    bool underVoltageAdcLockout;
+
     bool hasThermalWarning;
     bool isInThermalShutdown;
+
     bool overCurrentDetected;
+
     bool stallDetectedPhaseA;
     bool stallDetectedPhaseB;
 

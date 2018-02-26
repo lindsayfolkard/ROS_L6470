@@ -416,23 +416,22 @@ std::string toString (Status &status)
     ss << "isBusy               : " << (status.isBusy ? "Yes" : "No") << std::endl;
     ss << "isSwitchClosed       : " << (status.isSwitchClosed ? "Yes" : "No") << std::endl;
     ss << "switchEventDetected  : " << (status.switchEventDetected ? "Yes" : "No") << std::endl;
-    ss << "performedLastCommand : " << (status.performedLastCommand ? "Yes" : "No") << std::endl;
-    ss << "lastCommandInvalid   : " << (status.lastCommandInvalid ? "Yes" : "No") << std::endl;
+    ss << "performedLastCommand : " << (status.commandError ? "Yes" : "No") << std::endl;
+    ss << "stepClockActive      : " << (status.stepClockActive ? "Yes" : "No") << std::endl;
 
     // Fault States
+    ss << "UnderVoltageLockout  : " << (status.underVoltageLockout ? "Yes" : "No") << std::endl;
+    ss << "UnderVoltageAdc      : " << (status.underVoltageAdcLockout ? "Yes" : "No") << std::endl;
     ss << "hasThermalWarning    : " << (status.hasThermalWarning ? "Yes" : "No") << std::endl;
     ss << "isInThermalShutdown  : " << (status.isInThermalShutdown ? "Yes" : "No") << std::endl;
     ss << "overCurrentDetected  : " << (status.overCurrentDetected ? "Yes" : "No") << std::endl;
     ss << "stallDetectedPhaseA  : " << (status.stallDetectedPhaseA ? "Yes" : "No") << std::endl;
     ss << "stallDetectedPhaseB  : " << (status.stallDetectedPhaseB ? "Yes" : "No") << std::endl;
 
-    ss << "stepClockActive      : " << (status.stepClockActive ? "Yes" : "No") << std::endl;
-
     // Motor State
     ss << "Motor Spin Direction : " << status.spinDirection << std::endl;
-    //ss << "MotorStatus          : " << toString(status.motorStatus) << std::end;
+    ss << "MotorStatus          : " << status.motorStatus << std::endl;
     return ss.str();
-
 }
 
 // Parse the status
@@ -455,8 +454,10 @@ parseStatus(uint16_t statusValue)
     status.switchEventDetected = statusValue & STATUS_SW_EVN;
 
     // active low
-    status.performedLastCommand = !(statusValue & STATUS_NOTPERF_CMD);
-    status.lastCommandInvalid   = statusValue & STATUS_WRONG_CMD;
+    status.commandError = !(statusValue & STATUS_NOTPERF_CMD);
+
+    status.underVoltageLockout    = !(statusValue & STATUS_UVLO);
+    status.underVoltageAdcLockout = !(statusValue & STATUS_UVLO_ADC);
 
     // active high - slightly different mapping, but this will work
     status.hasThermalWarning    = (statusValue & STATUS_TH_WRN);
