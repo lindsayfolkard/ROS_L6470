@@ -29,6 +29,7 @@ int main (int argc, char ** argv)
     cout << "Try to instantiate the driver" << endl;
     PowerStepDriver driver(motors,cfgs,0,CommsDebugNothing);
     driver.softHiZ(0);
+    sleep(4);
     cout << "Instantiated the driver!" << endl;
 
     // Let's try to get the commonconfig
@@ -64,10 +65,18 @@ int main (int argc, char ** argv)
     cout << "Initial speed = " << driver.getSpeed(0) << endl;
 
     // Lets zero the position
-    const int startingPosition = 0;
-    cout << "Set position to " << startingPosition;
+    const int startingPosition = 100;
+    cout << "Set position to " << startingPosition << std::endl;
     usleep(1000);
     driver.setPos(startingPosition,0);
+    cout << "New position is " << driver.getPos(0) << std::endl << std::endl;
+    sleep(3); 	
+
+   // Let's set a positive position
+   cout << "Set position to -100" << std::endl;
+   driver.setPos(-100,0);
+   cout << "New position is " << driver.getPos(0) << std::endl << std::endl;
+   sleep(3);
 
     // Get the position
     usleep(1000);
@@ -83,7 +92,7 @@ int main (int argc, char ** argv)
     //    GoToCommand goToCommand(10000);
     //    cout << "Pos, converted is " << (int)goToCommand.pos;
     //    driver.goTo(goToCommand,0);
-    RunCommand runCommand(Reverse,700);
+    /*RunCommand runCommand(Reverse,700);
     driver.run(runCommand,0);
     cout << "Run Command is : " << runCommand << std::endl;
 
@@ -98,6 +107,7 @@ int main (int argc, char ** argv)
         sleep(1);
     }
 
+    */
     // Let's try to go to a position
 //    GoToCommand goToCommand(10000);
 //    cout << "Pos, converted is " << (int)goToCommand.pos;

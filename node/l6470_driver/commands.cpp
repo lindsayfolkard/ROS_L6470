@@ -11,23 +11,30 @@ uint32_t capMaxValue(uint32_t value , int bitLength)
 
 uint32_t toTwosComplementUint(int32_t value , int bitLength)
 {
-    uint32_t result = 0;
-    result = ((~value)+1) & (0xFFFFFFFF >> (32-bitLength));
+    uint32_t result = value ;
+    
+    if (value < 0)
+    {
+       result = (~(-value)+1);// & (0xFFFFFFFF >> (32-(bitLength-1)));
+    }
     return result;
 }
 
 int32_t toSignedInt(uint32_t value , int bitLength)
 {
     // Mask out any other bullshit ?? Hack
+    //std::cout << "Value before mask is : " << (int) value <<std::endl; 
     value &= (0xFFFFFFFF >> (32-bitLength));
+    //std::cout << "BValue after mask is : " << (int) value << std::endl;
+    //bool isNeg = value&(0x000000001<<21); 
+    //std::cout << "21s bit value is : " << isNeg << std::endl;
 
-    if (value& (0x01 << bitLength))
+    if (value& (0x01 << (bitLength-1)))
     {
         // hack
-        return -(~value+1);//&(0xFFFFFFFF >> (32-bitLength)));
-            //return -((uint32_t)(~value+1)&(0xFFFFFFFF >> (32-bitLength)));
+        return -(int32_t)(((~value+1))&(0xFFFFFFFF >> (32-(bitLength-1))));
     }
-    return value;
+    return (int32_t)value;
 }
 
 std::string toString (const std::map<int,DataCommand> &commandMap)
