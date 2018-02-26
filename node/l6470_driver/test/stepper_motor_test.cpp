@@ -37,7 +37,7 @@ int main (int argc, char ** argv)
     profileConfig.acceleration = 100;
     profileConfig.deceleration = 140;
     profileConfig.maxSpeed = 1000;
-    profileConfig.minSpeed = 140;
+    profileConfig.minSpeed = 200;
 
     std::cout << "Default profile is : " << driver.getProfileCfg(0) << std::endl;
 
@@ -92,20 +92,11 @@ int main (int argc, char ** argv)
    sleep(3);
 
     // Get the position
-    usleep(1000);
-    int gets=0;
-    const int maxGets=100;
-    while (gets < maxGets)
-    {
-        cout << "Position = " << driver.getPos(0);
-        usleep(5000);
-        ++gets;
-    }
     // Let's try to move
     //    GoToCommand goToCommand(10000);
     //    cout << "Pos, converted is " << (int)goToCommand.pos;
     //    driver.goTo(goToCommand,0);
-    RunCommand runCommand(Forward,50);
+    RunCommand runCommand(Forward,200);
     driver.run(runCommand,0);
     cout << "Run Command is : " << runCommand << std::endl;
 
@@ -113,7 +104,7 @@ int main (int argc, char ** argv)
     const int speedIncrement=50;
     const int maxSpeed=900;
     const int speedInterval=5;
-    int speed=50;
+    int speed=200;
     while (speed < maxSpeed)
     {
         cout << "========================================" << endl;
@@ -123,6 +114,8 @@ int main (int argc, char ** argv)
         cout << "Status from clearStatus is " << endl << driver.clearStatus()[0] << endl;
         cout << "========================================" << endl << endl;
         sleep(1);
+
+	++count;
 
         if (count > speedInterval)
         {

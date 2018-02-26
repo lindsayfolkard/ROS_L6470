@@ -344,10 +344,10 @@ inline std::ostream& operator<<(std::ostream& os,MotorSpinDirection x)
 // field mask
 enum MotorStatus
 {
-    STATUS_MOT_STATUS_STOPPED        = (0x0000)<<13, // Motor stopped
-    STATUS_MOT_STATUS_ACCELERATION   = (0x0001)<<13,// Motor accelerating
-    STATUS_MOT_STATUS_DECELERATION   = (0x0002)<<13, // Motor decelerating
-    STATUS_MOT_STATUS_CONST_SPD      = (0x0003)<<13 // Motor at constant speed
+    STATUS_MOT_STATUS_STOPPED        = 0x00,// Motor stopped
+    STATUS_MOT_STATUS_ACCELERATION   = 0x01,// Motor accelerating
+    STATUS_MOT_STATUS_DECELERATION   = 0x02,// Motor decelerating
+    STATUS_MOT_STATUS_CONST_SPD      = 0x03 // Motor at constant speed
 };
 std::string toString (MotorStatus motorStatus);
 inline std::ostream& operator<<(std::ostream& os,MotorStatus x)

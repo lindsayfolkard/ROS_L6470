@@ -19,4 +19,11 @@ int main(int argc, char **argv)
     PowerStepDriver driver(motors);
 
     driver.softHiZ(0);
+
+    while(1)
+    {
+      std::cout << "Status is : " << std::endl << driver.getStatus(0) << std::endl;
+      std::cout << "Status after clearing is :" << std::endl << driver.clearStatus()[0] << std::endl;
+      usleep(500000);
+    }
 }
