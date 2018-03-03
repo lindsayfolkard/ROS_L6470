@@ -567,7 +567,7 @@ CommonConfig::setStallThreshold(CurrentThreshold stallCurrent, CommsDriver &comm
 CurrentThreshold
 CommonConfig::getStallThreshold(CommsDriver &commsDriver, int motor)
 {
-    const uint32_t stallThresholdMask=0xFF; // TODO - fix!!
+    //const uint32_t stallThresholdMask=0xFF; // TODO - fix!!
     return static_cast<CurrentThreshold> (commsDriver.getParam(STALL_TH, toBitLength(STALL_TH), motor));
 }
 
@@ -817,7 +817,7 @@ VoltageModeCfg::set(CommsDriver &commsDriver, int motor)
 boost::bimap<uint8_t,std::string> makeNumBiMap(uint8_t startVal , uint8_t endVal)
 {
     boost::bimap<uint8_t,std::string> retVal;
-    for (int i = startVal ; i <= endVal ; ++i)
+    for (uint8_t i = startVal ; i <= endVal ; ++i)
     {
         retVal.insert({i, std::to_string(i)});
     }
@@ -945,7 +945,7 @@ void
 CommonConfig::setGateConfig1(const GateConfig1 &gateConfig1, CommsDriver &commsDriver, int motor)
 {
     uint16_t data = ((gateConfig1.gateCurrent & bit_mask_3) << gateCurrentShift) |
-                    ((gateConfig1.gateTBoost & bit_mask_3)  << gateTBoostMask)   |
+                    ((gateConfig1.gateTBoost & bit_mask_3)  << gateTBoostShift)  |
                     ((gateConfig1.gateTcc & bit_mask_4)     << gateTccShift)     |
                     ((gateConfig1.wd_en   & 0x01)           << gateWd_En_Shift);
 
@@ -1000,9 +1000,12 @@ CurrentModeCfg::set(CommsDriver &commsDriver, int motor)
 void
 CurrentModeCfg::unitTest(CommsDriver &commsDriver, int motor)
 {
+    // TODO !!!
     assert(!"Current mode config unit test not yet implemented");
     // do nothing
 }
+
+
 ///////////////////////////////////////////////////////////////////
 //////////// END of Current Mode Config ///////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -1221,11 +1224,13 @@ CommonConfig::writeToFile(const std::string &cfgFilePath)
 void
 CurrentModeCfg::readFromFile(const std::string &file)
 {
+    std::cout << "TODO - read from " << file << std::endl;
     assert("!TODO");
 }
 
 void
 CurrentModeCfg::writeToFile(const std::string &cfgFilePath)
 {
+    std::cout << "TODO - write to file " << cfgFilePath << std::endl;
     assert(!"TODO - commoncfg writing");
 }

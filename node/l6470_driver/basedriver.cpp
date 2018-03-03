@@ -5,8 +5,8 @@
 
 BaseDriver::BaseDriver(const std::vector<StepperMotor> &motors, MotorDriverType motorDriverType, int spiBus, CommsDebugLevel commsDebugLevel):
     motors_(motors),
-    commsDebugLevel_(commsDebugLevel),
-    motorDriverType_(motorDriverType)
+    motorDriverType_(motorDriverType),
+    commsDebugLevel_(commsDebugLevel)
 {
     commsDriver_.reset(new CommsDriver(motors_.size(),spiBus,commsDebugLevel));
 }

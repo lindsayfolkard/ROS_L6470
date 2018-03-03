@@ -88,7 +88,11 @@ L6470Node::on_timer()
 void
 L6470Node::manualSpeedCallback(const l6470_msgs::msg::ManualSpeed::UniquePtr manualSpeed)
 {
-    std::cout << "DEBUG - set manual speed command ... TODO" << std::endl;
+    // Hack stuff - to prevent compile warning
+    if (manualSpeed == nullptr)
+    {
+        std::cout << "DEBUG - set manual speed command ... TODO - to" <<  std::endl;
+    }
     //std::cout << "DEBUG : set manual speed" << manualSpeed.speed[0] << "steps per second" << std::endl;
     // TODO
 }
@@ -98,6 +102,10 @@ L6470Node::goToPositionCallback(const std::shared_ptr <l6470_srvs::srv::GoToPosi
                                       std::shared_ptr <l6470_srvs::srv::GoToPosition::Response> response
                                 )
 {
+    if (request == nullptr || response == nullptr)
+    {
+        std::cout << "TODO" << std::endl;
+    }
     std::cout << "GOToPosition callback .. TODO" << std::endl;
    // TODO
 }
@@ -106,6 +114,8 @@ void
 L6470Node::stopCallback(const std::shared_ptr <l6470_srvs::srv::Stop::Request>  request,
                               std::shared_ptr <l6470_srvs::srv::Stop::Response> response)
 {
+    if (request == nullptr || response == nullptr)
+        std::cout << "TODO" << std::endl;
     std::cout << "STOP callback .. TODO" << std::endl;
 }
 

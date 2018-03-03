@@ -72,7 +72,7 @@ private:
         }
     }
 
+    const int                  numMotors_;
     CommsDebugLevel            commsDebugLevel_;
     std::unique_ptr<mraa::Spi> SPI_;
-    const int                  numMotors_;
 };

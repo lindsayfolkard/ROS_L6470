@@ -15,7 +15,8 @@ uint32_t toTwosComplementUint(int32_t value , int bitLength)
     
     if (value < 0)
     {
-       result = (~(-value)+1);// & (0xFFFFFFFF >> (32-(bitLength-1)));
+        value  = (-value) & (0xFFFFFFFF >> (32-(bitLength-1))); // TODO - check me for correctness....
+        result = (~(value)+1);// & (0xFFFFFFFF >> (32-(bitLength-1)));
     }
     return result;
 }

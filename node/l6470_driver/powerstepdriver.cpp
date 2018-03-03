@@ -48,6 +48,7 @@ PowerStepCfg::readFromFile(const std::string &filePath)
 void
 PowerStepCfg::writeToFile(const std::string &cfgFilePath)
 {
+    std::cout << "TODO - write config to file " << cfgFilePath << std::endl;
     // TODO ?
 }
 
