@@ -13,18 +13,24 @@ using namespace std;
 int main (int argc, char ** argv)
 {
     // Create the stepper motor
-    Stepper_42BYGHW811 stepper;
-    std::vector<StepperMotor> motors = {stepper};
+    Stepper_42BYGHW811 nema17Stepper;
+    Stepper_57BYGH51   nema23Stepper;
+    std::vector<StepperMotor> motors = {nema17Stepper,nema23Stepper};
 
     // Let's try to make a PowerStepConfig from motors
-    VoltageModeCfg voltageModeCfg = BackEmfConfigFromStepper(stepper);
     CurrentModeCfg currentModeCfg;
     CommonConfig   commonConfig;
     commonConfig.overCurrentThreshold = OCD_TH_4500m;
-    PowerStepCfg powerStepConfig(commonConfig,currentModeCfg,voltageModeCfg);
-    std::cout << "Set config to : " << powerStepConfig << std::endl;
+    PowerStepCfg powerStepConfig17(commonConfig,currentModeCfg,BackEmfConfigFromStepper(nema17Stepper));
+    std::cout << "Set config to : " << powerStepConfig17 << std::endl;
 
-    std::vector<PowerStepCfg> cfgs = {powerStepConfig};
+    CommonConfig   commonConfig23;
+    commonConfig23.overCurrentThreshold = OCD_TH_4500m;
+    PowerStepCfg powerStepConfig23(commonConfig,currentModeCfg,BackEmfConfigFromStepper(nema23Stepper));
+    std::cout << "Set config to : " << powerStepConfig23 << std::endl;
+
+    std::vector<PowerStepCfg> cfgs = {powerStepConfig17,powerStepConfig23};
+
     // Instantiate the AutoDriver
     cout << "Try to instantiate the driver" << endl;
     PowerStepDriver driver(motors,cfgs,0,CommsDebugNothing);
