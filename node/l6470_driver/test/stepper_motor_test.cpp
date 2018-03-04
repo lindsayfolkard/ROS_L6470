@@ -29,7 +29,7 @@ int main (int argc, char ** argv)
     PowerStepCfg powerStepConfig23(commonConfig,currentModeCfg,BackEmfConfigFromStepper(nema23Stepper));
     std::cout << "Set config to : " << powerStepConfig23 << std::endl;
 
-    std::vector<PowerStepCfg> cfgs = {powerStepConfig17,powerStepConfig23};
+    std::vector<PowerStepCfg> cfgs = {powerStepConfig23,powerStepConfig17};
 
     // Instantiate the AutoDriver
     cout << "Try to instantiate the driver" << endl;

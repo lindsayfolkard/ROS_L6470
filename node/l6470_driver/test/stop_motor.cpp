@@ -14,10 +14,11 @@ int main(int argc, char **argv)
 {
     // Create the stepper motor
     Stepper_42BYGHW811 stepper;
-    std::vector<StepperMotor> motors = {stepper};
+    std::vector<StepperMotor> motors = {stepper,stepper};
 
     PowerStepDriver driver(motors);
 
+    driver.softHiZ(0);
     driver.softHiZ(0);
 
     while(1)
