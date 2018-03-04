@@ -113,12 +113,17 @@ int main (int argc, char ** argv)
     int speed=200;
     while (speed < maxSpeed)
     {
-        cout << "========================================" << endl;
-        cout << "Motor position is : " << driver.getPos(0) << endl;
-        cout << "Motor speed is : " << driver.getSpeed(0) << endl;
-        //cout << "Status is :"  << driver.getStatus(0) << endl;
-        cout << "Status from clearStatus is " << endl << driver.clearStatus()[0] << endl;
-        cout << "========================================" << endl << endl;
+        for (int i =0 ; i < cfgs.size() ; ++i)
+        {
+            cout << "========================================" << endl;
+            cout << "============ MOTOR " << i << "============" << endl;
+            cout << "Motor position is : " << driver.getPos(i) << endl;
+            cout << "Motor speed is : " << driver.getSpeed(i) << endl;
+            cout << "Motor status is : " << driver.getStatus()[0] << endl;
+            //cout << "Status is :"  << driver.getStatus(0) << endl;
+            //cout << "Status from clearStatus is " << endl << driver.clearStatus()[0] << endl;
+            cout << "========================================" << endl << endl;
+        }
         sleep(1);
 
 	++count;
@@ -127,7 +132,9 @@ int main (int argc, char ** argv)
         {
             count=0;
             RunCommand runCommand(Forward,speed+=speedIncrement);
-            driver.run(runCommand,0);
+            //driver.run(runCommand,0);
+            const std::map<int,DataCommand> runMap = {{0,runCommand},{1,runCommand}};
+            driver.run(runMap);
             cout << "Run Command is : " << runCommand << std::endl;
         }
     }
