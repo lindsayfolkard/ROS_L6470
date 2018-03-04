@@ -247,6 +247,19 @@ SimDriver::goMark(int motor)
 }
 
 // Stop Commands
+
+void
+SimDriver::stopAllHard()
+{
+
+}
+
+void
+SimDriver::stopAllSoft()
+{
+
+}
+
 void
 SimDriver::softStop(const std::vector <int> &motors)
 {
@@ -302,6 +315,12 @@ void
 SimDriver::setPos  (int32_t pos , int motor)
 {
 
+}
+
+void
+SimDriver::setAllPos(int32_t pos)
+{
+    // TODO -
 }
 
 void

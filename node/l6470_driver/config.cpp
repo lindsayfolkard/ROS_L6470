@@ -241,14 +241,6 @@ CommonConfig::set(CommsDriver &commsDriver, int motor)
 
 }
 
-enum Colour {
-    Red,
-    Blue,
-    Green,
-    Yellow,
-    Orange
-};
-
 std::string addColour(const std::string &str, Colour colour)
 {
     if (colour == Red)

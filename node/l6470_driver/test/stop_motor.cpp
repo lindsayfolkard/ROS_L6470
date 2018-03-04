@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     PowerStepDriver driver(motors);
 
     driver.softHiZ(0);
-    driver.softHiZ(0);
+    driver.softHiZ(1);
 
     while(1)
     {

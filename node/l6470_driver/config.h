@@ -73,6 +73,16 @@ inline std::ostream& operator<<(std::ostream& os,const OverallCfg &x)
     return os << toString(x);
 }
 
+enum Colour {
+    Red,
+    Blue,
+    Green,
+    Yellow,
+    Orange
+};
+
+std::string addColour(const std::string &str, Colour colour);
+
 class CurrentModeCfg : public AbstractConfig,
                        public WriteableConfig
 {

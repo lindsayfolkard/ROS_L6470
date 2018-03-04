@@ -112,6 +112,9 @@ public:
     virtual void goMark(int motor) override;
 
     // Stop Commands
+    virtual void stopAllHard() override;
+    virtual void stopAllSoft() override;
+
     virtual void softStop(const std::vector <int> &motors) override;
     virtual void softStop(int motor) override;
 
@@ -126,17 +129,18 @@ public:
 
     // Set Commands
     //void setMark(const std::map<int, long> &marks) override;
-    //void setPos(const std::map<int,long> &newPositions) override;
     virtual void setPos  (int32_t pos , int motor) override;
+    virtual void setAllPos(int32_t pos) override;
     virtual void resetPos(const std::vector <int> &motors) override;
     virtual void resetPos(int motor) override;
     virtual void resetDev(const std::vector <int> &motors) override;
 
+    // Stepper motors being controlled by this driver
+    const std::vector<StepperMotor> motors_;
+
 protected:
 
     void checkMotorIsValid(int motor);
-
-    const std::vector<StepperMotor> motors_;
     const MotorDriverType           motorDriverType_;
     CommsDebugLevel                 commsDebugLevel_;
     std::unique_ptr<CommsDriver>    commsDriver_;

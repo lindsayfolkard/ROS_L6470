@@ -103,6 +103,9 @@ class AbstractDriver
     virtual void goMark(int motor) = 0;
 
     // Stop Commands
+    virtual void stopAllHard() = 0;
+    virtual void stopAllSoft() = 0;
+
     virtual void softStop(const std::vector <int> &motors) = 0;
     virtual void softStop(int motor) = 0;
 
@@ -119,6 +122,7 @@ class AbstractDriver
     //void setMark(const std::map<int, long> &marks) = 0;
     //void setPos(const std::map<int,long> &newPositions) = 0;
     virtual void setPos  (int32_t pos , int motor) = 0;
+    virtual void setAllPos(int32_t pos) = 0;
     virtual void resetPos(const std::vector <int> &motors) = 0;
     virtual void resetPos(int motor) = 0;
     virtual void resetDev(const std::vector <int> &motors) = 0;

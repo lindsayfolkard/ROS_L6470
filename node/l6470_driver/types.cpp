@@ -764,3 +764,12 @@ std::string toString(const ProfileCfg &profileCfg)
     ss << "minSpeed     = " << profileCfg.minSpeed     << " steps/s"   << std::endl;
     return ss.str();
 }
+
+bool
+operator== (const ProfileCfg &cfg1 , const ProfileCfg &cfg2)
+{
+    return  (cfg1.acceleration == cfg2.acceleration) &&
+            (cfg1.deceleration == cfg2.deceleration) &&
+            (cfg1.maxSpeed     == cfg2.maxSpeed)     &&
+            (cfg1.minSpeed     == cfg2.minSpeed);
+}

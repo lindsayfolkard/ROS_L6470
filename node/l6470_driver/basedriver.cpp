@@ -3,6 +3,21 @@
 #include <mraa.hpp>
 #include <exception>
 
+namespace
+{
+std::vector getAllMotorsVector()
+{
+    std::vector<int> motors;
+
+    for (int i=0; i < motors_.size() ; ++i)
+    {
+        motors.push_back(i);
+    }
+
+    return motors;
+}
+}
+
 BaseDriver::BaseDriver(const std::vector<StepperMotor> &motors, MotorDriverType motorDriverType, int spiBus, CommsDebugLevel commsDebugLevel):
     motors_(motors),
     motorDriverType_(motorDriverType),
@@ -491,6 +506,13 @@ BaseDriver::setPos(int32_t pos , int motor)
 }
 
 void
+BaseDriver::setAllPos(int32_t pos)
+{
+    for (int i =0; i < motors_.size(); ++i)
+        setPos(pos,i);
+}
+
+void
 BaseDriver::resetPos(const std::vector<int> &motors)
 {
     commsDriver_->sendCommands(motors,RESET_POS);
@@ -511,6 +533,19 @@ BaseDriver::resetDev(const std::vector<int> &motors)
 }
 
 // Stop Commands
+void
+BaseDriver::stopAllHard()
+{
+    hardStop(getAllMotorsVector());
+}
+
+void
+BaseDriver::stopAllSoft()
+{
+    softStop(getAllMotorsVector());
+}
+
+
 void
 BaseDriver::softStop(const std::vector<int> &motors)
 {
