@@ -692,4 +692,8 @@ inline std::ostream& operator<<(std::ostream& os,const ProfileCfg &x)
     return os << toString(x);
 }
 
-bool operator== (const ProfileCfg &cfg1 , const ProfileCfg &cfg2);
+bool operator== (const ProfileCfg &cfg1, const ProfileCfg &cfg2);
+inline bool operator!= (const ProfileCfg &cfg1, const ProfileCfg &cfg2)
+{
+    return !(cfg1 == cfg2);
+}

@@ -248,15 +248,15 @@ CommsDriver::xferParam(const std::map<int,uint32_t> &parameters, uint8_t bitLeng
     return response;
 }
 
-void
-CommsDriver::sendCommands(const std::map <int,DataCommand> &dataCommands)
+template <class T> void
+CommsDriver::sendCommands(const std::map <int,T> &dataCommands)
 {
-    checkMapIsValid<DataCommand>(dataCommands);
+    checkMapIsValid<T>(dataCommands);
 
     if (commsDebugLevel_ >= CommsDebugOnlyActions)
     {
         std::cout << "///////////////////////////////////////////////////" << std::endl;
-        std::cout << "(CommsDebug) : Send CommandMap --> " << std::endl << dataCommands << std::endl;
+        //std::cout << "(CommsDebug) : Send CommandMap --> " << std::endl << dataCommands << std::endl;
     }
 
     // Send the go until commands
@@ -282,6 +282,13 @@ CommsDriver::sendCommands(const std::map <int,DataCommand> &dataCommands)
         std::cout << "///////////////////////////////////////////////////" << std::endl;
     }
 }
+
+template void CommsDriver::sendCommands <class RunCommand>     (const std::map <int,RunCommand> &dataCommands);
+template void CommsDriver::sendCommands <class GoToCommand>    (const std::map <int,GoToCommand> &dataCommands);
+template void CommsDriver::sendCommands <class GoUntilCommand> (const std::map <int,GoUntilCommand> &dataCommands);
+template void CommsDriver::sendCommands <class DataCommand>    (const std::map <int,DataCommand> &dataCommands);
+template void CommsDriver::sendCommands <class GoToDirCommand> (const std::map <int,GoToDirCommand> &dataCommands);
+template void CommsDriver::sendCommands <class MoveCommand>    (const std::map <int,MoveCommand> &dataCommands);
 
 // Assumed that no data is needed to be transferred
 void

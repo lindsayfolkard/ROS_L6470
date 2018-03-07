@@ -9,6 +9,7 @@
 #include <chrono>
 #include <functional>
 #include "../config.h"
+#include <utility>
 
 // Test Profile Config
 void testSetProfileCfg(BaseDriver &baseDriver, std::string &testName, bool debugEnabled = false);
@@ -41,7 +42,7 @@ class TestFailException : public std::exception
 {
 public:
     TestFailException (const std::string &failString):failString_(failString){}
-    virtual char const * what() const { return failString_; }
+    virtual char const * what() const noexcept override { return failString_.c_str(); }
 private:
     const std::string failString_;
 };
@@ -134,14 +135,14 @@ testSetProfileCfg (BaseDriver &baseDriver, std::string &testName, bool debugEnab
 
     // Create a reasonable profile
     std::map<int,ProfileCfg> profileCfgMap;
-    for (i=0; i < baseDriver.motors_.size() ; ++i)
+    for (unsigned int i=0; i < baseDriver.motors_.size() ; ++i)
     {
         ProfileCfg profile;
         profile.acceleration= 100 + (i*50);
         profile.deceleration= 100 + (i*50);
         profile.maxSpeed= 550 + (i*50);
         profile.minSpeed= 50 + (i*50);
-        profileCfgMap.insert(std::make_pair<int,ProfileCfg>(i,profile));
+        profileCfgMap.insert(std::make_pair(i,profile));
 
         if (debugEnabled)
             std::cout << "Set motor " << i << " profileconfig to be : " << std::endl << profile << std::endl;
@@ -151,7 +152,7 @@ testSetProfileCfg (BaseDriver &baseDriver, std::string &testName, bool debugEnab
     baseDriver.setProfileCfg(profileCfgMap);
 
     // read the profile configs back and confirm everything ok
-    for (i=0; i < profileCfgMap.size() ; ++i)
+    for (unsigned int i=0; i < profileCfgMap.size() ; ++i)
     {
         // Check that the config is as expected
         ProfileCfg readBackCfg = baseDriver.getProfileCfg(i);
@@ -178,13 +179,13 @@ testRun (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     // Make sure the motors are stopped
     baseDriver.stopAllSoft();
 
-    std::map<int,DataCommand> commandMap;
+    std::map<int,RunCommand> commandMap;
 
     float stepsPerSecond=300;
     for (int i=0 ; i < baseDriver.motors_.size(); ++i)
     {
-        commandMap.insert(std::make_pair<int,DataCommand>(i,RunCommand((i%2 == 0 ? Reverse : Forward),stepsPerSecond)));
-        stepPerSecond+=30;
+        commandMap.insert(std::pair<int,RunCommand>(i,RunCommand((i%2 == 0 ? Reverse : Forward),stepsPerSecond)));
+        stepsPerSecond+=30;
     }
 
     // Set the motor to run
@@ -194,9 +195,9 @@ testRun (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     sleep(2);
 
     // Check motors are running at the right speed
-    for (const &element : commandMap)
+    for (auto &element : commandMap)
     {
-        const RunCommand cmd = static_cast<RunCommand>(element.second);
+        const RunCommand cmd = element.second;
 
         Status status = baseDriver.getStatus()[element.first];
         float  speed  = baseDriver.getSpeed(element.first);
@@ -235,17 +236,20 @@ testMove (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     baseDriver.clearStatus();
 
     // Create the move commands and set each stepper to be at the 0 pos
-    std::map <int,DataCommand> cmdMap;
+    std::map <int,MoveCommand> cmdMap;
     const int minPos=300;
     const int posIncrement=50;
     for (int i=0 ; i < baseDriver.motors_.size(); ++i)
     {
         baseDriver.setPos(0,i);
         MotorSpinDirection spinDir = (i%2 == 0 ? Forward : Reverse);
-        position = (spinDir == Forward ? 1 : -1) * (minPos + (i*posIncrement));
+        int position = (spinDir == Forward ? 1 : -1) * (minPos + (i*posIncrement));
         MoveCommand moveCommand(spinDir,position);
-        cmdMap.insert(std::make_pair<int,DataCommand>(i,moveCommand));
+        cmdMap.insert(std::pair<int,MoveCommand>(i,moveCommand));
     }
+
+    // Execute the move command
+    baseDriver.move(cmdMap);
 
     // Wait for motors to reach their position roughly
     // assume they have well and truly reached the desired position by now...
@@ -254,7 +258,7 @@ testMove (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     // Check that we have reached the correct positions
     for (auto &element : cmdMap)
     {
-        MoveCommand cmd  = static_cast<MoveCommand>(element.second);
+        MoveCommand cmd  = element.second;
         double motorPosition = baseDriver.getPos(element.first);
 
         if (motorPosition != ((cmd.numSteps)*(cmd.direction == Forward ? 1 : -1)))
@@ -274,24 +278,176 @@ void
 testGoTo (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 {
     testName = "GoTo";
+
+    baseDriver.stopAllHard();
+    baseDriver.setAllPos(0);
+    baseDriver.clearStatus();
+
+    std::map <int,GoToCommand> cmdMap;
+    const int minPos=300;
+    const int posIncrement=50;
+    for (int i=0 ; i < baseDriver.motors_.size(); ++i)
+    {
+        baseDriver.setPos(0,i);
+        int position = minPos + (i*posIncrement);
+        GoToCommand goToCommand(position);
+        cmdMap.insert(std::pair<int,GoToCommand>(i,goToCommand));
+    }
+
+    // execute the goto command
+    baseDriver.goTo(cmdMap);
+
+    // Wait for motors to reach their position roughly
+    // assume they have well and truly reached the desired position by now...
+    sleep(5);
+
+    // Check that we have reached the correct positions
+    for (auto &element : cmdMap)
+    {
+        GoToCommand cmd  = element.second;
+        double motorPosition = baseDriver.getPos(element.first);
+
+        if (motorPosition != cmd.pos)
+        {
+            throw TestFailException("Motor " + std::to_string(element.first)
+                                    + " failed to reach the desired position (pos = " + std::to_string(cmd.pos)
+                                    + " steps). Current position is " + std::to_string(motorPosition) + ")");
+        }
+    }
+
+    // Stop all motors again as sanity check
+    baseDriver.stopAllHard();
+    sleep(2);
 }
 
 void
 testGoToDir(BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 {
     testName = "GoToDir";
+
+    baseDriver.stopAllHard();
+    baseDriver.setAllPos(0);
+    baseDriver.clearStatus();
+
+    std::map <int,GoToDirCommand> cmdMap;
+    const int minPos=300;
+    const int posIncrement=50;
+    for (int i=0 ; i < baseDriver.motors_.size(); ++i)
+    {
+        baseDriver.setPos(0,i);
+        MotorSpinDirection spinDir = (i%2 == 0 ? Forward : Reverse);
+        int position = (spinDir == Forward ? 1 : -1) * (minPos + (i*posIncrement));
+        GoToDirCommand goToDirCommand(spinDir,position);
+        cmdMap.insert(std::pair<int,GoToDirCommand>(i,goToDirCommand));
+    }
+
+    // Execute the command
+    baseDriver.goToDir(cmdMap);
+
+    // Wait for motors to reach their position roughly
+    // assume they have well and truly reached the desired position by now...
+    sleep(5);
+
+    // Check that we have reached the correct positions
+    for (auto &element : cmdMap)
+    {
+        GoToDirCommand cmd  = element.second;
+        double motorPosition = baseDriver.getPos(element.first);
+
+        if (motorPosition != cmd.pos)
+        {
+            throw TestFailException("Motor " + std::to_string(element.first)
+                                    + " failed to reach the desired position (pos = " + std::to_string(cmd.pos)
+                                    + " steps). Current position is " + std::to_string(motorPosition) + ")");
+        }
+    }
+
+    // Stop all motors again as sanity check
+    baseDriver.stopAllHard();
+    sleep(2);
 }
 
 void
 testGoHome (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 {
     testName = "GoHome";
+
+    baseDriver.stopAllHard();
+    baseDriver.setAllPos(0);
+    baseDriver.clearStatus();
+
+    // Create the move commands and set each stepper to be at the 0 pos
+    std::vector<int> motors;
+    for (int i=0 ; i < baseDriver.motors_.size(); ++i)
+    {
+        motors.push_back(i);
+    }
+
+    // Send the command
+    baseDriver.goHome(motors);
+
+    // Wait for motors to reach their position roughly
+    // assume they have well and truly reached the desired position by now...
+    sleep(5);
+
+    // Check that we have reached the correct positions
+    for (const auto &motor : motors)
+    {
+        double motorPosition = baseDriver.getPos(motor);
+
+        if (motorPosition != 0)
+        {
+            throw TestFailException("Motor " + std::to_string(motor)
+                                    + " failed to reach the desired home position (pos = 0"
+                                    + " steps). Current position is " + std::to_string(motorPosition) + ")");
+        }
+    }
+
+    // Stop all motors again as sanity check
+    baseDriver.stopAllHard();
+    sleep(2);
 }
 
 void
 testGoMark (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 {
     testName = "GoMark";
+
+    // Let's create a few mark positions
+    baseDriver.stopAllHard();
+    baseDriver.setAllPos(0);
+
+    int posIncrement = 50;
+    const int initialPos=200;
+    std::vector<int> motors;
+    for (unsigned int i=0; i < baseDriver.motors_.size() ; ++i)
+    {
+        baseDriver.setMark(initialPos + (i*posIncrement),i);
+        motors.push_back(i);
+    }
+
+    // Let's go to mark
+    baseDriver.goMark(motors);
+
+    // Wait for a bit
+    sleep(4);
+
+    // set the new positions as mark
+    for (unsigned int i=0; i < baseDriver.motors_.size(); ++i)
+    {
+        // get the mark
+        int markPos = baseDriver.getMark()[i];
+        int motorPosition = baseDriver.getPos(i);
+        if (motorPosition != markPos)
+        {
+            throw TestFailException("Motor " + std::to_string(i) +
+                                    " failed to reach the desired mark position (pos = " + std::to_string(markPos)
+                                    + " steps). Current position is " + std::to_string(motorPosition) + ")");
+
+        }
+    }
+
+    baseDriver.stopAllSoft();
 }
 
 // Stop Commands

@@ -2,20 +2,18 @@
 #include "commands.h"
 #include <mraa.hpp>
 #include <exception>
+#include <vector>
 
-namespace
-{
-std::vector getAllMotorsVector()
+std::vector<int> getAllMotorsVector()
 {
     std::vector<int> motors;
 
-    for (int i=0; i < motors_.size() ; ++i)
+    for (int i=0; i < motors.size() ; ++i)
     {
         motors.push_back(i);
     }
 
     return motors;
-}
 }
 
 BaseDriver::BaseDriver(const std::vector<StepperMotor> &motors, MotorDriverType motorDriverType, int spiBus, CommsDebugLevel commsDebugLevel):
@@ -369,9 +367,9 @@ float BaseDriver::getMinSpeed(int motor)
 //  The spdCalc() function is provided to convert steps/s values into
 //  appropriate integer values for this function.
 void
-BaseDriver::run(const std::map<int,DataCommand> &runCommands)
+BaseDriver::run(const std::map<int, RunCommand> &runCommands)
 {
-    commsDriver_->sendCommands(runCommands);
+    commsDriver_->sendCommands<RunCommand>(runCommands);
 }
 
 void
@@ -387,9 +385,9 @@ BaseDriver::run(const RunCommand &runCommand , int motor)
 //  act (either RESET or COPY) the value in the ABS_POS register is
 //  either RESET to 0 or COPY-ed into the MARK register.
 void
-BaseDriver::goUntil(const std::map <int,DataCommand> &goUntilCommands)
+BaseDriver::goUntil(const std::map<int, GoUntilCommand> &goUntilCommands)
 {
-    commsDriver_->sendCommands(goUntilCommands);
+    commsDriver_->sendCommands<GoUntilCommand>(goUntilCommands);
 }
 
 void
@@ -421,9 +419,9 @@ BaseDriver::goUntil(const GoUntilCommand &command, int motor)
 
 // Position Commands
 void
-BaseDriver::move(const std::map<int, DataCommand> &moveCommands)
+BaseDriver::move(const std::map<int, MoveCommand> &moveCommands)
 {
-    commsDriver_->sendCommands(moveCommands);
+    commsDriver_->sendCommands<MoveCommand>(moveCommands);
 }
 
 void
@@ -433,9 +431,9 @@ BaseDriver::move(const MoveCommand &command , int motor)
 }
 
 void
-BaseDriver::goTo(const std::map<int, DataCommand> &goToCommands)
+BaseDriver::goTo(const std::map<int, GoToCommand> &goToCommands)
 {
-    commsDriver_->sendCommands(goToCommands);
+    commsDriver_->sendCommands<GoToCommand>(goToCommands);
 }
 
 void
@@ -445,9 +443,9 @@ BaseDriver::goTo(const GoToCommand &command , int motor)
 }
 
 void
-BaseDriver::goToDir(const std::map<int, DataCommand> &goToDirCommands)
+BaseDriver::goToDir(const std::map<int, GoToDirCommand> &goToDirCommands)
 {
-    commsDriver_->sendCommands(goToDirCommands);
+    commsDriver_->sendCommands<GoToDirCommand>(goToDirCommands);
 }
 
 void
@@ -481,17 +479,11 @@ BaseDriver::goMark(int motor)
 }
 
 // Set Commands
-//void
-//BaseDriver::setMark(const std::map <int,long> &marks)
-//{
-//    setParam(MARK,marks);
-//}
-
-//void
-//BaseDriver::setMark(long mark, int motor)
-//{
-//    std::map<int,long> marks = {{motor,mark}};
-//}
+void
+BaseDriver::setMark(int32_t pos, int motor)
+{
+    commsDriver_->setParam(MARK,toBitLength(MARK),toTwosComplementUint(pos,toBitLength(MARK)), motor);
+}
 
 //void
 //BaseDriver::setPos(const std::map<int,long> &newPositions)
@@ -508,7 +500,7 @@ BaseDriver::setPos(int32_t pos , int motor)
 void
 BaseDriver::setAllPos(int32_t pos)
 {
-    for (int i =0; i < motors_.size(); ++i)
+    for (unsigned int i =0; i < motors_.size(); ++i)
         setPos(pos,i);
 }
 

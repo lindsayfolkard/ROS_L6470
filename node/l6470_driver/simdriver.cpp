@@ -162,7 +162,7 @@ SimDriver::getProfileCfg(int motor){
 
 // Speed Commands
 void
-SimDriver::run(const std::map<int, DataCommand> &runCommands)
+SimDriver::run(const std::map<int, RunCommand> &runCommands)
 {
 
 }
@@ -173,7 +173,7 @@ SimDriver::run(const RunCommand &runCommand , int motor)
 }
 
 void
-SimDriver::goUntil(const std::map<int, DataCommand> &goUntilCommands)
+SimDriver::goUntil(const std::map<int, GoUntilCommand> &goUntilCommands)
 {
 
 }
@@ -189,7 +189,7 @@ SimDriver::goUntil(const GoUntilCommand &command , int motor)
 
 // Position Commands
 void
-SimDriver::move(const std::map <int,DataCommand> &moveCommands)
+SimDriver::move(const std::map<int, MoveCommand> &moveCommands)
 {
 
 }
@@ -201,7 +201,7 @@ SimDriver::move(const MoveCommand &command , int motor)
 }
 
 void
-SimDriver::goTo(const std::map <int,DataCommand> &goToCommands)
+SimDriver::goTo(const std::map<int, GoToCommand> &goToCommands)
 {
 
 }
@@ -213,7 +213,7 @@ SimDriver::goTo(const GoToCommand &command , int motor)
 }
 
 void
-SimDriver::goToDir(const std::map <int,DataCommand> &goToDirCommands)
+SimDriver::goToDir(const std::map<int, GoToDirCommand> &goToDirCommands)
 {
 
 }
@@ -315,6 +315,12 @@ void
 SimDriver::setPos  (int32_t pos , int motor)
 {
 
+}
+
+void
+SimDriver::setMark(int32_t pos, int motor)
+{
+    // do nothing
 }
 
 void

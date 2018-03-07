@@ -77,23 +77,23 @@ class AbstractDriver
     /////////////////////////////
 
     // Speed Commands
-    virtual void run(const std::map<int, DataCommand> &runCommands) = 0;
+    virtual void run(const std::map<int,RunCommand> &runCommands) = 0;
     virtual void run(const RunCommand &runCommand , int motor) = 0;
 
-    virtual void goUntil(const std::map<int, DataCommand> &goUntilCommands) = 0;
+    virtual void goUntil(const std::map<int,GoUntilCommand> &goUntilCommands) = 0;
     virtual void goUntil(const GoUntilCommand &command , int motor) = 0;
 
 //    void releaseSw(const std::map <int,ReleaseSwCommand> &releaseSWCommands) = 0;
 //    void releaseSw(const ReleaseSwCommand &command , int motor) = 0;
 
     // Position Commands
-    virtual void move(const std::map <int,DataCommand> &moveCommands) = 0;
+    virtual void move(const std::map <int,MoveCommand> &moveCommands) = 0;
     virtual void move(const MoveCommand &command , int motor) = 0;
 
-    virtual void goTo(const std::map <int,DataCommand> &goToCommands) = 0;
+    virtual void goTo(const std::map <int,GoToCommand> &goToCommands) = 0;
     virtual void goTo(const GoToCommand &command , int motor) = 0;
 
-    virtual void goToDir(const std::map <int,DataCommand> &goToDirCommands) = 0;
+    virtual void goToDir(const std::map <int,GoToDirCommand> &goToDirCommands) = 0;
     virtual void goToDir(const GoToDirCommand &command , int motor) = 0;
 
     virtual void goHome(const std::vector <int> &motors) = 0;
@@ -119,12 +119,11 @@ class AbstractDriver
     virtual void hardHiZ(int motor) = 0;
 
     // Set Commands
-    //void setMark(const std::map<int, long> &marks) = 0;
-    //void setPos(const std::map<int,long> &newPositions) = 0;
-    virtual void setPos  (int32_t pos , int motor) = 0;
+    virtual void setMark  (int32_t pos, int motor) = 0;
+    virtual void setPos   (int32_t pos , int motor) = 0;
     virtual void setAllPos(int32_t pos) = 0;
-    virtual void resetPos(const std::vector <int> &motors) = 0;
-    virtual void resetPos(int motor) = 0;
-    virtual void resetDev(const std::vector <int> &motors) = 0;
+    virtual void resetPos (const std::vector <int> &motors) = 0;
+    virtual void resetPos (int motor) = 0;
+    virtual void resetDev (const std::vector <int> &motors) = 0;
 
 };

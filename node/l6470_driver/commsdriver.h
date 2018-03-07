@@ -40,7 +40,7 @@ public:
     std::vector<uint32_t> xferParam(const std::map<int,uint32_t> &parameters, uint8_t bitLen);
 
     // Convenience commands to sendCommands
-    void sendCommands(const std::map <int,DataCommand> &dataCommands);
+    template <class T> void sendCommands(const std::map <int,T> &dataCommands);
     void sendCommands(const std::vector<int> &motors , uint8_t commandByte);
     void sendCommand (const DataCommand &dataCommand , int motor);
 

@@ -86,23 +86,23 @@ public:
     /////////////////////////////
 
     // Speed Commands
-    virtual void run(const std::map<int, DataCommand> &runCommands) override;
+    virtual void run(const std::map<int,RunCommand> &runCommands) override;
     virtual void run(const RunCommand &runCommand , int motor) override;
 
-    virtual void goUntil(const std::map<int, DataCommand> &goUntilCommands) override;
+    virtual void goUntil(const std::map<int,GoUntilCommand> &goUntilCommands) override;
     virtual void goUntil(const GoUntilCommand &command , int motor) override;
 
     //    void releaseSw(const std::map <int,ReleaseSwCommand> &releaseSWCommands) override;
     //    void releaseSw(const ReleaseSwCommand &command , int motor) override;
 
     // Position Commands
-    virtual void move(const std::map <int,DataCommand> &moveCommands) override;
+    virtual void move(const std::map <int,MoveCommand> &moveCommands) override;
     virtual void move(const MoveCommand &command , int motor) override;
 
-    virtual void goTo(const std::map <int,DataCommand> &goToCommands) override;
+    virtual void goTo(const std::map <int,GoToCommand> &goToCommands) override;
     virtual void goTo(const GoToCommand &command , int motor) override;
 
-    virtual void goToDir(const std::map <int,DataCommand> &goToDirCommands) override;
+    virtual void goToDir(const std::map <int,GoToDirCommand> &goToDirCommands) override;
     virtual void goToDir(const GoToDirCommand &command , int motor) override;
 
     virtual void goHome(const std::vector <int> &motors) override;
@@ -128,7 +128,7 @@ public:
     virtual void hardHiZ(int motor) override;
 
     // Set Commands
-    //void setMark(const std::map<int, long> &marks) override;
+    virtual void setMark (int32_t pos, int motor) override;
     virtual void setPos  (int32_t pos , int motor) override;
     virtual void setAllPos(int32_t pos) override;
     virtual void resetPos(const std::vector <int> &motors) override;

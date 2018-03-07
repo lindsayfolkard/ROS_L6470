@@ -133,7 +133,7 @@ int main (int argc, char ** argv)
             count=0;
             RunCommand runCommand(Forward,speed+=speedIncrement);
             //driver.run(runCommand,0);
-            const std::map<int,DataCommand> runMap = {{0,runCommand},{1,runCommand}};
+            const std::map<int,RunCommand> runMap = {{0,runCommand},{1,runCommand}};
             driver.run(runMap);
             cout << "Run Command is : " << runCommand << std::endl;
         }
