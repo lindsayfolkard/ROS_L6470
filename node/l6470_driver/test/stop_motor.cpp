@@ -18,6 +18,8 @@ int main(int argc, char **argv)
 
     PowerStepDriver driver(motors);
 
+    driver.setAllPos(0);
+
     driver.softHiZ(0);
     driver.softHiZ(1);
 

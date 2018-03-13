@@ -501,7 +501,11 @@ void
 BaseDriver::setAllPos(int32_t pos)
 {
     for (unsigned int i =0; i < motors_.size(); ++i)
+    {
+        std::cout << "Debug - position set for motor " << i << " = " << pos << std::endl;
         setPos(pos,i);
+        std::cout << "Debug - position read back for motor " << i << " = " << getPos(i) << std::endl;
+    }
 }
 
 void
