@@ -102,6 +102,7 @@ int main(int argc, char **argv)
             std::cout << "Run Test " << testNumber << " - " << testName << std::endl;
             test(driver,testName,debugEnabled);
             std::cout << "Finished Test" << std::endl;
+            driver.stopAllSoft();
             sleep(5);
         }
         catch (std::exception &e)

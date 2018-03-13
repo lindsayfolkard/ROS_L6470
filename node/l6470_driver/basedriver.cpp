@@ -4,11 +4,11 @@
 #include <exception>
 #include <vector>
 
-std::vector<int> getAllMotorsVector()
+std::vector<int> getAllMotorsVector(int numMotors)
 {
     std::vector<int> motors;
 
-    for (int i=0; i < motors.size() ; ++i)
+    for (int i=0; i < numMotors ; ++i)
     {
         motors.push_back(i);
     }
@@ -532,13 +532,13 @@ BaseDriver::resetDev(const std::vector<int> &motors)
 void
 BaseDriver::stopAllHard()
 {
-    hardStop(getAllMotorsVector());
+    hardStop(getAllMotorsVector(motors_.size()));
 }
 
 void
 BaseDriver::stopAllSoft()
 {
-    softStop(getAllMotorsVector());
+    softStop(getAllMotorsVector(motors_.size()));
 }
 
 
