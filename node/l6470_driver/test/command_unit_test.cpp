@@ -99,7 +99,10 @@ int main(int argc, char **argv)
         std::string testName;
         try
         {
+            std::cout << "Run Test " << testNumber << " - " << testName << std::endl;
             test(driver,testName,debugEnabled);
+            std::cout << "Finished Test" << std::endl;
+            sleep(5);
         }
         catch (std::exception &e)
         {
@@ -241,11 +244,10 @@ testMove (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     // Create the move commands and set each stepper to be at the 0 pos
     std::map <int,MoveCommand> cmdMap;
     const int minPos=300;
-    const int posIncrement=50;
     for (int i=0 ; i < baseDriver.motors_.size(); ++i)
     {
         MotorSpinDirection spinDir = (i%2 == 0 ? Forward : Reverse);
-        int position = (spinDir == Forward ? 1 : -1) * (minPos + (i*posIncrement));
+        int position = (spinDir == Forward ? 1 : -1) * (minPos);
         MoveCommand moveCommand(spinDir,position);
         std::cout << "Move cmd for motor --> " << i << " is " << moveCommand << std::endl;
         cmdMap.insert(std::pair<int,MoveCommand>(i,moveCommand));
