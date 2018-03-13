@@ -773,3 +773,13 @@ operator== (const ProfileCfg &cfg1 , const ProfileCfg &cfg2)
             (cfg1.maxSpeed     == cfg2.maxSpeed)     &&
             (cfg1.minSpeed     == cfg2.minSpeed);
 }
+
+bool isNear(const ProfileCfg &cfg1 ,
+            const ProfileCfg &cfg2 ,
+            const double tolerance)
+{
+    return (std::fabs(cfg1.acceleration - cfg2.acceleration) < tolerance) &&
+           (std::fabs(cfg1.deceleration - cfg2.deceleration) < tolerance) &&
+           (std::fabs(cfg1.maxSpeed - cfg2.maxSpeed) < tolerance) &&
+           (std::fabs(cfg1.minSpeed - cfg2.minSpeed) < tolerance);
+}

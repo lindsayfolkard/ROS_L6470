@@ -157,7 +157,9 @@ testSetProfileCfg (BaseDriver &baseDriver, std::string &testName, bool debugEnab
         // Check that the config is as expected
         ProfileCfg readBackCfg = baseDriver.getProfileCfg(i);
 
-        if (readBackCfg != profileCfgMap[i])
+        // Generally the config is not exactly what we want set
+        const double tolerance = 15;
+        if (!isNear(readBackCfg,profileCfgMap[i],tolerance))
         {
             std::stringstream ss;
             ss << "ProfileConfig set to motor " << i << " doe not match config read back. Hence : "
@@ -232,6 +234,7 @@ testMove (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 
     // Stop all the motors and zero position before doing anything
     baseDriver.stopAllHard();
+    sleep(5);
     baseDriver.setAllPos(0);
     baseDriver.clearStatus();
 
@@ -241,10 +244,10 @@ testMove (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     const int posIncrement=50;
     for (int i=0 ; i < baseDriver.motors_.size(); ++i)
     {
-        baseDriver.setPos(0,i);
         MotorSpinDirection spinDir = (i%2 == 0 ? Forward : Reverse);
         int position = (spinDir == Forward ? 1 : -1) * (minPos + (i*posIncrement));
         MoveCommand moveCommand(spinDir,position);
+        std::cout << "Move cmd for motor --> " << i << " is " << moveCommand << std::endl;
         cmdMap.insert(std::pair<int,MoveCommand>(i,moveCommand));
     }
 
@@ -280,6 +283,7 @@ testGoTo (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     testName = "GoTo";
 
     baseDriver.stopAllHard();
+    sleep(5);
     baseDriver.setAllPos(0);
     baseDriver.clearStatus();
 
@@ -326,6 +330,7 @@ testGoToDir(BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     testName = "GoToDir";
 
     baseDriver.stopAllHard();
+    sleep(5);
     baseDriver.setAllPos(0);
     baseDriver.clearStatus();
 
@@ -373,6 +378,7 @@ testGoHome (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     testName = "GoHome";
 
     baseDriver.stopAllHard();
+    sleep(5);
     baseDriver.setAllPos(0);
     baseDriver.clearStatus();
 
@@ -415,6 +421,7 @@ testGoMark (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 
     // Let's create a few mark positions
     baseDriver.stopAllHard();
+    sleep(5);
     baseDriver.setAllPos(0);
 
     int posIncrement = 50;

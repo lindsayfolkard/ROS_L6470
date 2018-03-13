@@ -692,6 +692,7 @@ inline std::ostream& operator<<(std::ostream& os,const ProfileCfg &x)
     return os << toString(x);
 }
 
+bool isNear(const ProfileCfg &cfg1 , const ProfileCfg &cfg2 , const double tolerance);
 bool operator== (const ProfileCfg &cfg1, const ProfileCfg &cfg2);
 inline bool operator!= (const ProfileCfg &cfg1, const ProfileCfg &cfg2)
 {
