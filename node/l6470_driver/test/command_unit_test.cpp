@@ -450,11 +450,51 @@ testGoMark (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     baseDriver.stopAllSoft();
 }
 
+//void testStop(BaseDriver &baseDriver,
+//              std::function <void(BaseDriver,int)> &stopFunction,
+//              std::function <void(BaseDriver,int)> &testFunction)
+//{
+
+//}
+
+
 // Stop Commands
 void
 testSoftStop (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 {
     testName = "SoftStop";
+
+    // Get the motors spinning
+    const int stepsPerSecond=400;
+    for (int i=0; i < baseDriver.motors_.size(); ++i)
+    {
+        RunCommand runCommand(Forward,stepsPerSecond);
+        baseDriver.run(runCommand,i);
+    }
+
+    // Wait for all the motors to be spinning
+    sleep(2);
+
+    // Check the status - TODO if needed
+
+    // Soft Stop each Motor and check the status
+    for (int i=0; i < baseDriver.motors_.size(); ++i)
+    {
+        baseDriver.softStop(i);
+        const int waitTimeoutS = 5;
+        const int sleepTimeMs = 100;
+        int waitCount=0;
+        const int maxWaitCount = (waitTimeoutS*1e3)/sleepTimeMs;
+
+        while (waitCount < maxWaitCount && baseDriver.getStatus(i).motorStatus != STATUS_MOT_STATUS_STOPPED)
+        {
+            ++waitCount;
+            usleep(sleepTimeMs*1e3);
+        }
+
+        if (waitCount >= maxWaitCount)
+            throw TestFailException("Motor " + std::to_string(i) + " does not appeared to have come to a " + testName);
+    }
 }
 
 void
