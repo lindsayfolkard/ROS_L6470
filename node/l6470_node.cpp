@@ -47,10 +47,10 @@ L6470Node::L6470Node():
     // Instantiate the Stepper Driver from the factory
     const std::string overallCfgFile = "~/dspin_stepper_configs/ros_overall_config.txt"; // TODO - figure out where this file can be stored/deployed nicely
     std::cout << "Try to instantiate stepper motor driver with ros_overall_config file from " << overallCfgFile << std::endl;
-    //OverallCfg overallCfg(overallCfgFile);
-    //driver_ = factoryMakeDriver(overallCfg);
-    //assert(driver_ || !"driver is null pointer!" );
-    //std::cout << "Instantiated " << overallCfg.controllerType_ << " stepper motor driver with " << overallCfg.cfgFiles_.size() << " daisy chained steppers" << std::endl;
+    OverallCfg overallCfg(overallCfgFile);
+    driver_ = factoryMakeDriver(overallCfg);
+    assert(driver_ || !"driver is null pointer!" );
+    std::cout << "Instantiated " << overallCfg.controllerType_ << " stepper motor driver with " << overallCfg.cfgFiles_.size() << " daisy chained steppers" << std::endl;
 }
 
 L6470Node::~L6470Node()

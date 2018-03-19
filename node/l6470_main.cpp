@@ -25,9 +25,7 @@ int main(int argc, char * argv[])
   // Add some nodes to the executor which provide work for the executor during its "spin" function.
   // An example of available work is executing a subscription callback, or a timer callback.
   auto node = std::make_shared<l6470::L6470Node>();
-  std::cout << "Add node" << std::endl;
   exec.add_node(node);
-  std::cout << "Node is added" << std::endl;
 
   // spin will block until work comes in, execute work as it becomes available, and keep blocking.
   // It will only be interrupted by Ctrl-C.

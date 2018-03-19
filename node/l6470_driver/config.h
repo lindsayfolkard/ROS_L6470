@@ -2,19 +2,29 @@
 
 #include "types.h"
 #include "commsdriver.h"
+#include <boost/property_tree/ptree.hpp>
+
+namespace pt = boost::property_tree;
 
 // Abstract Classes for passing configs around
 class AbstractConfig {
 public:
     virtual ~AbstractConfig() = 0;
     virtual void set(CommsDriver &commsDriver, int motor) = 0;
-    virtual void readFromFile(const std::string &filePath) = 0;
     virtual void unitTest(CommsDriver &commsDriver, int motor) = 0;
 };
 
 class WriteableConfig {
 public:
     virtual ~WriteableConfig() = 0;
+
+    // Get representation of config in ptree (i.e JSON ready) format
+    virtual pt::ptree getPTree() = 0;
+
+    // Read Config from a given ptree
+    virtual void readFromPTree(pt::ptree &root) = 0;
+
+    virtual void readFromFile(const std::string &filePath)   = 0;
     virtual void writeToFile(const std::string &cfgFilePath) = 0;
 };
 
@@ -90,9 +100,13 @@ class CurrentModeCfg : public AbstractConfig,
 public:
 
     virtual void set(CommsDriver &commsDriver, int motor) override;
+    virtual void unitTest(CommsDriver &commsDriver, int motor) override;
+
+    virtual pt::ptree getPTree() override;
+    virtual void readFromPTree(pt::ptree &root) override;
+
     virtual void readFromFile(const std::string &filePath) override;
     virtual void writeToFile(const std::string &filePath) override;
-    virtual void unitTest(CommsDriver &commsDriver, int motor) override;
 
     uint8_t tvalHold;
     uint8_t tvalRun;
@@ -120,6 +134,8 @@ public:
     
     virtual void set(CommsDriver &commsDriver, int motor) override;
     virtual void readFromFile(const std::string &file) override;
+    virtual pt::ptree getPTree() override;
+    virtual void readFromPTree(pt::ptree &root) override;
     virtual void writeToFile(const std::string &cfgFilePath) override;
     virtual void unitTest(CommsDriver &commsDriver, int motor) override;
 
@@ -187,6 +203,8 @@ public:
     
     virtual void set(CommsDriver &commsDriver, int motor) override;
     virtual void readFromFile(const std::string &file) override;
+    virtual pt::ptree getPTree() override;
+    virtual void readFromPTree(pt::ptree &root) override;
     virtual void writeToFile(const std::string &cfgFilePath) override;
     virtual void unitTest(CommsDriver &commsDriver, int motor) override;
 

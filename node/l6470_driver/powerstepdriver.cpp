@@ -1,41 +1,40 @@
 #include "powerstepdriver.h"
 
-PowerStepCfg::PowerStepCfg (const CfgFile &cfgFile)
-{
-    if (cfgFile.commonConfigFile_!="")
-        commonCfg_ = CommonConfig(cfgFile.commonConfigFile_);
-
-    if (cfgFile.voltageModeConfigFile_ != "")
-        voltageModeCfg_ = VoltageModeCfg(cfgFile.voltageModeConfigFile_);
-    else if (cfgFile.stepperMotorFile_ != "")
-        voltageModeCfg_ = BackEmfConfigFromStepper(StepperMotor(cfgFile.stepperMotorFile_));
-    
-    //if (cfgFile.currentModeConfigFile_ != "")
-      //  currentModeCfg_ = CurrentModeCfg(cfgFile.currentModeConfigFile_);
-}
-
 PowerStepCfg::PowerStepCfg (CommsDriver &commsDriver , int motor)
 {
     commonCfg_ = CommonConfig(commsDriver,motor);
 }
 
-PowerStepCfg::PowerStepCfg (const CommonConfig   &commonConfig,
+PowerStepCfg::PowerStepCfg (const StepperMotor   &stepperMotor,
+                            const CommonConfig   &commonConfig,
                             const CurrentModeCfg &currentModeConfig,
                             const VoltageModeCfg &voltageModeConfig):
+    stepperMotor_(stepperMotor),
     commonCfg_(commonConfig),
     currentModeCfg_(currentModeConfig),
     voltageModeCfg_(voltageModeConfig)
 {}
 
-
 void
 PowerStepCfg::set(CommsDriver &commsDriver, int motor)
 {
+    std::cout << "============================" << std::endl;
+    std::cout << "Power Step Config : motor " << motor << std::endl;
+    std::cout << "----------------------------" << std::endl;
+    std::cout <<
     commonCfg_.set(commsDriver,motor);
-    //currentModeCfg_.set(commsDriver,motor);
-    
-    // default to voltage mode config
-    //voltageModeCfg_.set(commsDriver,motor);
+    if (commonCfg_.controlMode == CurrentControlMode)
+    {
+        std::cout << "Set current mode config" << std::endl;
+        currentModeCfg_.set(commsDriver,motor);
+    }
+    else
+    {
+        // default to voltage mode config
+        std::cout << "Set the voltage mode config" << std::endl;
+        voltageModeCfg_.set(commsDriver,motor);
+    }
+    std::cout << "============================" << std::endl;
 }
 
 void
@@ -48,8 +47,7 @@ PowerStepCfg::readFromFile(const std::string &filePath)
 void
 PowerStepCfg::writeToFile(const std::string &cfgFilePath)
 {
-    std::cout << "TODO - write config to file " << cfgFilePath << std::endl;
-    // TODO ?
+
 }
 
 void
@@ -86,8 +84,17 @@ PowerStepDriver::getConfig(int motor)
 std::string toString (const PowerStepCfg &cfg)
 {
     std::stringstream ss;
-    ss << "Common : " << std::endl << toString(cfg.commonCfg_) << std::endl;
-    ss << "TODO - the rest" << std::endl;
+    ss << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
+    ss << "--------------------------------------------------------------" << std::endl;
+    ss << "StepperMotor : " << std::endl << cfg.stepperMotor_ << std::endl;
+    ss << "--------------------------------------------------------------" << std::endl;
+    ss << "CommonCfg : " << std::endl << cfg.commonCfg_ << std::endl;
+    ss << "--------------------------------------------------------------" << std::endl;
+    ss << "VoltageModeCfg :" << std::endl << cfg.voltageModeCfg_ << std::endl;
+    ss << "--------------------------------------------------------------" << std::endl;
+    ss << "CurrentModeCfg : " << std::endl << cfg.currentModeCfg_ << std::endl;
+    ss << "--------------------------------------------------------------" << std::endl;
+    ss << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << std::endl;
     return ss.str();
 }
 

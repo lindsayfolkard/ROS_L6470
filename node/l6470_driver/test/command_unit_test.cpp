@@ -476,7 +476,7 @@ testSoftStop (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     testName = "SoftStop";
 
     // Get the motors spinning
-    const int stepsPerSecond=400;
+    const int stepsPerSecond=200;
     for (int i=0; i < baseDriver.motors_.size(); ++i)
     {
         RunCommand runCommand(Forward,stepsPerSecond);

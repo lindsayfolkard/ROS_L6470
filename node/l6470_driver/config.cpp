@@ -1,7 +1,6 @@
 #include "config.h"
 #include <fstream>
 #include <boost/property_tree/json_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
 #include <boost/bimap.hpp>
 #include "types.h"
 
@@ -44,8 +43,6 @@ MotorDriverType motorDriverTypeFromString(const std::string &str)
 /////////////////////////////////
 ///
 ///
-
-namespace pt = boost::property_tree;
 
 OverallCfg::OverallCfg(const std::string &filePath)
 {
@@ -1056,22 +1053,7 @@ VoltageModeCfg::readFromFile(const std::string &file)
     try
     {
         pt::read_json(file,root);
-
-        holdingKVal       = root.get<int>("holdingKVal");
-        constantSpeedKVal = root.get<int>("constantSpeedKVal");
-        accelStartingKVal = root.get<int>("accelStartingKVal");
-        decelStartingKVal = root.get<int>("decelStartingKVal");
-
-        intersectSpeed  = root.get<int>("intersectSpeed");
-        startSlope      = root.get<int>("startSlope");
-        accelFinalSlope = root.get<int>("accelFinalSlope");
-        decelFinalSlope = root.get<int>("decelFinalSlope");
-        enableLowSpeedOptimisation = root.get<bool>("enableLowSpeedOptimisation");
-
-        tryReadConfig<SlewRate>(root.get<std::string>("slewRate") ,getSlewRateBiMap(), slewRate);
-        tryReadConfig<VoltageCompensation>(root.get<std::string>("voltageCompensation"), getVoltageCompensationBiMap(), voltageCompensation);
-        tryReadConfig<PwmFrequencyMultiplier>(root.get<std::string>("pwmFrequencyMultiplier"),getPwmFrequencyMultiplierBiMap(), pwmFrequencyMultiplier);
-        tryReadConfig<PwmFrequencyDivider>(root.get<std::string>("pwmFrequencyDivider"),getPwmFrequencyDividerBiMap(), pwmFrequencyDivider);
+        readFromPTree(root);
     }
     catch (std::exception &e)
     {
@@ -1103,8 +1085,8 @@ VoltageModeCfg::VoltageModeCfg(const std::string &file):
     readFromFile(file);
 }
 
-void
-VoltageModeCfg::writeToFile(const std::string &cfgFilePath)
+pt::ptree
+VoltageModeCfg::getPTree()
 {
     pt::ptree root;
 
@@ -1124,11 +1106,76 @@ VoltageModeCfg::writeToFile(const std::string &cfgFilePath)
     root.put("pwmFrequencyDivider",toString(pwmFrequencyDivider));
     root.put("enableLowSpeedOptimisation",enableLowSpeedOptimisation);
 
+    return root;
+}
+
+void
+VoltageModeCfg::writeToFile(const std::string &cfgFilePath)
+{
+    pt::ptree root = getPTree();
+
     // Open the file and write to json
     std::ofstream outFile;
     outFile.open(cfgFilePath);
         //throw; // TODO - fix to real exception
     pt::write_json(outFile,root);
+}
+
+void
+VoltageModeCfg::readFromPTree(pt::ptree &root)
+{
+    try
+    {
+        holdingKVal       = root.get<int>("holdingKVal");
+        constantSpeedKVal = root.get<int>("constantSpeedKVal");
+        accelStartingKVal = root.get<int>("accelStartingKVal");
+        decelStartingKVal = root.get<int>("decelStartingKVal");
+
+        intersectSpeed  = root.get<int>("intersectSpeed");
+        startSlope      = root.get<int>("startSlope");
+        accelFinalSlope = root.get<int>("accelFinalSlope");
+        decelFinalSlope = root.get<int>("decelFinalSlope");
+        enableLowSpeedOptimisation = root.get<bool>("enableLowSpeedOptimisation");
+
+        tryReadConfig<SlewRate>(root.get<std::string>("slewRate") ,getSlewRateBiMap(), slewRate);
+        tryReadConfig<VoltageCompensation>(root.get<std::string>("voltageCompensation"), getVoltageCompensationBiMap(), voltageCompensation);
+        tryReadConfig<PwmFrequencyMultiplier>(root.get<std::string>("pwmFrequencyMultiplier"),getPwmFrequencyMultiplierBiMap(), pwmFrequencyMultiplier);
+        tryReadConfig<PwmFrequencyDivider>(root.get<std::string>("pwmFrequencyDivider"),getPwmFrequencyDividerBiMap(), pwmFrequencyDivider);
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception thrown while trying to read VoltageModeCfg from ptree : " << e.what();
+        throw;
+    }
+}
+
+void
+CommonConfig::readFromPTree(pt::ptree &root)
+{
+    fullStepThresholdSpeed  = root.get<int>("fullStepThresholdSpeed");
+
+    tryReadConfig<CurrentThreshold>(root.get<std::string>("overCurrentThreshold"), getCurrentThresholdBiMap(), overCurrentThreshold);
+    tryReadConfig<CurrentThreshold>(root.get<std::string>("stallThreshold"), getCurrentThresholdBiMap(),stallThreshold);
+    tryReadConfig<StepMode>(root.get<std::string>("stepMode"), getStepModeBiMap(),stepMode);
+    tryReadConfig<SyncSelect>(root.get<std::string>("syncSelect"), getSyncSelectBiMap(),syncSelect);
+    tryReadConfig<ControlMode>(root.get<std::string>("controlMode"), getControlModeBiMap(),controlMode);
+    tryReadConfig<OscillatorSelect>(root.get<std::string>("oscillatorSelect"), getOscillatorSelectBiMap(),oscillatorSelect);
+    tryReadConfig<SwitchConfiguration>(root.get<std::string>("switchConfiguration"), getSwitchConfigurationBiMap(), switchConfiguration);
+    tryReadConfig<OverCurrentDetection>(root.get<std::string>("overCurrentDetection"), getOverCurrentDetectionBiMap(), overCurrentDetection);
+
+    // Read Sync Enable
+    syncEnable = root.get<bool>("syncEnable");
+
+    // Parse Alarm State Config (if it exists)
+    pt::ptree alarmRoot = root.get_child("alarmState");
+    alarmState.overCurrentEnabled = alarmRoot.get<bool>("overCurrentEnabled");
+    alarmState.thermalShutdownEnabled = alarmRoot.get<bool>("thermalShutdownEnabled");
+    alarmState.thermalWarningEnabled = alarmRoot.get<bool>("thermalWarningEnabled");
+    alarmState.underVoltageEnabled = alarmRoot.get<bool>("underVoltageEnabled");
+    alarmState.stallDetectionAEnabled = alarmRoot.get<bool>("stallDetectionAEnabled");
+    alarmState.stallDetectionBEnabled = alarmRoot.get<bool>("stallDetectionBEnabled");
+    alarmState.switchTurnOnEnabled = alarmRoot.get<bool>("switchTurnOnEnabled");
+    alarmState.badCommandEnabled = alarmRoot.get<bool>("badCommandEnabled");
 }
 
 void
@@ -1140,31 +1187,7 @@ CommonConfig::readFromFile(const std::string &file)
     try
     {
         pt::read_json(file,root);
-
-        fullStepThresholdSpeed  = root.get<int>("fullStepThresholdSpeed");
-
-        tryReadConfig<CurrentThreshold>(root.get<std::string>("overCurrentThreshold"), getCurrentThresholdBiMap(), overCurrentThreshold);
-        tryReadConfig<CurrentThreshold>(root.get<std::string>("stallThreshold"), getCurrentThresholdBiMap(),stallThreshold);
-        tryReadConfig<StepMode>(root.get<std::string>("stepMode"), getStepModeBiMap(),stepMode);
-        tryReadConfig<SyncSelect>(root.get<std::string>("syncSelect"), getSyncSelectBiMap(),syncSelect);
-        tryReadConfig<ControlMode>(root.get<std::string>("controlMode"), getControlModeBiMap(),controlMode);
-        tryReadConfig<OscillatorSelect>(root.get<std::string>("oscillatorSelect"), getOscillatorSelectBiMap(),oscillatorSelect);
-        tryReadConfig<SwitchConfiguration>(root.get<std::string>("switchConfiguration"), getSwitchConfigurationBiMap(), switchConfiguration);
-        tryReadConfig<OverCurrentDetection>(root.get<std::string>("overCurrentDetection"), getOverCurrentDetectionBiMap(), overCurrentDetection);
-
-        // Read Sync Enable
-        syncEnable = root.get<bool>("syncEnable");
-
-        // Parse Alarm State Config (if it exists)
-        pt::ptree alarmRoot = root.get_child("alarmState");
-        alarmState.overCurrentEnabled = alarmRoot.get<bool>("overCurrentEnabled");
-        alarmState.thermalShutdownEnabled = alarmRoot.get<bool>("thermalShutdownEnabled");
-        alarmState.thermalWarningEnabled = alarmRoot.get<bool>("thermalWarningEnabled");
-        alarmState.underVoltageEnabled = alarmRoot.get<bool>("underVoltageEnabled");
-        alarmState.stallDetectionAEnabled = alarmRoot.get<bool>("stallDetectionAEnabled");
-        alarmState.stallDetectionBEnabled = alarmRoot.get<bool>("stallDetectionBEnabled");
-        alarmState.switchTurnOnEnabled = alarmRoot.get<bool>("switchTurnOnEnabled");
-        alarmState.badCommandEnabled = alarmRoot.get<bool>("badCommandEnabled");
+        readFromPTree(root);
     }
     catch (std::exception &e)
     {
@@ -1173,11 +1196,10 @@ CommonConfig::readFromFile(const std::string &file)
     }
 }
 
-void
-CommonConfig::writeToFile(const std::string &cfgFilePath)
+pt::ptree
+CommonConfig:: getPTree()
 {
     pt::ptree root;
-
     root.put("fullStepThresholdSpeed",fullStepThresholdSpeed);
 
     root.put("overCurrentThreshold",toString(overCurrentThreshold));
@@ -1206,6 +1228,14 @@ CommonConfig::writeToFile(const std::string &cfgFilePath)
     alarmStateNode.put("badCommandEnabled",alarmState.badCommandEnabled);
     root.add_child("alarmState",alarmStateNode);
 
+    return root;
+}
+
+void
+CommonConfig::writeToFile(const std::string &cfgFilePath)
+{
+    pt::ptree root = getPTree();
+
     // Open the file and write to json
     std::ofstream outFile;
     outFile.open(cfgFilePath);
@@ -1217,6 +1247,20 @@ void
 CurrentModeCfg::readFromFile(const std::string &file)
 {
     std::cout << "TODO - read from " << file << std::endl;
+    assert("!TODO");
+}
+
+void
+CurrentModeCfg::readFromPTree(pt::ptree &root)
+{
+    std::cout << "TODO - readFromPTree " << std::endl;
+    assert("!TODO");
+}
+
+pt::ptree
+CurrentModeCfg:: getPTree()
+{
+    std::cout << "TODO - writeToTree " << std::endl;
     assert("!TODO");
 }
 

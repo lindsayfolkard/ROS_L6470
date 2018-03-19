@@ -10,10 +10,12 @@ class PowerStepCfg : public AbstractConfig,
 public:
 
     PowerStepCfg() {}
-    PowerStepCfg (const CfgFile &cfgFile);
-    PowerStepCfg (const CommonConfig   &commonConfig,
-                  const CurrentModeCfg &currentModeConfig,
-                  const VoltageModeCfg &voltageModeConfig);
+
+    PowerStepCfg (const StepperMotor   &stepperMotor,
+                  const CommonConfig   &commonConfig,
+                  const CurrentModeCfg &currentModeConfig = CurrentModeCfg(),
+                  const VoltageModeCfg &voltageModeConfig = VoltageModeCfg());
+
     PowerStepCfg (CommsDriver &commsDriver , int motor);
 
     virtual void set(CommsDriver &commsDriver, int motor) override;
@@ -24,6 +26,8 @@ public:
     void    setCurrentModeCfg(CommsDriver &commsDriver, int motor);
     void    setVoltageModeCfg(CommsDriver &commsDriver, int motor);
 
+    // All Configuration items relevant to the powerstepdriver
+    StepperMotor    stepperMotor_;
     CommonConfig    commonCfg_;
     CurrentModeCfg  currentModeCfg_;
     VoltageModeCfg  voltageModeCfg_;
@@ -41,7 +45,7 @@ class PowerStepDriver : public BaseDriver
 public:
 
     PowerStepDriver(const std::vector<StepperMotor> &motors, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
-    PowerStepDriver(const std::vector<StepperMotor> &motors, std::vector<PowerStepCfg> &cfgs, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
+    PowerStepDriver(const std::vector<PowerStepCfg> &cfgs, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
 
     virtual void setConfig(AbstractConfig &cfg , int motor) override;
     PowerStepCfg getConfig(int motor);
