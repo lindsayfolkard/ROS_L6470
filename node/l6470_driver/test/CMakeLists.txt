@@ -15,6 +15,9 @@ add_executable(test_configs
 add_executable(command_unit_test
   command_unit_test.cpp)
 
+add_executable(generate_config
+  generate_config.cpp)
+
 target_link_libraries(stepper_motor_test
   l6470_driver)
 
@@ -29,3 +32,5 @@ target_link_libraries(config_unit_test
 
 target_link_libraries(command_unit_test
    l6470_driver)
+
+target_link_libraries(generate_config l6470_driver)

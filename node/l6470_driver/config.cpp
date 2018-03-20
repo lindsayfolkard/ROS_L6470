@@ -44,6 +44,16 @@ MotorDriverType motorDriverTypeFromString(const std::string &str)
 ///
 ///
 
+// Stack overflow - https://stackoverflow.com/questions/23481262/using-boost-property-tree-to-read-int-array
+template <typename T>
+std::vector<T> as_vector(pt::ptree const& pt, pt::ptree::key_type const& key)
+{
+    std::vector<T> r;
+    for (auto& item : pt.get_child(key))
+        r.push_back(item.second.get_value<T>());
+    return r;
+}
+
 OverallCfg::OverallCfg(const std::string &filePath)
 {
     // Let's do this in json format (easier to parse)
@@ -57,14 +67,7 @@ OverallCfg::OverallCfg(const std::string &filePath)
         spiBus_          = root.get<int>("SpiBus");
 
         // Get the stepper motor configs
-        //cfgFiles_ = root.get<std::vector<std::string>>("Configs");
-        //        for (pt::ptree::value_type &child : root.get_child("motors"))
-        //        {
-        //            CfgFile cfg(child.second.get<std::string> ("motorCfgFile"),
-        //                        child.second.get<std::string> ("customCfgFile"),
-        //                        child.second.get<std::string> ("model"));
-        //            cfgFiles_.push_back(cfg);
-        //        }
+        cfgFiles_ = as_vector<std::string>(root,"Configs");
 
     }
     catch (std::exception &e)
@@ -92,17 +95,15 @@ OverallCfg::writeToFile(const std::string &baseFile)
     root.put("ControllerType",toString(controllerType_));
     root.put("CommsDebugLevel",(int)commsDebugLevel_);
     root.put("SpiBus",spiBus_);
-    //root.put("Configs",cfgFiles_);
+    pt::ptree cfgNode;
 
-    //    for (const auto &cfgFile : cfgFiles_)
-    //    {
-    //        pt::ptree child;
-    //        child.put("model",cfgFile.motorModel_);
-    //        child.put("motorCfgFile",cfgFile.stepperMotorFile_);
-    //        child.put("customCfgFile",cfgFile.commonConfigFile_);
-    //        cfgNode.push_back((std::make_pair("",child)));
-    //    }
-    //root.add_child("motors",cfgNode);
+    for (const auto &cfgFile : cfgFiles_)
+    {
+        pt::ptree child;
+        child.put("",cfgFile);
+        cfgNode.push_back(std::make_pair("",child));
+    }
+    root.add_child("Configs",cfgNode);
 
     // Write to file
     std::ofstream outFile;
@@ -1131,10 +1132,10 @@ VoltageModeCfg::readFromPTree(pt::ptree &root)
         accelStartingKVal = root.get<int>("accelStartingKVal");
         decelStartingKVal = root.get<int>("decelStartingKVal");
 
-        intersectSpeed  = root.get<int>("intersectSpeed");
-        startSlope      = root.get<int>("startSlope");
-        accelFinalSlope = root.get<int>("accelFinalSlope");
-        decelFinalSlope = root.get<int>("decelFinalSlope");
+        intersectSpeed  = root.get<uint32_t>("intersectSpeed");
+        startSlope      = root.get<uint32_t>("startSlope");
+        accelFinalSlope = root.get<uint32_t>("accelFinalSlope");
+        decelFinalSlope = root.get<uint32_t>("decelFinalSlope");
         enableLowSpeedOptimisation = root.get<bool>("enableLowSpeedOptimisation");
 
         tryReadConfig<SlewRate>(root.get<std::string>("slewRate") ,getSlewRateBiMap(), slewRate);
