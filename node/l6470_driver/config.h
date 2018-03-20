@@ -42,9 +42,9 @@ inline std::ostream& operator<<(std::ostream& os, MotorDriverType x)
 }
 MotorDriverType motorDriverTypeFromString(const std::string &str);
 
-///
-/// \brief The CfgFile struct
-/// \abstract Contains links to required config files for a particular stepper motor
+/////
+///// \brief The CfgFile struct
+///// \abstract Contains links to required config files for a particular stepper motor
 struct CfgFile
 {
     CfgFile(const std::string motorModel, const std::string &stepperMotorFile, const std::string &customConfigFile="", const std::string voltageModeConfigFile="", const std::string currentModeConfigFile="") :
@@ -65,17 +65,17 @@ struct CfgFile
 struct OverallCfg
 {
     OverallCfg(const std::string &filePath);
-    OverallCfg(const std::vector<CfgFile> &cfgFiles,
+    OverallCfg(const std::vector<std::string> &cfgFiles,
                MotorDriverType             controllerType,
                CommsDebugLevel             commsDebugLevel = CommsDebugNothing,
                int                         spiBus = 0);
 
     void writeToFile(const std::string &baseFile);
 
-    std::vector<CfgFile>     cfgFiles_;
-    MotorDriverType          controllerType_;
-    CommsDebugLevel          commsDebugLevel_;
-    int                      spiBus_;
+    std::vector<std::string>  cfgFiles_;
+    MotorDriverType           controllerType_;
+    CommsDebugLevel           commsDebugLevel_;
+    int                       spiBus_;
 };
 std::string toString(const OverallCfg &cfg);
 inline std::ostream& operator<<(std::ostream& os,const OverallCfg &x)

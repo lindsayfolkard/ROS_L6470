@@ -83,16 +83,7 @@ StepperMotor::StepperMotor(const std::string &cfg)
     try
     {
         pt::read_json(cfg,root);
-
-        motorSize       = getStepperMotorSizeBiMap().right.at(root.get<std::string>("motorSize"));
-        motorModel      = root.get<std::string>("motorModel");
-        stepAngle       = root.get<double>("stepAngle");
-        phaseResistance = root.get<double>("phaseResistance");
-        phaseInductance = root.get<double>("phaseInductance");
-        Ke              = root.get<double>("backEmfConstant");
-        holdingTorque   = root.get<double>("holdingTorque");
-        vbus            = root.get<double>("vbus");
-        phaseCurrent    = root.get<double>("phaseCurrent");
+        readFromPTree(root);
     }
     catch (std::exception &e)
     {
@@ -101,8 +92,8 @@ StepperMotor::StepperMotor(const std::string &cfg)
     }
 }
 
-void
-StepperMotor::writeToFile(const std::string &file)
+pt::ptree
+StepperMotor::getPTree()
 {
     pt::ptree root;
 
@@ -116,6 +107,37 @@ StepperMotor::writeToFile(const std::string &file)
     root.put("holdingTorque",holdingTorque);
     root.put("vbus",vbus);
     root.put("phaseCurrent",phaseCurrent);
+
+    return root;
+}
+
+void
+StepperMotor::readFromPTree(pt::ptree &root)
+{
+    try
+    {
+        motorSize       = getStepperMotorSizeBiMap().right.at(root.get<std::string>("motorSize"));
+        motorModel      = root.get<std::string>("motorModel");
+        stepAngle       = root.get<double>("stepAngle");
+        phaseResistance = root.get<double>("phaseResistance");
+        phaseInductance = root.get<double>("phaseInductance");
+        Ke              = root.get<double>("backEmfConstant");
+        holdingTorque   = root.get<double>("holdingTorque");
+        vbus            = root.get<double>("vbus");
+        phaseCurrent    = root.get<double>("phaseCurrent");
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception caught while trying to read stepper motor cfg from ptree : " << e.what() << std::endl;
+        throw;
+    }
+}
+
+void
+StepperMotor::writeToFile(const std::string &file)
+{
+
+    pt::ptree root = getPTree();
 
     // Open the file and write to json
     std::ofstream outFile;

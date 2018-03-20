@@ -12,9 +12,9 @@ std::unique_ptr<AbstractDriver> factoryMakeDriver(const OverallCfg &overallCfg)
     std::vector<StepperMotor>   motors;
     std::vector<PowerStepCfg> cfgs;
 
-    for (const CfgFile &cfgFile : overallCfg.cfgFiles_)
+    for (const auto &cfgFile : overallCfg.cfgFiles_)
     {
-        motors.push_back(StepperMotor(cfgFile.stepperMotorFile_));
+        motors.push_back(StepperMotor(cfgFile));
 
         switch (overallCfg.controllerType_)
         {

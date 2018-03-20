@@ -52,18 +52,19 @@ OverallCfg::OverallCfg(const std::string &filePath)
     try
     {
         pt::read_json(filePath,root);
-        controllerType_  = motorDriverTypeFromString(root.get<std::string>("controllerType"));
-        commsDebugLevel_ = static_cast<CommsDebugLevel>(root.get<int>("commsDebugLevel"));
-        spiBus_          = root.get<int>("spiBus");
+        controllerType_  = motorDriverTypeFromString(root.get<std::string>("ControllerType"));
+        commsDebugLevel_ = static_cast<CommsDebugLevel>(root.get<int>("CommsDebugLevel"));
+        spiBus_          = root.get<int>("SpiBus");
 
         // Get the stepper motor configs
-        for (pt::ptree::value_type &child : root.get_child("motors"))
-        {
-            CfgFile cfg(child.second.get<std::string> ("motorCfgFile"),
-                        child.second.get<std::string> ("customCfgFile"),
-                        child.second.get<std::string> ("model"));
-            cfgFiles_.push_back(cfg);
-        }
+        //cfgFiles_ = root.get<std::vector<std::string>>("Configs");
+        //        for (pt::ptree::value_type &child : root.get_child("motors"))
+        //        {
+        //            CfgFile cfg(child.second.get<std::string> ("motorCfgFile"),
+        //                        child.second.get<std::string> ("customCfgFile"),
+        //                        child.second.get<std::string> ("model"));
+        //            cfgFiles_.push_back(cfg);
+        //        }
 
     }
     catch (std::exception &e)
@@ -73,7 +74,7 @@ OverallCfg::OverallCfg(const std::string &filePath)
     }
 }
 
-OverallCfg::OverallCfg( const std::vector<CfgFile> &cfgFiles,
+OverallCfg::OverallCfg( const std::vector<std::string> &cfgFiles,
                         MotorDriverType                 controllerType,
                         CommsDebugLevel                 commsDebugLevel,
                         int                             spiBus):
@@ -88,22 +89,20 @@ OverallCfg::writeToFile(const std::string &baseFile)
 {
     pt::ptree root;
 
-    root.put("controllerType",toString(controllerType_));
-    root.put("commsDebugLevel",(int)commsDebugLevel_);
-    root.put("spiBus",spiBus_);
+    root.put("ControllerType",toString(controllerType_));
+    root.put("CommsDebugLevel",(int)commsDebugLevel_);
+    root.put("SpiBus",spiBus_);
+    //root.put("Configs",cfgFiles_);
 
-    pt::ptree cfgNode;
-
-    for (const auto &cfgFile : cfgFiles_)
-    {
-        pt::ptree child;
-        child.put("model",cfgFile.motorModel_);
-        child.put("motorCfgFile",cfgFile.stepperMotorFile_);
-        child.put("customCfgFile",cfgFile.commonConfigFile_);
-        cfgNode.push_back((std::make_pair("",child)));
-    }
-
-    root.add_child("motors",cfgNode);
+    //    for (const auto &cfgFile : cfgFiles_)
+    //    {
+    //        pt::ptree child;
+    //        child.put("model",cfgFile.motorModel_);
+    //        child.put("motorCfgFile",cfgFile.stepperMotorFile_);
+    //        child.put("customCfgFile",cfgFile.commonConfigFile_);
+    //        cfgNode.push_back((std::make_pair("",child)));
+    //    }
+    //root.add_child("motors",cfgNode);
 
     // Write to file
     std::ofstream outFile;
@@ -118,11 +117,12 @@ toString(const OverallCfg &cfg)
     std::stringstream ss;
     ss << "ControllerType  : " << cfg.controllerType_  << std::endl;
     ss << "CommsDebugLevel : " << cfg.commsDebugLevel_ << std::endl;
+    ss << "SPI Bus         : " << cfg.spiBus_ << std::endl;
 
     int count=1;
     for (const auto &file : cfg.cfgFiles_)
     {
-        ss << "Motor " << count << " : " << file.stepperMotorFile_ << " , " << file.commonConfigFile_ << std::endl;
+        ss << "Motor " << count << " : " << file;// file.stepperMotorFile_ << " , " << file.commonConfigFile_ << std::endl;
         ++count;
     }
 
@@ -1260,8 +1260,10 @@ CurrentModeCfg::readFromPTree(pt::ptree &root)
 pt::ptree
 CurrentModeCfg:: getPTree()
 {
+    pt::ptree root;
     std::cout << "TODO - writeToTree " << std::endl;
     assert("!TODO");
+    return root;
 }
 
 void

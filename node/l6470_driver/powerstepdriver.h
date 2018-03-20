@@ -11,12 +11,17 @@ public:
 
     PowerStepCfg() {}
 
-    PowerStepCfg (const StepperMotor   &stepperMotor,
-                  const CommonConfig   &commonConfig,
+    PowerStepCfg(const std::string &cfgFile) {readFromFile(cfgFile);}
+
+    PowerStepCfg (const CommonConfig   &commonConfig,
                   const CurrentModeCfg &currentModeConfig = CurrentModeCfg(),
                   const VoltageModeCfg &voltageModeConfig = VoltageModeCfg());
 
     PowerStepCfg (CommsDriver &commsDriver , int motor);
+
+    // Get representation of config in ptree (i.e JSON ready) format
+    virtual pt::ptree   getPTree() override;
+    virtual void        readFromPTree(pt::ptree &root) override;
 
     virtual void set(CommsDriver &commsDriver, int motor) override;
     virtual void readFromFile(const std::string &filePath) override;
@@ -27,7 +32,6 @@ public:
     void    setVoltageModeCfg(CommsDriver &commsDriver, int motor);
 
     // All Configuration items relevant to the powerstepdriver
-    StepperMotor    stepperMotor_;
     CommonConfig    commonCfg_;
     CurrentModeCfg  currentModeCfg_;
     VoltageModeCfg  voltageModeCfg_;
@@ -45,11 +49,10 @@ class PowerStepDriver : public BaseDriver
 public:
 
     PowerStepDriver(const std::vector<StepperMotor> &motors, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
-    PowerStepDriver(const std::vector<PowerStepCfg> &cfgs, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
+    PowerStepDriver(const std::vector<StepperMotor> &motors, std::vector<PowerStepCfg> &cfgs, int spiBus = 0, CommsDebugLevel commsDebugLevel = CommsDebugNothing);
 
     virtual void setConfig(AbstractConfig &cfg , int motor) override;
     PowerStepCfg getConfig(int motor);
 
 private:
-
 };

@@ -42,6 +42,9 @@ struct StepperMotor
                  double            _vbus,
                  double            _phaseCurrent);
 
+    pt::ptree getPTree();
+    void      readFromPTree(pt::ptree &root);
+
     void writeToFile(const std::string &file);
 
     // Motor Type information

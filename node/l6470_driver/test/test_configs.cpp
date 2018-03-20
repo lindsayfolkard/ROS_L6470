@@ -8,9 +8,7 @@ int main (int argc, char ** argv)
 {
 
     std::cout << "T1 : test generation and parsing of OverallCfg" << std::endl;
-    CfgFile cfgM1("nema17.cfg","motor1.cfg","NEMA17H101");
-    CfgFile cfgM2("nema23.cfg","motor2.cfg","NEMA23H201");
-    std::vector <CfgFile> cfgs = {cfgM1,cfgM2};
+    const std::vector <std::string> cfgs = {"motor1.cfg","motor2.cfg"};
     OverallCfg overallCfg(cfgs,PowerStep01,CommsDebugNothing);
     //std::cout << "Original Config : " << overallCfg << std::endl;
     overallCfg.writeToFile("test_overall.cfg");
