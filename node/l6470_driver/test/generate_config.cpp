@@ -51,7 +51,7 @@ int main(int argc, char ** argv)
     }
 
 
-    // Let's make a
+    // Let's make an overall config
     //    OverallCfg overallCfg;
     //    overallCfg.commsDebugLevel_ = CommsDebugNothing;
     //    overallCfg.controllerType_  = PowerStep01;

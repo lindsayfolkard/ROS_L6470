@@ -681,6 +681,11 @@ enum TargetSwitchingPeriod
 // changed several times on the fly
 struct ProfileCfg
 {
+    ProfileCfg(float _acceleration, float _deceleration, float _maxSpeed, float _minSpeed = 200) :  acceleration(_acceleration),
+                                                                                                    deceleration(_deceleration),
+                                                                                                    maxSpeed(_maxSpeed),
+                                                                                                    minSpeed(_minSpeed){}
+
     float acceleration; // steps/s^2
     float deceleration; // steps/s^2
     float maxSpeed; // steps/s

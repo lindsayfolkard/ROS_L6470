@@ -25,6 +25,7 @@
 
 // STL Libraries
 #include <memory>
+#include <mutex>
 
 namespace l6470
 {
@@ -39,7 +40,7 @@ public:
 
 protected:
 
-  void on_timer();
+  void poseTimerCallback();
 
   void manualSpeedCallback(const l6470_msgs::msg::ManualSpeed::UniquePtr manualSpeed);
 
@@ -65,9 +66,11 @@ private:
   rclcpp::service::Service<l6470_srvs::srv::Stop>::SharedPtr         stopSrv_;
 
   // Wall Timers
-  rclcpp::timer::TimerBase::SharedPtr timer_; // I prefer if there is really only one task that talks to the controller
+  rclcpp::timer::TimerBase::SharedPtr poseTimer_;
+  rclcpp::timer::TimerBase::SharedPtr statusTimer_;
 
   // Stepper Motor Driver
+  std::mutex driverMutex_;
   std::unique_ptr<AbstractDriver> driver_;
 
 };
