@@ -37,6 +37,13 @@ l6470_msgs::msg::Status toRosStatus (const Status &status)
 
     return returnStatus;
 }
+
+std::string errorToStringInfo(const char *funcInfo, const std::string &detail)
+{
+    std::stringstream ss;
+    ss << funcInfo << " : " << detail;
+}
+
 }
 
 L6470Node::L6470Node():
@@ -92,7 +99,7 @@ L6470Node::poseTimerCallback()
 
     // Let's get the actual positions and speeds
     std::vector<int>    positions;
-    std::vector<int>    speeds;
+    std::vector<uint32_t>    speeds;
     std::vector<Status> states;
     {
         std::lock_guard<std::mutex> lock(driverMutex_);
@@ -110,7 +117,7 @@ L6470Node::poseTimerCallback()
     // Create the pose message to publish
     std::shared_ptr<l6470_msgs::msg::MultiPose> poseMsg = std::make_shared<l6470_msgs::msg::MultiPose>();
 
-    for (int motor=0; motor < positions.size(); ++motor)
+    for (unsigned int motor=0; motor < positions.size(); ++motor)
     {
         poseMsg->motor_states[motor].position = positions[motor];
         poseMsg->motor_states[motor].speed    = speeds[motor];
@@ -136,47 +143,39 @@ L6470Node::poseTimerCallback()
 void
 L6470Node::manualSpeedCallback(const l6470_msgs::msg::ManualSpeed::UniquePtr manualSpeed)
 {
-    // Hack stuff - to prevent compile warning
     if (!manualSpeed.get())
-    {
-        std::cout << "DEBUG - wtf manualSpeed is nullptr" <<  std::endl;
-    }
-    else
-    {
-        // Create an appropriate run command
-        //
-        std::map <int,RunCommand> runCommands;
-        int motor=0;
-        for (const auto &speed : manualSpeed->speed)
-        {
-            runCommands.insert(std::make_pair(motor,RunCommand((speed > 0 ? Forward : Reverse),speed)));
-            ++motor;
-        }
+        throw std::invalid_argument(errorToStringInfo(__func__,"ManualSpeed is nullptr"));
 
-        std::lock_guard<std::mutex> lock(driverMutex_);
-
-        // Send the command to the motors
-        driver_->run(runCommands);
+    // Create an appropriate run command
+    //
+    std::map <int,RunCommand> runCommands;
+    int motor=0;
+    for (const auto &speed : manualSpeed->speed)
+    {
+        runCommands.insert(std::make_pair(motor,RunCommand((speed > 0 ? Forward : Reverse),speed)));
+        ++motor;
     }
+
+    std::lock_guard<std::mutex> lock(driverMutex_);
+
+    // Send the command to the motors
+    driver_->run(runCommands);
 }
 
 void
 L6470Node::goToPositionCallback(const   std::shared_ptr <l6470_srvs::srv::GoToPosition::Request>  request,
                                         std::shared_ptr <l6470_srvs::srv::GoToPosition::Response> response )
 {
-    if (request.get() == nullptr || response.get() == nullptr)
-    {
-        throw;
-        std::cout << "TODO - throw an exception" << std::endl;
-    }
+    if (!request.get() || !response.get())
+        throw std::invalid_argument(errorToStringInfo(__func__ ,"One of arguments is nullptr"));
 
     // Get the desired positions
-    std::map <int,GoToDirCommand> goToCommands;
+    std::map <int,GoToDirCommand> goToDirCommands;
     std::map <int,ProfileCfg>  profiles;
 
     // Check that the vectors are okay
     // TODO - change the command to be a vector or GoToPositiong to avoid this bullshit
-    if (!(request->motor_indice.size == request->motor_position.size()
+    if (!(request->motor_indice.size() == request->motor_position.size()
           == request->drive_direction.size()
           == request->acceleration.size()
           == request->deceleration.size()
@@ -188,7 +187,7 @@ L6470Node::goToPositionCallback(const   std::shared_ptr <l6470_srvs::srv::GoToPo
 
     for (int i=0; i < request->motor_indice.size(); ++i)
     {
-        goToCommands.insert(std::make_pair(request->motor_indice[i],GoToDirCommand((request->drive_direction >= 1 ? Forward : Reverse),request->motor_position[i])));
+        goToDirCommands.insert(std::make_pair(request->motor_indice[i],GoToDirCommand((request->drive_direction >= 1 ? Forward : Reverse),request->motor_position[i])));
         profiles.insert(std::make_pair(request->motor_indice[i],ProfileCfg(request->acceleration[i],request->deceleration[i],request->speed[i])));
     }
 
@@ -196,7 +195,7 @@ L6470Node::goToPositionCallback(const   std::shared_ptr <l6470_srvs::srv::GoToPo
     {
         std::lock_guard<std::mutex> lock(driverMutex_);
         driver_->setProfileCfg(profiles);
-        driver_->goToDir(goToCommands);
+        driver_->goToDir(goToDirCommands);
     }
 
     // Let's get the positions/speeds
@@ -211,9 +210,28 @@ void
 L6470Node::stopCallback(const   std::shared_ptr <l6470_srvs::srv::Stop::Request>  request,
                                 std::shared_ptr <l6470_srvs::srv::Stop::Response> response)
 {
-    if (request == nullptr || response == nullptr)
-        std::cout << "TODO" << std::endl;
-    std::cout << "STOP callback .. TODO" << std::endl;
+    if (!request.get() || !response.get())
+        throw std::invalid_argument(errorToStringInfo(__func__, "One of arguments is nullptr"));
+
+    std::lock_guard<std::mutex> lock(driverMutex_);
+
+    if (request->stop_type == static_cast<uint8_t>(l6470_srvs::srv::Stop::Request::STOP_HARD))
+    {
+        driver_->hardStop(std::vector<int>(request->motor_indice.begin(),request->motor_indice.end()));
+    }
+    else if (request->stop_type == l6470_srvs::srv::Stop::Request::STOP_HIZ)
+    {
+        driver_->hardHiZ(std::vector<int>(request->motor_indice.begin(),request->motor_indice.end()));
+    }
+    else if (request->stop_type == l6470_srvs::srv::Stop::Request::STOP_SOFT)
+    {
+        driver_->softStop(std::vector<int>(request->motor_indice.begin(),request->motor_indice.end()));
+    }
+    else
+    {
+        throw std::invalid_argument(errorToStringInfo(__func__,"Stop Type is invalid (" + std::to_string((int)request->stop_type)));
+    }
+
 }
 
 } // l6470 namespace
