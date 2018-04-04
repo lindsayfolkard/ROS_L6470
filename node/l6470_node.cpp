@@ -47,10 +47,8 @@ std::string errorToStringInfo(const char *funcInfo, const std::string &detail)
 }
 
 L6470Node::L6470Node():
-    Node("l6470node"),
-    count_(0)
+    Node("l6470node")
 {
-    // TODO - perhaps put this in the init stage ???
     // Instantiate the Stepper Driver from the factory
     const std::string overallCfgFile = "~/dspin_stepper_configs/ros_overall_config.txt"; // TODO - figure out where this file can be stored/deployed nicely
     std::cout << "Try to instantiate stepper motor driver with ros_overall_config file from " << overallCfgFile << std::endl;
@@ -123,7 +121,7 @@ L6470Node::poseTimerCallback()
         poseMsg->motor_states[motor].speed    = speeds[motor];
     }
 
-    std::cout << "Publishing : message " << count_ << std::endl;
+    std::cout << "Publishing : message " << poseMsg << std::endl;
     std::flush(std::cout);
 
     // Create the status message to publish
@@ -187,7 +185,7 @@ L6470Node::goToPositionCallback(const   std::shared_ptr <l6470_srvs::srv::GoToPo
 
     for (int i=0; i < request->motor_indice.size(); ++i)
     {
-        goToDirCommands.insert(std::make_pair(request->motor_indice[i],GoToDirCommand((request->drive_direction >= 1 ? Forward : Reverse),request->motor_position[i])));
+        goToDirCommands.insert(std::make_pair(request->motor_indice[i],GoToDirCommand((request->drive_direction[i] == l6470_srvs::srv::GoToPosition::Request::DRIVE_DIR_FORWARD ? Forward : Reverse),request->motor_position[i])));
         profiles.insert(std::make_pair(request->motor_indice[i],ProfileCfg(request->acceleration[i],request->deceleration[i],request->speed[i])));
     }
 
@@ -202,7 +200,8 @@ L6470Node::goToPositionCallback(const   std::shared_ptr <l6470_srvs::srv::GoToPo
     {
         std::lock_guard<std::mutex> lock(driverMutex_);
         response->positions      = driver_->getPos();
-        response->current_speed  = driver_->getSpeed();
+        const auto speedVec = driver_->getSpeed();
+        response->current_speed  = std::vector<int>(speedVec.begin(),speedVec.end());
     }
 }
 

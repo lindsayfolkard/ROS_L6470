@@ -4,6 +4,30 @@ SimDriver::SimDriver(const std::vector<StepperMotor> &motors):
     motors_(motors)
 {}
 
+SimDriver::SimDriver(const std::vector<StepperMotor> &motors, std::vector<PowerStepCfg> cfgs):
+    motors_(motors),
+    cfgs_(cfgs)
+{
+    std::cout << "========= Motor Configs ==========" << std::endl;
+    int count=0;
+    for (const auto &motor : motors_)
+    {
+        std::cout << "Motor " << count << std::endl << motor;
+        ++count;
+    }
+    std::cout << "==================================" << std::endl;
+
+    std::cout << "======= Power Step Configs =======" << std::endl;
+    count=0;
+    for (const auto &cfg : cfgs_)
+    {
+        std::cout << "Motor " << count << std::endl << cfg;
+        ++count;
+    }
+    std::cout << "==================================" << std::endl;
+
+}
+
 // Contains all data in status command
 // and also the current position and speed
 std::vector<Status> SimDriver::getStatus()
@@ -13,7 +37,6 @@ std::vector<Status> SimDriver::getStatus()
 }
 Status
 SimDriver::getStatus(int motor){
-    // TODO
     return Status();
 }
 
@@ -88,7 +111,7 @@ void
 SimDriver::setProfileCfg(const std::map<int,ProfileCfg> &cfgs)
 {
     //std::cout << "SimDriver : setProfileConfig of motor " << motor << " to " << cfgs[0] << "--> " << "TODO" << std::endl;
-    assert(!"Not implemented setProfileCfg");
+    //assert(!"Not implemented setProfileCfg");
 }
 
 void
@@ -116,8 +139,8 @@ void SimDriver::setAcc(float stepsPerSecondPerSecond , int motor )
 void
 SimDriver::setDec(std::map<int,float> &decelerations)
 {
-    if (decelerations.empty())
-        assert(!"Not Implemented setDec");
+    //if (decelerations.empty())
+       //assert(!"Not Implemented setDec");
 }
 
 void
@@ -150,7 +173,7 @@ void SimDriver::setMinSpeed(float stepsPerSecond , int motor){
 
 ProfileCfg
 SimDriver::getProfileCfg(int motor){
-    assert(!"Not implemented yet");
+    //assert(!"Not implemented yet");
     return ProfileCfg();
 }
 

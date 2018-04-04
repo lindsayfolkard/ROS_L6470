@@ -28,7 +28,7 @@ std::unique_ptr<AbstractDriver> factoryMakeDriver(const OverallCfg &overallCfg)
             // TODO!
             break;
         case Simulator:
-            // N/A
+            cfgs.push_back(PowerStepCfg(cfgFile));
             break;
         default:
             assert(!"Invalid controller type in driverfactory.cpp factoryMakeDriver");
@@ -52,7 +52,7 @@ std::unique_ptr<AbstractDriver> factoryMakeDriver(const OverallCfg &overallCfg)
         assert(!"TODO! - L6472 driver not yet implemented in driverfactory.cpp");
         break;
     case Simulator:
-        driver.reset(new SimDriver(motors));
+        driver.reset(new SimDriver(motors,cfgs));
         break;
     default:
         assert(!"Invalid controller type in driverfactory.cpp factoryMakeDriver");

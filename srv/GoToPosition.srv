@@ -8,6 +8,10 @@ uint8[] motor_indice
 
 # The desired goal positions and drive directions
 int32[] motor_position
+
+uint8 DRIVE_DIR_FORWARD=1
+uint8 DRIVE_DIR_BACKWARD=2
+
 uint8[] drive_direction
 
 # The desired speed and accel profiles

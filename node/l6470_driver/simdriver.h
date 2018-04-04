@@ -1,5 +1,7 @@
 #pragma once
 #include "abstractdriver.h"
+#include "powerstepdriver.h"
+
 
 ///
 /// \brief The simdriver class
@@ -9,6 +11,7 @@ class SimDriver : public AbstractDriver
 public:
 
     SimDriver(const std::vector<StepperMotor> &motors);
+    SimDriver(const std::vector<StepperMotor> &motors, std::vector<PowerStepCfg> cfgs);
 
     // Contains all data in status command
     // and also the current position and speed
@@ -114,4 +117,5 @@ public:
 private:
 
     std::vector<StepperMotor> motors_;
+    std::vector<PowerStepCfg> cfgs_;
 };
