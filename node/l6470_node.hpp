@@ -58,14 +58,14 @@ private:
   rclcpp::Publisher<l6470_msgs::msg::MultiStatus>::SharedPtr statusPublisher_;
 
   // Subscriptions
-  rclcpp::subscription::Subscription<l6470_msgs::msg::ManualSpeed>::SharedPtr speedSub_;
+  rclcpp::Subscription<l6470_msgs::msg::ManualSpeed>::SharedPtr speedSub_;
 
   // Services
-  rclcpp::service::Service<l6470_srvs::srv::GoToPosition>::SharedPtr goToPositionSrv_;
-  rclcpp::service::Service<l6470_srvs::srv::Stop>::SharedPtr         stopSrv_;
+  rclcpp::Service<l6470_srvs::srv::GoToPosition>::SharedPtr goToPositionSrv_;
+  rclcpp::Service<l6470_srvs::srv::Stop>::SharedPtr         stopSrv_;
 
   // Wall Timers
-  rclcpp::timer::TimerBase::SharedPtr timer_; // I prefer if there is really only one task that talks to the controller
+  rclcpp::TimerBase::SharedPtr timer_; // I prefer if there is really only one task that talks to the controller
 
   // L6470 Multi Driver
   std::unique_ptr<MultiDriver> driver_;
