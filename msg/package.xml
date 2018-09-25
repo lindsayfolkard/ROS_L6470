@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
-<package format="2">
+<package format="3">
   <name>l6470_msgs</name>
+  <member_of_group>rosidl_interface_packages</member_of_group>
   <version>0.0.0</version>
   <description>Custom messages for l6470 motor controller driver</description>
   <maintainer email="lindsayfolkard@gmail.com">Lindsay Folkard</maintainer>

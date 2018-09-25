@@ -14,7 +14,8 @@
   <build_depend>rmw_implementation</build_depend>
   <build_depend>builtin_interfaces</build_depend>
   <build_depend>rosidl_default_generators</build_depend>
-  <build_depend>ros_l6470_msgs</build_depend>
+  <build_depend>l6470_msgs</build_depend>
+  <build_depend>l6470_srvs</build_depend>  
 
   <exec_depend>example_interfaces</exec_depend>
   <exec_depend>rcl</exec_depend>
@@ -22,7 +23,8 @@
   <exec_depend>rosidl_default_runtime</exec_depend>
   <exec_depend>builtin_interfaces</exec_depend>
   <exec_depend>rosidl_default_runtime</exec_depend>
-  <exec_depend>ros_l6470_msgs</exec_depend>
+  <exec_depend>l6470_msgs</exec_depend>
+  <build_depend>l6470_srvs</build_depend> 
 
   <export>
     <build_type>ament_cmake</build_type>

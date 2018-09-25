@@ -235,10 +235,10 @@ L6470Node::stopCallback(const   std::shared_ptr <l6470_srvs::srv::Stop::Request>
 
 } // l6470 namespace
 
-#include "class_loader/class_loader_register_macro.h"
+//#include "class_loader/class_loader_register_macro.h"
 
 // Register the component with class_loader.
 // This acts as a sort of entry point, allowing the component to be discoverable when its library
 // is being loaded into a running process.
 
-CLASS_LOADER_REGISTER_CLASS(l6470::L6470Node, rclcpp::Node)
+//CLASS_LOADER_REGISTER_CLASS(l6470::L6470Node, rclcpp::Node)

@@ -59,15 +59,15 @@ private:
   rclcpp::Publisher<l6470_msgs::msg::MultiStatus>::SharedPtr statusPublisher_;
 
   // Subscriptions
-  rclcpp::subscription::Subscription<l6470_msgs::msg::ManualSpeed>::SharedPtr speedSub_;
+  rclcpp::Subscription<l6470_msgs::msg::ManualSpeed>::SharedPtr speedSub_;
 
   // Services
-  rclcpp::service::Service<l6470_srvs::srv::GoToPosition>::SharedPtr goToPositionSrv_;
-  rclcpp::service::Service<l6470_srvs::srv::Stop>::SharedPtr         stopSrv_;
+  rclcpp::Service<l6470_srvs::srv::GoToPosition>::SharedPtr goToPositionSrv_;
+  rclcpp::Service<l6470_srvs::srv::Stop>::SharedPtr         stopSrv_;
 
   // Wall Timers
-  rclcpp::timer::TimerBase::SharedPtr poseTimer_;
-  rclcpp::timer::TimerBase::SharedPtr statusTimer_;
+  rclcpp::TimerBase::SharedPtr poseTimer_;
+  rclcpp::TimerBase::SharedPtr statusTimer_;
 
   // Stepper Motor Driver
   std::mutex driverMutex_;
