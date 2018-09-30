@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>joyproxy</name>
+  <version>0.0.0</version>
+  <description>Package which handles proxying of joystick commands to ros_stspin motor controller</description>
+  <maintainer email="lindsayfolkard@gmail.com">Lindsay Folkard</maintainer>
+  <license>Apache License 2.0</license>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>l6470_msgs</exec_depend>
+
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>l6470_msgs</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>ament_pep8</test_depend>
+  <test_depend>ament_pyflakes</test_depend>
+  <test_depend>rclpy</test_depend>
+  <test_depend>std_msgs</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

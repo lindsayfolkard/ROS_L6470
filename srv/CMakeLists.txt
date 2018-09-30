@@ -22,6 +22,7 @@ rosidl_generate_interfaces(l6470_srvs
   "GoTrajectory.srv"
   "Stop.srv"
   "StopAll.srv"
+  "GoSpeed.srv"
   DEPENDENCIES builtin_interfaces
 )
 

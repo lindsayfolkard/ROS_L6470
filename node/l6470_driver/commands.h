@@ -34,7 +34,7 @@ struct DataCommand
     // Command Byte to send
     const Command  cmd;
     const uint8_t  cmdFlags;
-    uint8_t toCommand() const { return ((uint8_t)cmd | cmdFlags);}
+    uint8_t toCommand() const { return (static_cast<uint8_t>(cmd) | cmdFlags);}
 
     // DataByte to send
     const uint32_t data;

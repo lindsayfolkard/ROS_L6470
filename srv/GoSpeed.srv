@@ -1,0 +1,21 @@
+# A straight forward interface which
+# will command the joints in an arm to go
+# to a particular position
+
+# The indices of the motors
+# to which the commands need to be applied
+#uint8[] motor_indice
+
+# The desired motor speeds in steps/s
+int32[] motor_speed
+
+# The desired accel profiles
+float64[] acceleration
+float64[] deceleration
+
+---
+
+# Respond with current state
+# at time of request
+int32[] positions
+int32[] current_speed

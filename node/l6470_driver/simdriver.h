@@ -71,8 +71,8 @@ public:
     virtual void goUntil(const std::map<int, GoUntilCommand> &goUntilCommands) override ;
     virtual void goUntil(const GoUntilCommand &command , int motor) override ;
 
-//    void releaseSw(const std::map <int,ReleaseSwCommand> &releaseSWCommands) override ;
-//    void releaseSw(const ReleaseSwCommand &command , int motor) override ;
+    //    void releaseSw(const std::map <int,ReleaseSwCommand> &releaseSWCommands) override ;
+    //    void releaseSw(const ReleaseSwCommand &command , int motor) override ;
 
     // Position Commands
     virtual void move(const std::map <int,MoveCommand> &moveCommands) override ;
@@ -116,6 +116,8 @@ public:
 
 private:
 
-    std::vector<StepperMotor> motors_;
+    std::vector<StepperMotor>  motors_;
     std::vector<PowerStepCfg> cfgs_;
+    std::map<int,ProfileCfg>       profileCfgs_;
+    
 };

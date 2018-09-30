@@ -8,6 +8,8 @@
 ///
 
 // Includes
+#include <chrono>
+#include <boost/optional.hpp>
 
 // Driver
 #include "l6470_driver/abstractdriver.h"
@@ -22,6 +24,7 @@
 #include "l6470_msgs/msg/manual_speed.hpp"
 #include "l6470_srvs/srv/go_to_position.hpp"
 #include "l6470_srvs/srv/stop.hpp"
+//#include "l6470_srvs/srv/gospeed.hpp"
 
 // STL Libraries
 #include <memory>
@@ -72,6 +75,9 @@ private:
   // Stepper Motor Driver
   std::mutex driverMutex_;
   std::unique_ptr<AbstractDriver> driver_;
+
+  // Time outs for manual control
+  boost::optional<std::chrono::steady_clock::time_point> lastManualSpeedUpdate_;
 
 };
 

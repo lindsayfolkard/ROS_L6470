@@ -31,12 +31,16 @@ int main(int argc, char * argv[])
   // It will only be interrupted by Ctrl-C.
   while(rclcpp::ok())
   {
-      std::cout << "Spin some.." << std::endl;
+      std::cout << "Spin some.. please" << std::endl;
       //rclcpp::spin_some(node);
-      //loop_rate.sleep();
+     // loop_rate.sleep();
       exec.spin();
+      std::cout << "Leave spin" << std::endl;
   }
   std::cout << "Leave spin ?? " << std::endl;
+  std::cout << std::flush;
+  
+  rclcpp::shutdown();
 
   return 0;
 }

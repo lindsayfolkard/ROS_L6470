@@ -2,6 +2,7 @@
 #include "l6470_driver/types.h"
 #include "l6470_driver/commands.h"
 #include "l6470_driver/driverfactory.h"
+#include "l6470_driver/simdriver.h"
 #include <iostream> // TODO - lets remove and just use ros logging output (much richer)
 #include <stdexcept>
 #include <string>
@@ -42,6 +43,7 @@ std::string errorToStringInfo(const char *funcInfo, const std::string &detail)
 {
     std::stringstream ss;
     ss << funcInfo << " : " << detail;
+    return ss.str();
 }
 
 }
@@ -52,13 +54,15 @@ L6470Node::L6470Node():
     // Instantiate the Stepper Driver from the factory
     const std::string overallCfgFile = "~/dspin_stepper_configs/ros_overall_config.txt"; // TODO - figure out where this file can be stored/deployed nicely
     std::cout << "Try to instantiate stepper motor driver with ros_overall_config file from " << overallCfgFile << std::endl;
-    OverallCfg overallCfg(overallCfgFile);
-    driver_ = factoryMakeDriver(overallCfg);
+    //OverallCfg overallCfg(overallCfgFile);
+    driver_ = std::unique_ptr<AbstractDriver>(new SimDriver({StepperMotor(),StepperMotor(),StepperMotor()}));
+    //driver_ = factoryMakeDriver(overallCfg);
     assert(driver_ || !"driver is null pointer!" );
-    std::cout << "Instantiated " << overallCfg.controllerType_ << " stepper motor driver with " << overallCfg.cfgFiles_.size() << " daisy chained steppers" << std::endl;
+    //std::cout << "Instantiated " << overallCfg.controllerType_ << " stepper motor driver with " << overallCfg.cfgFiles_.size() << " daisy chained steppers" << std::endl;
 
     // Create a publisher of l6470_msgs::msg::Pose msgs
-    posePublisher_ = create_publisher<l6470_msgs::msg::MultiPose>("multipose");
+    posePublisher_    = create_publisher<l6470_msgs::msg::MultiPose>("multipose");
+    statusPublisher_ = create_publisher<l6470_msgs::msg::MultiStatus>("mutistatus");
 
     // Use a timer to schedule periodic message publishing.
     std::chrono::milliseconds period(500);
@@ -111,21 +115,24 @@ L6470Node::poseTimerCallback()
         std::cout << "Speeds and positions do not match in size (speeds = " << speeds.size() << " while positions length = " << positions.size() << std::endl;
         throw; // throw something more meaningful
     }
-
+    
     // Create the pose message to publish
     std::shared_ptr<l6470_msgs::msg::MultiPose> poseMsg = std::make_shared<l6470_msgs::msg::MultiPose>();
 
-    for (unsigned int motor=0; motor < positions.size(); ++motor)
+    for (unsigned int motor=0;  motor < positions.size(); ++motor)
     {
-        poseMsg->motor_states[motor].position = positions[motor];
-        poseMsg->motor_states[motor].speed    = speeds[motor];
+        l6470_msgs::msg::Pose state;
+        state.position = positions[motor];
+        state.speed     = static_cast<int>(speeds[motor]);
+        // Timestamp ???
+        
+        poseMsg->motor_states.push_back(state);
     }
+    
+    RCLCPP_INFO(this->get_logger(), "Published:  data")
 
-    std::cout << "Publishing : message " << poseMsg << std::endl;
-    std::flush(std::cout);
-
-    // Create the status message to publish
-    std::shared_ptr<l6470_msgs::msg::MultiStatus> statusMsg = std::make_shared<l6470_msgs::msg::MultiStatus>();
+            // Create the status message to publish
+            std::shared_ptr<l6470_msgs::msg::MultiStatus> statusMsg = std::make_shared<l6470_msgs::msg::MultiStatus>();
 
     for (const Status &status : states)
     {
@@ -136,21 +143,42 @@ L6470Node::poseTimerCallback()
     // This call is non-blocking.
     posePublisher_->publish(poseMsg);
     statusPublisher_->publish(statusMsg);
+
+    // Hack - Let's check for a rough timeout on manaul speed commands
+    const std::chrono::milliseconds timeOutThreshold(500);
+    if (lastManualSpeedUpdate_ && ((std::chrono::steady_clock::now() - *lastManualSpeedUpdate_) > timeOutThreshold))
+    {
+        RCLCPP_WARN(this->get_logger(), "Manual Control Timed Out!");
+        lastManualSpeedUpdate_.reset();
+        driver_->stopAllSoft();
+    }
 }
 
 void
 L6470Node::manualSpeedCallback(const l6470_msgs::msg::ManualSpeed::UniquePtr manualSpeed)
-{
+{  
     if (!manualSpeed.get())
         throw std::invalid_argument(errorToStringInfo(__func__,"ManualSpeed is nullptr"));
 
+    // There is a potential for speed spamming. Let's only update the speed if it has been long enough
+    const std::chrono::milliseconds timeThreshold(50);
+
+    if (!lastManualSpeedUpdate_)
+        RCLCPP_INFO(this->get_logger(), "Manual Control Enabled");
+
+    if (lastManualSpeedUpdate_ && ((std::chrono::steady_clock::now() - *lastManualSpeedUpdate_) < timeThreshold))
+        return;
+
+    lastManualSpeedUpdate_ = std::chrono::steady_clock::now();
+
     // Create an appropriate run command
     //
+    RCLCPP_INFO(this->get_logger(), "Set Manual Speed : ");
     std::map <int,RunCommand> runCommands;
     int motor=0;
     for (const auto &speed : manualSpeed->speed)
     {
-        runCommands.insert(std::make_pair(motor,RunCommand((speed > 0 ? Forward : Reverse),speed)));
+        runCommands.insert(std::make_pair(motor,RunCommand((speed > 0 ? Forward : Reverse),static_cast<float>(speed))));
         ++motor;
     }
 
@@ -161,8 +189,8 @@ L6470Node::manualSpeedCallback(const l6470_msgs::msg::ManualSpeed::UniquePtr man
 }
 
 void
-L6470Node::goToPositionCallback(const   std::shared_ptr <l6470_srvs::srv::GoToPosition::Request>  request,
-                                        std::shared_ptr <l6470_srvs::srv::GoToPosition::Response> response )
+L6470Node::goToPositionCallback(const   std::shared_ptr <l6470_srvs::srv::GoToPosition::Request>   request,
+                                std::shared_ptr <l6470_srvs::srv::GoToPosition::Response> response )
 {
     if (!request.get() || !response.get())
         throw std::invalid_argument(errorToStringInfo(__func__ ,"One of arguments is nullptr"));
@@ -183,10 +211,10 @@ L6470Node::goToPositionCallback(const   std::shared_ptr <l6470_srvs::srv::GoToPo
         throw;
     }
 
-    for (int i=0; i < request->motor_indice.size(); ++i)
+    for (size_t i=0; i < request->motor_indice.size(); ++i)
     {
         goToDirCommands.insert(std::make_pair(request->motor_indice[i],GoToDirCommand((request->drive_direction[i] == l6470_srvs::srv::GoToPosition::Request::DRIVE_DIR_FORWARD ? Forward : Reverse),request->motor_position[i])));
-        profiles.insert(std::make_pair(request->motor_indice[i],ProfileCfg(request->acceleration[i],request->deceleration[i],request->speed[i])));
+        profiles.insert(std::make_pair(request->motor_indice[i],ProfileCfg(static_cast<float>(request->acceleration[i]),static_cast<float>(request->deceleration[i]),static_cast<float>(request->speed[i]))));
     }
 
     // Send the commands
@@ -207,7 +235,7 @@ L6470Node::goToPositionCallback(const   std::shared_ptr <l6470_srvs::srv::GoToPo
 
 void
 L6470Node::stopCallback(const   std::shared_ptr <l6470_srvs::srv::Stop::Request>  request,
-                                std::shared_ptr <l6470_srvs::srv::Stop::Response> response)
+                        std::shared_ptr <l6470_srvs::srv::Stop::Response> response)
 {
     if (!request.get() || !response.get())
         throw std::invalid_argument(errorToStringInfo(__func__, "One of arguments is nullptr"));
@@ -230,15 +258,14 @@ L6470Node::stopCallback(const   std::shared_ptr <l6470_srvs::srv::Stop::Request>
     {
         throw std::invalid_argument(errorToStringInfo(__func__,"Stop Type is invalid (" + std::to_string((int)request->stop_type)));
     }
-
 }
 
 } // l6470 namespace
 
-//#include "class_loader/class_loader_register_macro.h"
+#include "class_loader/register_macro.hpp"
 
 // Register the component with class_loader.
 // This acts as a sort of entry point, allowing the component to be discoverable when its library
 // is being loaded into a running process.
 
-//CLASS_LOADER_REGISTER_CLASS(l6470::L6470Node, rclcpp::Node)
+CLASS_LOADER_REGISTER_CLASS(l6470::L6470Node, rclcpp::Node)
