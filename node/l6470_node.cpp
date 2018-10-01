@@ -161,7 +161,7 @@ L6470Node::manualSpeedCallback(const l6470_msgs::msg::ManualSpeed::UniquePtr man
         throw std::invalid_argument(errorToStringInfo(__func__,"ManualSpeed is nullptr"));
 
     // There is a potential for speed spamming. Let's only update the speed if it has been long enough
-    const std::chrono::milliseconds timeThreshold(50);
+    const std::chrono::milliseconds timeThreshold(100);
 
     if (!lastManualSpeedUpdate_)
         RCLCPP_INFO(this->get_logger(), "Manual Control Enabled");
