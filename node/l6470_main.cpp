@@ -10,7 +10,7 @@
 
 int main(int argc, char * argv[])
 {
-  std::cout << "Run l6470_main for node" << std::endl;
+  std::cout << "Run l6470_main for nodee" << std::endl;
   // Initialize any global resources needed by the middleware and the client library.
   // This will also parse command line arguments one day (as of Beta 1 they are not used).
   // You must call this before using any other part of the ROS system.
@@ -31,11 +31,11 @@ int main(int argc, char * argv[])
   // It will only be interrupted by Ctrl-C.
   while(rclcpp::ok())
   {
-      std::cout << "Spin some.. please" << std::endl;
+      std::cout << "Spin some.. please sir" << std::endl;
       //rclcpp::spin_some(node);
      // loop_rate.sleep();
       exec.spin();
-      std::cout << "Leave spin" << std::endl;
+      std::cout << "Leave spin ... " << std::endl;
   }
   std::cout << "Leave spin ?? " << std::endl;
   std::cout << std::flush;

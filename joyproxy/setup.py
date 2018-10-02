@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='joyproxy',
+    name='joy_proxy',
     version='0.0.0',
     packages=[],
     py_modules=['joyproxy_py'],

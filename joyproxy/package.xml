@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>joyproxy</name>
+  <name>joy_proxy</name>
   <version>0.0.0</version>
   <description>Package which handles proxying of joystick commands to ros_stspin motor controller</description>
   <maintainer email="lindsayfolkard@gmail.com">Lindsay Folkard</maintainer>
