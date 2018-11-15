@@ -1,11 +1,19 @@
 from setuptools import setup
 
+package_name='joyproxy'
+
 setup(
-    name='joy_proxy',
-    version='0.0.0',
+    name=package_name,
+    version='0.5.1',
     packages=[],
     py_modules=['joyproxy_py'],
+    data_files=[
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+        ('share/' + package_name, ['package.xml']),
+    ],
     install_requires=['setuptools'],
+    zip_safe=True,
     author='Lindsay Folkard',
     author_email='lindsayfolkard@gmail.com',
     maintainer='Lindsay Folkard',
@@ -17,9 +25,9 @@ setup(
         'Programming Language :: Python',
         'Topic :: Software Development',
     ],
-    description='Package containing a proxy from joystick commands to ROS_STPSIN commands',
+    description='A proxy from joy commands to ROS_STPSIN commands',
     license='Apache License, Version 2.0',
-    test_suite='test',
+    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             'joyproxy_py = joyproxy_py:main'

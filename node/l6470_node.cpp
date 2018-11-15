@@ -129,7 +129,7 @@ L6470Node::poseTimerCallback()
         poseMsg->motor_states.push_back(state);
     }
     
-    RCLCPP_INFO(this->get_logger(), "Published:  data")
+    //RCLCPP_INFO(this->get_logger(), "Published:  data")
 
             // Create the status message to publish
             std::shared_ptr<l6470_msgs::msg::MultiStatus> statusMsg = std::make_shared<l6470_msgs::msg::MultiStatus>();
@@ -163,7 +163,7 @@ L6470Node::manualSpeedCallback(const l6470_msgs::msg::ManualSpeed::UniquePtr man
     // There is a potential for speed spamming. Let's only update the speed if it has been long enough
     const std::chrono::milliseconds timeThreshold(100);
 
-    if (!lastManualSpeedUpdate_)
+    //if (!lastManualSpeedUpdate_)
         RCLCPP_INFO(this->get_logger(), "Manual Control Enabled");
 
     if (lastManualSpeedUpdate_ && ((std::chrono::steady_clock::now() - *lastManualSpeedUpdate_) < timeThreshold))

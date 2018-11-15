@@ -32,14 +32,14 @@ SimDriver::SimDriver(const std::vector<StepperMotor> &motors,                   
 // and also the current position and speed
 std::vector<Status> SimDriver::getStatus()
 {
-    std::cout << "SimDriver : " << __func__  << std::endl;
+    //std::cout << "SimDriver : " << __func__  << std::endl;
     Status defaultStatus = Status();
     std::vector<Status> statusVector(motors_.size(),defaultStatus);
     return statusVector;
 }
 Status
 SimDriver::getStatus(int motor){
-    std::cout << "SimDriver : " << __func__  << std::endl;
+    //std::cout << "SimDriver : " << __func__  << std::endl;
     return Status();
 }
 
@@ -69,7 +69,7 @@ SimDriver::isBusy(int motor)
 std::vector<int32_t>
 SimDriver::getPos()
 {
-    std::cout << "SimDriver : " << __func__  << std::endl;
+    //std::cout << "SimDriver : " << __func__  << std::endl;
     std::vector <int32_t> positions(motors_.size(),0);
     return positions;
 }

@@ -16,11 +16,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 from sensor_msgs.msg import Joy
-#from l6470_srvs import GoToPosition
-#from l6470_srvs import StopAll
-#from l6470_srvs import GoSpeed
 from l6470_msgs.msg import ManualSpeed
-#from  import 
 
 class JoyProxy(Node):
     """
@@ -35,9 +31,9 @@ class JoyProxy(Node):
         # Print hello
         print("Initialising...")
         super().__init__('joyproxy')
-        self.sub                              = self.create_subscription(String, 'chatter', self.chatter_callback)
-        self.subJoy                       = self.create_subscription(Joy, 'joy'    , self.joystick_callback)
-        self.speedPublisher      = self.create_publisher(ManualSpeed, 'manual_speed')
+        self.sub             = self.create_subscription(String, 'chatter', self.chatter_callback)
+        self.subJoy          = self.create_subscription(Joy, 'joy'    , self.joystick_callback)
+        self.speedPublisher  = self.create_publisher(ManualSpeed, 'manual_speed')
         #timer_period = 0.05  # seconds
         #self.timer = self.create_timer(timer_period, self.timer_callback)
         #self.speedClient   = self.create_client(GoSpeed,'go_speed')
@@ -58,6 +54,7 @@ class JoyProxy(Node):
     def joystick_callback(self,msg):
         #self.get_logger().info('I heard joystick: "%s"' % msg.header)
         #self.get_logger().info('Axes 0 : %f' % msg.axes[0])
+        self.get_logger().info('Length Axes: %d' % len(msg.axes))
         #self.print_joy_state(msg)
         
         # Are we stopping ?
