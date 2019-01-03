@@ -1,17 +1,19 @@
 #pragma once
 #include "abstractdriver.h"
 #include "powerstepdriver.h"
-
+#include <chrono>
 
 ///
 /// \brief The simdriver class
 /// \abstract A simulator implementation of the abstract driver for use with robot in simulation mode
+///
+
 class SimDriver : public AbstractDriver
 {
 public:
 
-    SimDriver(const std::vector<StepperMotor> &motors);
-    SimDriver(const std::vector<StepperMotor> &motors, std::vector<PowerStepCfg> cfgs);
+    SimDriver(const std::vector<StepperMotor> &motors , bool debugEnabled = false);
+    SimDriver(const std::vector<StepperMotor> &motors, std::vector<PowerStepCfg> &cfgs, bool debugEnabled = false);
 
     // Contains all data in status command
     // and also the current position and speed
@@ -116,8 +118,18 @@ public:
 
 private:
 
+    void updateState();
+
     std::vector<StepperMotor>  motors_;
-    std::vector<PowerStepCfg> cfgs_;
-    std::map<int,ProfileCfg>       profileCfgs_;
+    std::vector<PowerStepCfg>  cfgs_;
+    std::map<int,ProfileCfg>  profileCfgs_;
+    const bool                debugEnabled_;
+
+    // Map of current action and time it was commanded.
+    // NB: this map may be empty, or not (depending on whether a command is active)
+    std::vector<std::pair<std::chrono::steady_clock::time_point,std::unique_ptr<DataCommand>>> currentCommand_;
+    std::vector<int32_t> positions_;
+    std::vector<uint32_t> speeds_;
+    std::vector<Status>  status_;
     
 };

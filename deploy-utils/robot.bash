@@ -56,7 +56,7 @@ for arg in $@; do
 
         # Rsync the files across
         echo -e "${INFO} Deploy source and binaries to remote host ... ${NC}"
-        rsync --info=progress2 -rlt /home/lindsay/git lindsay@FoodRobot:
+        rsync --info=progress2 -rlt /home/lindsay/git foodrobot:
         #rsync --info=progress2 -rlt /home/lindsay/git/ROS_STSPIN_ANGULAR/src lindsay@FoodRobot:/home/lindsay/git/ROS_STSPIN_ANGULAR
         echo -e "${SUCCESS} Finished binary transfer to remote host ${NC}"
     fi
@@ -95,9 +95,9 @@ for arg in $@; do
 
         # Run the launch script for this machine
         echo -e "${INFO} Start ROS2 and the required nodes up on the remote machine ... ${NC}"
-        #ssh lindsay@foodrobot -t "echo 'source ros' ; source /home/lindsay/ros2_bouncy/install/setup.sh ; source /home/lindsay/git/ROS_STSPIN_ANGULAR/install/setup.sh ; echo 'run joyproxy' ; $sourceDir'install/joyproxy/lib/joyproxy/joyproxy_py'" &> $outDir"/joyproxy.out" &
+        #ssh foodrobot -t "echo 'source ros' ; source /home/lindsay/ros2_bouncy/install/setup.sh ; source /home/lindsay/git/ROS_STSPIN_ANGULAR/install/setup.sh ; echo 'run joyproxy' ; $sourceDir'install/joyproxy/lib/joyproxy/joyproxy_py'" &> $outDir"/joyproxy.out" &
         #sleep 2
-        #ssh lindsay@foodrobot -t "echo 'source ros' && source /home/lindsay/ros2_bouncy/install/setup.sh && source /home/lindsay/git/ROS_STSPIN_ANGULAR/install/setup.sh && echo 'run ros_l6470' && /home/lindsay/git/ROS_STSPIN_ANGULAR/build/ros_l6470/l6470_main" &> $outDir"/foodrobot_ros_l6470.out" &
+        #ssh foodrobot -t "echo 'source ros' && source /home/lindsay/ros2_bouncy/install/setup.sh && source /home/lindsay/git/ROS_STSPIN_ANGULAR/install/setup.sh && echo 'run ros_l6470' && /home/lindsay/git/ROS_STSPIN_ANGULAR/build/ros_l6470/l6470_main" &> $outDir"/foodrobot_ros_l6470.out" &
         echo -e "${SUCCESS} Started ROS2 nodes on remote machine successfully ${NC}"
 
         sleep 2
@@ -119,13 +119,13 @@ for arg in $@; do
 
     if [ $arg == "remote-clean" ]; then
         echo -e "${INFO} Clean remote build directory ...${NC}"
-        ssh lindsay@foodrobot -t "cd /home/lindsay/git/ROS_STSPIN_ANGULAR ; rm -rf build install"
+        ssh foodrobot -t "cd /home/lindsay/git/ROS_STSPIN_ANGULAR ; rm -rf build install"
         echo -e "${INFO} Remote build complete ${NC}"
     fi
 
     if [ $arg == "remote-build" ]; then
         echo -e "${INFO} Start clean remote build of ros2 packages ...${NC}"
-        ssh lindsay@foodrobot -t "echo 'source ros' && source /home/lindsay/ros2_bouncy/install/setup.sh && echo 'finished sourcing' && cd $sourceDir && colcon build --symlink-install"
+        ssh foodrobot -t "echo 'source ros' && source /home/foodrobot/ros2_bouncy/install/setup.sh && echo 'finished sourcing' && cd $sourceDir && colcon build --symlink-install"
         echo -e "${INFO} Remote build complete ${NC}"
     fi
 
@@ -133,14 +133,15 @@ for arg in $@; do
         echo -e "${INFO} Open up editor and environment for ROS2 ... ${NC}"
         cmakeFile=$sourceDir"src/ROS_L6470/node/CMakeLists.txt"
         echo $cmakeFile 
+        export CMAKE_PREFIX_PATH=$AMENT_PREFIX_PATH:$CMAKE_PREFIX_PATH
         qtcreator "$sourceDir/src/ROS_L6470/node/CMakeLists.txt" "$sourceDir/src/ROS_L6470/joyproxy_cpp/CMakeLists.txt" "$sourceDir/src/ROS_L6470/msg" "$sourceDir/src/ROS_L6470/srv"
         echo -e "${INFO}  ... ${NC}"
     fi
 
-    if [ $arg == "cleanbuild" ]; then
+    if [ $arg == "clean-build" ]; then
        echo -e "${INFO} Cleanbuild src on remote machine ... ${NC}"
-       rsync --info=progress2 -rlt /home/lindsay/git/ROS_STSPIN_ANGULAR/src lindsay@FoodRobot:/home/lindsay/git/ROS_STSPIN_ANGULAR
-       ssh lindsay@foodrobot -t "echo 'source ros' && source /home/lindsay/ros2_bouncy/install/setup.sh && echo 'finished sourcing' && cd $sourceDir && rm -rf build/ install/ log/ && colcon build --symlink-install"
+       rsync --info=progress2 -rlt /home/lindsay/git/ROS_STSPIN_ANGULAR/src foodrobot:/home/lindsay/git/ROS_STSPIN_ANGULAR
+       ssh foodrobot -t "echo 'source ros' && source /home/lindsay/ros2_ws/install/setup.sh && echo 'finished sourcing' && cd $sourceDir && rm -rf build/ install/ log/ && colcon build --symlink-install"
        echo -e "${INFO}  Finished clean build ... ${NC}"
     fi
 

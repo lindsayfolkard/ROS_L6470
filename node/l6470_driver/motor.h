@@ -96,11 +96,11 @@ struct Stepper_57H703 : public StepperMotor
         "Nema23_57H703",
         1.8,
         3.0,
-        0.9,
-        3.4,
+        1.8, // 0.9
+        2.5, // 3.4
         2.012,
-        0.073,
-        15,
+        0.1, // 0.073
+        12,
         2.5){}
 };
 
@@ -118,7 +118,7 @@ struct Stepper_42BYGHW811 : public StepperMotor
        1.8,
        0.48,
        0.014,
-       15,
+       12,
        2.5){}
 };
 
@@ -136,7 +136,7 @@ struct Stepper_57BYGH51 : public StepperMotor
         12,
         1.0,
         0.054,
-        15,
+        12,
         2.5){}
 };
 

@@ -6,6 +6,8 @@
 
 int main (int argc, char ** argv)
 {
+    (void) argc;
+    (void) argv;
 
     std::cout << "T1 : test generation and parsing of OverallCfg" << std::endl;
     const std::vector <std::string> cfgs = {"motor1.cfg","motor2.cfg"};

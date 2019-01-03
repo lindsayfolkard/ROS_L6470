@@ -12,10 +12,14 @@ using namespace std;
 
 int main (int argc, char ** argv)
 {
+    (void) argc;
+    (void) argv;
+
     // Create the stepper motor
     Stepper_42BYGHW811 nema17Stepper;
-    Stepper_57BYGH51   nema23Stepper;
-    std::vector<StepperMotor> motors = {nema17Stepper,nema23Stepper};
+    Stepper_57BYGH51   smallNema23Stepper;
+    Stepper_57H703     bigNema23Stepper;
+    std::vector<StepperMotor> motors = {bigNema23Stepper};//,smallNema23Stepper,bigNema23Stepper};
 
     // Let's try to make a PowerStepConfig from motors
     CurrentModeCfg currentModeCfg;
@@ -25,11 +29,17 @@ int main (int argc, char ** argv)
     std::cout << "Set config to : " << powerStepConfig17 << std::endl;
 
     CommonConfig   commonConfig23;
-    commonConfig23.overCurrentThreshold = OCD_TH_4500m;
-    PowerStepCfg powerStepConfig23(commonConfig,currentModeCfg,BackEmfConfigFromStepper(nema23Stepper));
-    std::cout << "Set config to : " << powerStepConfig23 << std::endl;
+    commonConfig23.overCurrentThreshold = OCD_TH_6000m;
+    commonConfig23.stallThreshold = OCD_TH_6000m;
+    commonConfig23.stepMode = STEP_SEL_1;
+    PowerStepCfg smallPowerStepConfig23(commonConfig23,currentModeCfg,BackEmfConfigFromStepper(smallNema23Stepper));
+    std::cout << "Set config to : " << smallPowerStepConfig23 << std::endl;
 
-    std::vector<PowerStepCfg> cfgs = {powerStepConfig23,powerStepConfig17};
+    PowerStepCfg bigPowerStepConfig23(commonConfig23,currentModeCfg,BackEmfConfigFromStepper(bigNema23Stepper));
+    bigPowerStepConfig23.commonCfg_.controlMode = CurrentControlMode;
+    std::cout << "Set config to : " << bigPowerStepConfig23 << std::endl;
+
+    std::vector<PowerStepCfg> cfgs = {bigPowerStepConfig23};//,smallPowerStepConfig23,bigPowerStepConfig23};
 
     // Instantiate the AutoDriver
     cout << "Try to instantiate the driver" << endl;
@@ -39,17 +49,17 @@ int main (int argc, char ** argv)
     cout << "Instantiated the driver!" << endl;
 
     // Lets create a profile config
-    ProfileCfg profileConfig;
-    profileConfig.acceleration = 100;
-    profileConfig.deceleration = 140;
-    profileConfig.maxSpeed = 1000;
-    profileConfig.minSpeed = 200;
+//    ProfileCfg profileConfig;
+//    profileConfig.acceleration = 100;
+//    profileConfig.deceleration = 140;
+//    profileConfig.maxSpeed = 1000;
+//    profileConfig.minSpeed = 200;
 
-    std::cout << "Default profile is : " << driver.getProfileCfg(0) << std::endl;
+//    std::cout << "Default profile is : " << driver.getProfileCfg(0) << std::endl;
 
-    std::cout << "Set a new profile config " << profileConfig << std::endl;
+//    std::cout << "Set a new profile config " << profileConfig << std::endl;
 
-    driver.setProfileCfg(profileConfig,0);
+//    driver.setProfileCfg(profileConfig,0);
 
     // Let's try to get the commonconfig
     //CommsDriver commsDriver(1);
@@ -69,18 +79,18 @@ int main (int argc, char ** argv)
     //std::cout << " Config read back is : " << std::endl << updatedConfig << std::endl;
 
     // Lets try and get the status
-    usleep(1000);
+    usleep(200);
     cout << "Status is " << driver.getStatus(0) << endl;
-    usleep(1000);
+    usleep(200);
     cout << "Status after clearing is : " << driver.clearStatus()[0] << endl;
-    usleep(1000);
+    usleep(200);
 
     // Get the position
-    usleep(1000);
+    usleep(200);
     cout << "Initial pos = " << driver.getPos(0) << endl;
 
     // Get the Speed
-    usleep(1000);
+    usleep(200);
     cout << "Initial speed = " << driver.getSpeed(0) << endl;
 
     // Lets zero the position
@@ -89,7 +99,7 @@ int main (int argc, char ** argv)
     usleep(1000);
     driver.setPos(startingPosition,0);
     cout << "New position is " << driver.getPos(0) << std::endl << std::endl;
-    sleep(3); 	
+    sleep(3);
 
    // Let's set a positive position
    cout << "Set position to -100" << std::endl;
@@ -102,24 +112,27 @@ int main (int argc, char ** argv)
     //    GoToCommand goToCommand(10000);
     //    cout << "Pos, converted is " << (int)goToCommand.pos;
     //    driver.goTo(goToCommand,0);
-    RunCommand runCommand(Forward,200);
+    RunCommand runCommand(Reverse,300);
     driver.run(runCommand,0);
     cout << "Run Command is : " << runCommand << std::endl;
 
     int count=0;
-    const int speedIncrement=50;
-    const int maxSpeed=900;
-    const int speedInterval=5;
-    int speed=200;
-    while (speed < maxSpeed)
+    //const int speedIncrement=50;
+    //const int maxSpeed=900;
+    //const int speedInterval=5;
+    //int speed=200;
+    //while (speed < maxSpeed)
+    while(true)
     {
-        for (int i =0 ; i < cfgs.size() ; ++i)
+
+        int i=2;
+        //for (int i =0 ; i < cfgs.size() ; ++i)
         {
             cout << "========================================" << endl;
             cout << "============ MOTOR " << i << "============" << endl;
             cout << "Motor position is : " << driver.getPos(i) << endl;
             cout << "Motor speed is : " << driver.getSpeed(i) << endl;
-            cout << "Motor status is : " << driver.getStatus()[0] << endl;
+            cout << "Motor status is : " << driver.getStatus()[i] << endl;
             //cout << "Status is :"  << driver.getStatus(0) << endl;
             //cout << "Status from clearStatus is " << endl << driver.clearStatus()[0] << endl;
             cout << "========================================" << endl << endl;
@@ -128,15 +141,15 @@ int main (int argc, char ** argv)
 
 	++count;
 
-        if (count > speedInterval)
-        {
-            count=0;
-            RunCommand runCommand(Forward,speed+=speedIncrement);
-            //driver.run(runCommand,0);
-            const std::map<int,RunCommand> runMap = {{0,runCommand},{1,runCommand}};
-            driver.run(runMap);
-            cout << "Run Command is : " << runCommand << std::endl;
-        }
+        //        if (count > speedInterval)
+        //        {
+        //            count=0;
+        //            RunCommand runCommand(Forward,speed+=speedIncrement);
+        //            //driver.run(runCommand,0);
+        //            const std::map<int,RunCommand> runMap = {{0,runCommand},{1,runCommand}};
+        //            driver.run(runMap);
+        //            cout << "Run Command is : " << runCommand << std::endl;
+        //        }
     }
 
     // Let's try to go to a position

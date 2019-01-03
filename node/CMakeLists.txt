@@ -25,7 +25,7 @@ find_package(rmw REQUIRED)
 find_package(rmw_implementation REQUIRED)
 #force opensplice implementation
 #find_package(rmw_opensplice_cpp REQUIRED)
-#find_package(rmw_fastrtps_cpp REQUIRED)
+find_package(rmw_fastrtps_cpp REQUIRED)
 find_package(l6470_msgs REQUIRED)
 find_package(l6470_srvs REQUIRED)
 

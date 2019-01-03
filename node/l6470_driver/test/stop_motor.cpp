@@ -12,9 +12,12 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+    (void) argc;
+    (void) argv;
+
     // Create the stepper motor
     Stepper_42BYGHW811 stepper;
-    std::vector<StepperMotor> motors = {stepper,stepper};
+    std::vector<StepperMotor> motors = {stepper,stepper,stepper};
 
     PowerStepDriver driver(motors);
 
@@ -22,6 +25,7 @@ int main(int argc, char **argv)
 
     driver.softHiZ(0);
     driver.softHiZ(1);
+    driver.softHiZ(2);
 
     while(1)
     {

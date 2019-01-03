@@ -3,6 +3,9 @@
 
 int main(int argc, char **argv)
 {
+    (void) argc;
+    (void) argv;
+
     // Instantiate a base level comms driver to check that comms are fine
     CommsDriver commsDriver(1,0,CommsDebugNothing);
 

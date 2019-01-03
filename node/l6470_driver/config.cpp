@@ -982,8 +982,28 @@ CommonConfig::setGateConfig2(const GateConfig2 &gateConfig2, CommsDriver &commsD
 void
 CurrentModeCfg::set(CommsDriver &commsDriver, int motor)
 {
-    // TODO !!!
-    assert(!"set is not currently implemented for CurrentModeCfg");
+    //    // TODO !!!
+    //    //assert(!"set is not currently implemented for CurrentModeCfg");
+    //    std::cout << "Doing nothing. Not implemented yet!!" << std::endl;
+    //    // Set the K Values
+    //    setHoldKVAL(holdingKVal, commsDriver, motor);
+    //    setRunKVAL(constantSpeedKVal, commsDriver, motor);
+    //    setAccKVAL(accelStartingKVal, commsDriver, motor);
+    //    setDecKVAL(decelStartingKVal, commsDriver, motor);
+
+    //    // Set the intersect speed and slope of the curve
+    //    commsDriver.setParam(INT_SPD,toBitLength(INT_SPD),intersectSpeed, motor);
+    //    commsDriver.setParam(ST_SLP,toBitLength(INT_SPD),startSlope, motor);
+    //    commsDriver.setParam(FN_SLP_ACC,toBitLength(FN_SLP_ACC),accelFinalSlope, motor);
+    //    commsDriver.setParam(FN_SLP_DEC,toBitLength(FN_SLP_DEC),decelFinalSlope, motor);
+
+    //    // PWM Configs
+    //    setThermalDriftCompensation(thermalDriftCompensation,commsDriver,motor);
+    //    setPWMFreq(pwmFrequencyDivider, pwmFrequencyMultiplier, commsDriver, motor);
+    //    setSlewRate(slewRate, commsDriver, motor);
+    //    setVoltageComp(voltageCompensation, commsDriver, motor);
+    (void) commsDriver;
+    (void) motor;
 }
 
 
@@ -992,7 +1012,8 @@ CurrentModeCfg::unitTest(CommsDriver &commsDriver, int motor)
 {
     // TODO !!!
     assert(!"Current mode config unit test not yet implemented");
-    // do nothing
+    (void) commsDriver;
+    (void) motor;
 }
 
 
@@ -1255,6 +1276,7 @@ void
 CurrentModeCfg::readFromPTree(pt::ptree &root)
 {
     std::cout << "TODO - readFromPTree " << std::endl;
+    (void) root;
     assert("!TODO");
 }
 

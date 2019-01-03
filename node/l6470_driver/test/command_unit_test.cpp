@@ -51,6 +51,9 @@ bool isNear(float a, float b , float tolerance);
 
 int main(int argc, char **argv)
 {
+    (void) argc;
+    (void) argv;
+
     // Instantiate the driver
     // My test rig has two motors with the following
     Stepper_42BYGHW811 nema17Stepper;
@@ -188,10 +191,13 @@ testRun (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     std::map<int,RunCommand> commandMap;
 
     float stepsPerSecond=300;
-    for (int i=0 ; i < baseDriver.motors_.size(); ++i)
+    for (int i=0 ; i < (int)baseDriver.motors_.size(); ++i)
     {
         commandMap.insert(std::pair<int,RunCommand>(i,RunCommand((i%2 == 0 ? Reverse : Forward),stepsPerSecond)));
         stepsPerSecond+=30;
+
+        if (debugEnabled)
+            std::cout << "Let's run motor " << i << " with command " << commandMap.at(i) << std::endl;
     }
 
     // Set the motor to run
@@ -206,7 +212,7 @@ testRun (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
         const RunCommand cmd = element.second;
 
         Status status = baseDriver.getStatus()[element.first];
-        float  speed  = baseDriver.getSpeed(element.first);
+        //float  speed  = baseDriver.getSpeed(element.first);
 
         if (status.spinDirection != cmd.direction)
         {
@@ -246,12 +252,15 @@ testMove (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     std::map <int,MoveCommand> cmdMap;
     const int minPos=300;
     const int posIncrement=50;
-    for (int i=0 ; i < baseDriver.motors_.size(); ++i)
+    for (int i=0 ; i < (int)baseDriver.motors_.size(); ++i)
     {
         MotorSpinDirection spinDir = (i%2 == 0 ? Forward : Reverse);
         int position = (minPos + (i*posIncrement));
         MoveCommand moveCommand(spinDir,position);
-        std::cout << "Move cmd for motor --> " << i << " is " << moveCommand << std::endl;
+
+        if (debugEnabled)
+            std::cout << "Move cmd for motor --> " << i << " is " << moveCommand << std::endl;
+
         cmdMap.insert(std::pair<int,MoveCommand>(i,moveCommand));
     }
 
@@ -294,11 +303,15 @@ testGoTo (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     std::map <int,GoToCommand> cmdMap;
     const int minPos=300;
     const int posIncrement=50;
-    for (int i=0 ; i < baseDriver.motors_.size(); ++i)
+    for (int i=0 ; i < (int)baseDriver.motors_.size(); ++i)
     {
         baseDriver.setPos(0,i);
         int position = minPos + (i*posIncrement);
         GoToCommand goToCommand(position);
+
+        if (debugEnabled)
+            std::cout << "GoToCommand for motor "<< i << " is " << goToCommand << std::endl;
+
         cmdMap.insert(std::pair<int,GoToCommand>(i,goToCommand));
     }
 
@@ -341,12 +354,16 @@ testGoToDir(BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     std::map <int,GoToDirCommand> cmdMap;
     const int minPos=300;
     const int posIncrement=50;
-    for (int i=0 ; i < baseDriver.motors_.size(); ++i)
+    for (int i=0 ; i < (int)baseDriver.motors_.size(); ++i)
     {
         baseDriver.setPos(0,i);
         MotorSpinDirection spinDir = (i%2 == 0 ? Forward : Reverse);
         int position = (spinDir == Forward ? 1 : -1) * (minPos + (i*posIncrement));
         GoToDirCommand goToDirCommand(spinDir,position);
+
+        if (debugEnabled)
+            std::cout << "GoToDirCommand for motor " << i << " is " << goToDirCommand << std::endl;
+
         cmdMap.insert(std::pair<int,GoToDirCommand>(i,goToDirCommand));
     }
 
@@ -388,12 +405,15 @@ testGoHome (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 
     // Create the move commands and set each stepper to be at the 0 pos
     std::vector<int> motors;
-    for (int i=0 ; i < baseDriver.motors_.size(); ++i)
+    for (int i=0 ; i < (int)baseDriver.motors_.size(); ++i)
     {
         motors.push_back(i);
     }
 
     // Send the command
+    if (debugEnabled)
+        std::cout << "Tell all motors to go home" << std::endl;
+
     baseDriver.goHome(motors);
 
     // Wait for motors to reach their position roughly
@@ -422,6 +442,7 @@ void
 testGoMark (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 {
     testName = "GoMark";
+    (void) debugEnabled;
 
     // Let's create a few mark positions
     baseDriver.stopAllHard();
@@ -474,10 +495,11 @@ void
 testSoftStop (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 {
     testName = "SoftStop";
+    (void) debugEnabled;
 
     // Get the motors spinning
     const int stepsPerSecond=200;
-    for (int i=0; i < baseDriver.motors_.size(); ++i)
+    for (int i=0; i < (int)baseDriver.motors_.size(); ++i)
     {
         RunCommand runCommand(Forward,stepsPerSecond);
         baseDriver.run(runCommand,i);
@@ -489,7 +511,7 @@ testSoftStop (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
     // Check the status - TODO if needed
 
     // Soft Stop each Motor and check the status
-    for (int i=0; i < baseDriver.motors_.size(); ++i)
+    for (int i=0; i < (int)baseDriver.motors_.size(); ++i)
     {
         baseDriver.softStop(i);
         const int waitTimeoutS = 5;
@@ -512,34 +534,46 @@ void
 testHardStop (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 {
     testName = "HardStop";
+    (void) baseDriver;
+    (void) debugEnabled;
 }
 
 void
 testSoftHiZ (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 {
     testName = "SoftHiZ";
+    (void) baseDriver;
+    (void) debugEnabled;
 }
 
 void
 testHardHiZ (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 {
     testName = "HardHiZ";
+    (void) baseDriver;
+    (void) debugEnabled;
 }
 
 void
 testSetPos (BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 {
     testName = "SetPos";
+    (void) baseDriver;
+    (void) debugEnabled;
 }
 
 void
 testResetPos(BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 {
     testName = "ResetPos";
+    (void) baseDriver;
+    (void) debugEnabled;
 }
 
 void
 testResetDev(BaseDriver &baseDriver, std::string &testName, bool debugEnabled)
 {
     testName = "ResetDev";
+    (void) baseDriver;
+    (void) debugEnabled;
 }

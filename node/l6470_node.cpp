@@ -92,13 +92,6 @@ L6470Node::poseTimerCallback()
 {
     // Send Speed Commands (if needed) ? ? ? --> I guess when asking for a new trajectory
 
-    // Let's just make a fake message for now ?
-    //    auto msg = std::make_shared<l6470_msgs::msg::MultiPose>();
-
-    //    auto motorP1 = l6470_msgs::msg::Pose();
-    //    motorP1.position=++count_;
-    //    motorP1.speed=count_*2;
-
     // Let's get the actual positions and speeds
     std::vector<int>    positions;
     std::vector<uint32_t>    speeds;
@@ -201,11 +194,11 @@ L6470Node::goToPositionCallback(const   std::shared_ptr <l6470_srvs::srv::GoToPo
 
     // Check that the vectors are okay
     // TODO - change the command to be a vector or GoToPositiong to avoid this bullshit
-    if (!(request->motor_indice.size() == request->motor_position.size()
-          == request->drive_direction.size()
-          == request->acceleration.size()
-          == request->deceleration.size()
-          == request->speed.size()))
+    if (!(request->motor_indice.size() == request->motor_position.size())   ||
+        !(request->motor_indice.size() == request->drive_direction.size())  ||
+        !(request->motor_indice.size() == request->acceleration.size())     ||
+        !(request->motor_indice.size() == request->deceleration.size())     ||
+        !(request->motor_indice.size() == request->speed.size()))
     {
         std::cout << " TODO - throw an appropriate exception" << std::endl;
         throw;

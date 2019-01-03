@@ -140,6 +140,12 @@ struct GoToCommand : public DataCommand
     uint32_t pos;
 };
 
+std::string toString(const GoToCommand &x);
+inline std::ostream& operator<<(std::ostream& os,const GoToCommand &x)
+{
+    return os << toString(x);
+}
+
 struct GoToDirCommand : public DataCommand
 {
     GoToDirCommand(MotorSpinDirection _direction , int32_t _pos):

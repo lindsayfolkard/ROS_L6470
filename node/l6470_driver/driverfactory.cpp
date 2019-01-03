@@ -2,8 +2,6 @@
 #include <assert.h>
 
 #include "powerstepdriver.h"
-#include "l6470driver.h"
-#include "l6472driver.h"
 #include "simdriver.h"
 
 std::unique_ptr<AbstractDriver> factoryMakeDriver(const OverallCfg &overallCfg)

@@ -44,7 +44,7 @@ JoyProxy::JoyProxy():
         // Create a publisher with a custom Quality of Service profile.
         rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
         custom_qos_profile.depth = 7;
-        const std::string topicName = "joychat";
+        const std::string topicName = "chatter";
         pub_ = this->create_publisher<std_msgs::msg::String>(topicName, custom_qos_profile);
 
         // Use a timer to schedule periodic message publishing.

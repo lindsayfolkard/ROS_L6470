@@ -8,6 +8,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "joyproxy_node.hpp"
 
+using namespace joyproxy;
+
 int main(int argc, char * argv[])
 {
   std::cout << "Run JoyProxy Node main!" << std::endl;
@@ -19,7 +21,7 @@ int main(int argc, char * argv[])
 
   // Add some nodes to the executor which provide work for the executor during its "spin" function.
   // An example of available work is executing a subscription callback, or a timer callback.
-  auto node = std::make_shared<joyproxy::JoyProxy>();
+  auto node = std::make_shared<JoyProxy>();
 
   rclcpp::spin(node);
   
