@@ -677,6 +677,9 @@ enum TargetSwitchingPeriod
     SwitchingPeriod8KHz    = 0x0F
 };
 
+std::string toString(TargetSwitchingPeriod period);
+void fromString(const std::string &input, TargetSwitchingPeriod &targetSwitchingPeriod);
+
 // It is expected during normal operation that these configs will be
 // changed several times on the fly
 struct ProfileCfg

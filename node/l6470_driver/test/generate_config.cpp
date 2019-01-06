@@ -5,7 +5,10 @@
 
 int main(int argc, char ** argv)
 {
-    Stepper_42BYGHW811 nema17Stepper;
+    (void) argc;
+    (void) argv;
+
+    //Stepper_42BYGHW811 nema17Stepper;
     Stepper_57BYGH51   nema23SmallStepper;
 
     // Let's make the powerstepcfg

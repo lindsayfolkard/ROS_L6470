@@ -212,31 +212,6 @@ CommonConfig::set(CommsDriver &commsDriver, int motor)
     // Set the Gate config structs
     setGateConfig1(gateConfig1,commsDriver,motor);
     setGateConfig2(gateConfig2,commsDriver,motor);
-
-
-//    usleep(5000);
-//    std::cout << "Debug - Lets try to set the FS_SPD parameter" << fullStepThresholdSpeed << std::endl;
-//    commsDriver.setParam(FS_SPD,toBitLength(FS_SPD),fullStepThresholdSpeed,motor);
-//    commsDriver.SPIXfer(0,0);
-//    commsDriver.SPIXfer(0,0);
-//    commsDriver.SPIXfer(0,0);
-//    commsDriver.SPIXfer(0,0);
-//    commsDriver.SPIXfer(0,0);
-//    commsDriver.SPIXfer(0,0);
-//    usleep(5000);
-//    std::cout << "Debug - let's do some more shit" << std::endl;
-//    std::cout << "I think I have set the parameter" << std::endl;
-//    std::cout << "Get the parameter" << std::endl;
-//    std::cout << commsDriver.getParam(FS_SPD,toBitLength(FS_SPD),motor) << std::endl;
-//    commsDriver.SPIXfer(0,0);
-//    commsDriver.SPIXfer(0,0);
-//    commsDriver.SPIXfer(0,0);
-//    commsDriver.SPIXfer(0,0);
-//    commsDriver.SPIXfer(0,0);
-//    commsDriver.SPIXfer(0,0);
-//    usleep(5000);
-//    std::cout << commsDriver.getParam(FS_SPD,toBitLength(FS_SPD),motor) << std::endl;
-
 }
 
 std::string addColour(const std::string &str, Colour colour)
@@ -975,37 +950,50 @@ CommonConfig::setGateConfig2(const GateConfig2 &gateConfig2, CommsDriver &commsD
 /////////// Start of Current Mode Config //////////////////////////
 ///////////////////////////////////////////////////////////////////
 
-//
-// TODO !!!
-//
+namespace
+{
+    enum CurrentModeParams
+    {
+        TVAL_HOLD = KVAL_HOLD,
+        TVAL_RUN  = KVAL_RUN,
+        TVAL_ACC  = KVAL_ACC,
+        TVAL_DEC  = KVAL_DEC,
+        TFAST     = ST_SLP,
+        TON_MIN   = FN_SLP_ACC,
+        TOFF_MIN  = FN_SLP_DEC
+    };
 
+    const uint16_t PRED_CURR_CONTROL_MASK    = 0x8000;
+    const uint16_t TARGET_SWITCH_PERIOD_MASK = 0x7C00;
+    const uint16_t EN_TORQUE_REG_MASK        = 0x0020;
+    const uint16_t EXT_CLOCK_SEL_MASK        = 0x0008;
+    const uint8_t  TargetSwitchingPeriodBitShift = 10;
+
+}
+
+// NB: current mode config will only be set if the cm_en bit is set to current_mode
 void
 CurrentModeCfg::set(CommsDriver &commsDriver, int motor)
 {
-    //    // TODO !!!
-    //    //assert(!"set is not currently implemented for CurrentModeCfg");
-    //    std::cout << "Doing nothing. Not implemented yet!!" << std::endl;
-    //    // Set the K Values
-    //    setHoldKVAL(holdingKVal, commsDriver, motor);
-    //    setRunKVAL(constantSpeedKVal, commsDriver, motor);
-    //    setAccKVAL(accelStartingKVal, commsDriver, motor);
-    //    setDecKVAL(decelStartingKVal, commsDriver, motor);
+    commsDriver.setParam(TVAL_HOLD, toBitLength(TVAL_HOLD), tValHold, motor);
+    commsDriver.setParam(TVAL_RUN, toBitLength(TVAL_RUN), tValRun, motor);
+    commsDriver.setParam(TVAL_ACC, toBitLength(TVAL_ACC), tValAcc, motor);
+    commsDriver.setParam(TVAL_DEC, toBitLength(TVAL_DEC), tValDec, motor);
+    commsDriver.setParam(TFAST, toBitLength(TFAST), tFast, motor);
+    commsDriver.setParam(TON_MIN, toBitLength(TON_MIN), tOnMin, motor);
+    commsDriver.setParam(TOFF_MIN, toBitLength(TOFF_MIN), tOffMin, motor);
 
-    //    // Set the intersect speed and slope of the curve
-    //    commsDriver.setParam(INT_SPD,toBitLength(INT_SPD),intersectSpeed, motor);
-    //    commsDriver.setParam(ST_SLP,toBitLength(INT_SPD),startSlope, motor);
-    //    commsDriver.setParam(FN_SLP_ACC,toBitLength(FN_SLP_ACC),accelFinalSlope, motor);
-    //    commsDriver.setParam(FN_SLP_DEC,toBitLength(FN_SLP_DEC),decelFinalSlope, motor);
+    // Handle the changed config register
+    uint16_t configVal = commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor);
 
-    //    // PWM Configs
-    //    setThermalDriftCompensation(thermalDriftCompensation,commsDriver,motor);
-    //    setPWMFreq(pwmFrequencyDivider, pwmFrequencyMultiplier, commsDriver, motor);
-    //    setSlewRate(slewRate, commsDriver, motor);
-    //    setVoltageComp(voltageCompensation, commsDriver, motor);
-    (void) commsDriver;
-    (void) motor;
+    // Zero the bits for the or operation
+    configVal &= ~(PRED_CURR_CONTROL_MASK | TARGET_SWITCH_PERIOD_MASK | EN_TORQUE_REG_MASK | EXT_CLOCK_SEL_MASK);
+
+    //Now, OR in the values
+    configVal |= ((PRED_CURR_CONTROL_MASK & predictiveCurrentControlEnabled) | (EN_TORQUE_REG_MASK & enableTorqueRegulation) | (EXT_CLOCK_SEL_MASK & externalClockEnabled));
+    configVal |= (EN_TORQUE_REG_MASK & ((uint16_t) targetSwitchingPeriod << TargetSwitchingPeriodBitShift));
+    commsDriver.setParam(CONFIG, toBitLength(CONFIG), configVal, motor);
 }
-
 
 void
 CurrentModeCfg::unitTest(CommsDriver &commsDriver, int motor)
@@ -1014,6 +1002,82 @@ CurrentModeCfg::unitTest(CommsDriver &commsDriver, int motor)
     assert(!"Current mode config unit test not yet implemented");
     (void) commsDriver;
     (void) motor;
+}
+
+void
+CurrentModeCfg::readFromFile(const std::string &file)
+{
+    // Let's do this in json format (easier to parse)
+    pt::ptree root;
+
+    try
+    {
+        pt::read_json(file,root);
+        readFromPTree(root);
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception thrown while trying to read VoltageModeCfg from file " << file << " with reason " << e.what();
+        throw;
+    }
+}
+
+void
+CurrentModeCfg::readFromPTree(pt::ptree &root)
+{
+    try
+    {
+        tValHold = root.get<int>("holdingKVal");
+        tValRun  = root.get<int>("constantSpeedKVal");
+        tValDec  = root.get<int>("accelStartingKVal");
+        tFast    = root.get<int>("decelStartingKVal");
+        tOnMin   = root.get<uint32_t>("intersectSpeed");
+        tOffMin  = root.get<uint32_t>("startSlope");
+        predictiveCurrentControlEnabled = root.get<uint32_t>("accelFinalSlope");
+        fromString(root.get<std::string>("decelFinalSlope"),targetSwitchingPeriod);
+        enableTorqueRegulation          = root.get<bool>("enableLowSpeedOptimisation");
+        externalClockEnabled            = root.get<bool>("enableLowSpeedOptimisation");
+
+    }
+    catch (std::exception &e)
+    {
+        std::cout << "Exception thrown while trying to read VoltageModeCfg from ptree : " << e.what();
+        throw;
+    }
+}
+
+pt::ptree
+CurrentModeCfg:: getPTree()
+{
+    pt::ptree root;
+
+    root.put("tValHold",tValHold);
+    root.put("tValRun",tValRun);
+    root.put("tValAcc",tValDec);
+    root.put("tValDec",tValDec);
+
+    root.put("tFast",tFast);
+    root.put("tOnMin",tOnMin);
+    root.put("tOffMin",tOffMin);
+    root.put("predCurrControl",predictiveCurrentControlEnabled);
+
+    root.put("targetSwitchPeriod",toString(targetSwitchingPeriod));
+    root.put("torqueRegulationEn",enableTorqueRegulation);
+    root.put("extClockEn",externalClockEnabled);
+
+    return root;
+}
+
+void
+CurrentModeCfg::writeToFile(const std::string &cfgFilePath)
+{
+    pt::ptree root = getPTree();
+
+    // Open the file and write to json
+    std::ofstream outFile;
+    outFile.open(cfgFilePath);
+        //throw; // TODO - fix to real exception
+    pt::write_json(outFile,root);
 }
 
 
@@ -1263,35 +1327,4 @@ CommonConfig::writeToFile(const std::string &cfgFilePath)
     outFile.open(cfgFilePath);
         //throw; // TODO - fix to real exception
     pt::write_json(outFile,root);
-}
-
-void
-CurrentModeCfg::readFromFile(const std::string &file)
-{
-    std::cout << "TODO - read from " << file << std::endl;
-    assert("!TODO");
-}
-
-void
-CurrentModeCfg::readFromPTree(pt::ptree &root)
-{
-    std::cout << "TODO - readFromPTree " << std::endl;
-    (void) root;
-    assert("!TODO");
-}
-
-pt::ptree
-CurrentModeCfg:: getPTree()
-{
-    pt::ptree root;
-    std::cout << "TODO - writeToTree " << std::endl;
-    assert("!TODO");
-    return root;
-}
-
-void
-CurrentModeCfg::writeToFile(const std::string &cfgFilePath)
-{
-    std::cout << "TODO - write to file " << cfgFilePath << std::endl;
-    assert(!"TODO - commoncfg writing");
 }

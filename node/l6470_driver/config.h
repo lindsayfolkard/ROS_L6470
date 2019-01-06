@@ -108,20 +108,19 @@ public:
     virtual void readFromFile(const std::string &filePath) override;
     virtual void writeToFile(const std::string &filePath) override;
 
-    uint8_t tvalHold;
-    uint8_t tvalRun;
-    uint8_t tvalAcc;
-    uint8_t tvalDec;
+    uint8_t tValHold;
+    uint8_t tValRun;
+    uint8_t tValAcc;
+    uint8_t tValDec;
     uint8_t tFast;
-    uint8_t tonMin;
-    uint8_t toffMin;
+    uint8_t tOnMin;
+    uint8_t tOffMin;
 
     // Config Register
     bool                  predictiveCurrentControlEnabled;
     TargetSwitchingPeriod targetSwitchingPeriod;
     bool                  enableTorqueRegulation;
     bool                  externalClockEnabled;
-
 };
 
 class VoltageModeCfg : public AbstractConfig,

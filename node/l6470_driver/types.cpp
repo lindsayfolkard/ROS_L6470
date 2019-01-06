@@ -755,6 +755,39 @@ std::string toString(ParamRegister paramRegister)
     }
 }
 
+std::string toString(TargetSwitchingPeriod period)
+{
+    switch (period)
+    {
+    case SwitchingPeriod250KHz  : return "SwitchingPeriod250KHz";
+    case SwitchingPeriod125KHz  : return "SwitchingPeriod125KHz";
+    case SwitchingPeriod62_5KHz : return "SwitchingPeriod62_5KHz";
+    case SwitchingPeriod31KHz   : return "SwitchingPeriod31KHz";
+    case SwitchingPeriod32_     : return "SwitchingPeriod32_";
+    case SwitchingPeriod16KHz   : return "SwitchingPeriod16KHz";
+    case SwitchingPeriod8KHz    : return "SwitchingPeriod8KHz";
+    default : assert(!"Invalid targetSwitchingPeriod");
+    }
+}
+
+void fromString(const std::string &input, TargetSwitchingPeriod &targetSwitchingPeriod)
+{
+    std::vector<TargetSwitchingPeriod> options = {SwitchingPeriod250KHz,SwitchingPeriod125KHz,SwitchingPeriod62_5KHz,SwitchingPeriod31KHz,SwitchingPeriod32_,SwitchingPeriod16KHz,SwitchingPeriod8KHz};
+
+    for (const auto &element : options)
+    {
+        if (toString(element) == input)
+        {
+            targetSwitchingPeriod = element;
+            return;
+        }
+    }
+
+    // TODO - throw a meaningful exception...
+    std::cout << "Invalid targetSwitchingPeriod string " << input << std::endl;
+    throw ;
+}
+
 std::string toString(const ProfileCfg &profileCfg)
 {
     std::stringstream ss;
