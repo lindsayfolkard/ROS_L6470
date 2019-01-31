@@ -17,12 +17,12 @@ find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
-rosidl_generate_interfaces(l6470_srvs
-  "GoToPosition.srv"
-  "GoTrajectory.srv"
-  "Stop.srv"
-  "StopAll.srv"
-  "GoSpeed.srv"
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "srv/GoToPosition.srv"
+  "srv/GoTrajectory.srv"
+  "srv/Stop.srv"
+  "srv/StopAll.srv"
+  "srv/GoSpeed.srv"
   DEPENDENCIES builtin_interfaces
 )
 
