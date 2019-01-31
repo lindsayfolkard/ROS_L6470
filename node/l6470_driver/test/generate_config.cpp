@@ -22,7 +22,6 @@ int main(int argc, char ** argv)
     overall.add_child("PowerStepCfg",cfg.getPTree());
 
     // Open the file and write to json
-
     {
         std::ofstream outFile;
         outFile.open("Nema23.cfg");
@@ -55,11 +54,13 @@ int main(int argc, char ** argv)
 
 
     // Let's make an overall config
-    //    OverallCfg overallCfg;
-    //    overallCfg.commsDebugLevel_ = CommsDebugNothing;
-    //    overallCfg.controllerType_  = PowerStep01;
-    //    overallCfg.spiBus_ = 0;
-    //    overallCfg.cfgFiles_.push_back();
-    //    overallCfg.cfgFiles_.push_back(voltageMode17Cfg);
+    OverallCfg overallCfg;
+    overallCfg.commsDebugLevel_ = CommsDebugNothing;
+    overallCfg.controllerType_  = PowerStep01;
+    overallCfg.spiBus_ = 0;
+    overallCfg.cfgFiles_.push_back("Motor1.cfg");
+    overallCfg.cfgFiles_.push_back("Motor2.cfg");
+
+    overallCfg.writeToFile("Node.cfg");
 
 }

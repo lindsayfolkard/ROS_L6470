@@ -48,17 +48,13 @@ std::string errorToStringInfo(const char *funcInfo, const std::string &detail)
 
 }
 
-L6470Node::L6470Node():
+L6470Node::L6470Node(const OverallCfg &cfg):
     Node("l6470node")
 {
     // Instantiate the Stepper Driver from the factory
-    const std::string overallCfgFile = "~/dspin_stepper_configs/ros_overall_config.txt"; // TODO - figure out where this file can be stored/deployed nicely
-    std::cout << "Try to instantiate stepper motor driver with ros_overall_config file from " << overallCfgFile << std::endl;
-    //OverallCfg overallCfg(overallCfgFile);
-    driver_ = std::unique_ptr<AbstractDriver>(new SimDriver({StepperMotor(),StepperMotor(),StepperMotor()}));
-    //driver_ = factoryMakeDriver(overallCfg);
+    driver_ = factoryMakeDriver(cfg);
     assert(driver_ || !"driver is null pointer!" );
-    //std::cout << "Instantiated " << overallCfg.controllerType_ << " stepper motor driver with " << overallCfg.cfgFiles_.size() << " daisy chained steppers" << std::endl;
+    std::cout << "Instantiated " << cfg.controllerType_ << " stepper motor driver with " << cfg.cfgFiles_.size() << " daisy chained steppers" << std::endl;
 
     // Create a publisher of l6470_msgs::msg::Pose msgs
     posePublisher_    = create_publisher<l6470_msgs::msg::MultiPose>("multipose");
@@ -261,4 +257,4 @@ L6470Node::stopCallback(const   std::shared_ptr <l6470_srvs::srv::Stop::Request>
 // This acts as a sort of entry point, allowing the component to be discoverable when its library
 // is being loaded into a running process.
 
-CLASS_LOADER_REGISTER_CLASS(l6470::L6470Node, rclcpp::Node)
+//CLASS_LOADER_REGISTER_CLASS(l6470::L6470Node, rclcpp::Node)

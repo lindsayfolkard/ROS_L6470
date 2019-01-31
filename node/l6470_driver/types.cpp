@@ -170,6 +170,20 @@ AlarmState::AlarmState()
     badCommandEnabled=true;
 }
 
+bool
+operator == (const AlarmState &a, const AlarmState &b)
+{
+    return
+    a.overCurrentEnabled == b.overCurrentEnabled &&
+    a.thermalShutdownEnabled == b.thermalShutdownEnabled &&
+    a.thermalWarningEnabled == b.thermalWarningEnabled &&
+    a.underVoltageEnabled == b.underVoltageEnabled &&
+    a.stallDetectionAEnabled == b.stallDetectionAEnabled &&
+    a.stallDetectionBEnabled == b.stallDetectionBEnabled &&
+    a.switchTurnOnEnabled == b.switchTurnOnEnabled &&
+    a.badCommandEnabled == b.badCommandEnabled;
+}
+
 std::string toString(AlarmState alarmState)
 {
     std::stringstream ss;
@@ -602,14 +616,20 @@ std::string toString(GateTBoost x)
     return getGateTBoostBiMap().left.at(x);
 }
 
+
+bool operator== (const GateConfig1 &a , const GateConfig1 &b)
+{
+    return
+    a.gateCurrent   == b.gateCurrent &&
+    a.gateTcc       == b.gateTcc &&
+    a.gateTBoost    == b.gateTBoost &&
+    a.wd_en         == b.wd_en;
+}
+
 std::string
 toString(GateConfig1 x)
 {
     std::stringstream ss;
-//    ss << "GateCurrent : " << x.gateCurrent << "(0x" << std::hex << (int)x.gateCurrent << "),"  << std::dec
-//       << "GateTBoost : "  << x.gateTBoost  << "(0x" << std::hex << (int)x.gateTBoost << "),"   << std::dec
-//       << "GateTcc : "     << x.gateTcc     << "(0x" << std::hex << (int)x.gateTcc << "),"      << std::dec
-//       << "wd_en : "       << (x.wd_en ? "Yes" : "No");
 
     ss << "GateCurrent : " << "(0x" << std::hex << (int)x.gateCurrent << "),"  << std::dec
        << "GateTBoost : "  << "(0x" << std::hex << (int)x.gateTBoost << "),"   << std::dec
@@ -685,6 +705,13 @@ getGateTBlankBiMap()
 std::string toString(GateTBlank x)
 {
     return getGateTBlankBiMap().left.at(x);
+}
+
+bool operator== (const GateConfig2 &a , const GateConfig2 &b)
+{
+    return
+    a.gateDeadTime == b.gateDeadTime &&
+    a.gateTBlank   == b.gateTBlank;
 }
 
 std::string

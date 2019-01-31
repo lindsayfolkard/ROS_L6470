@@ -7,7 +7,7 @@
 std::unique_ptr<AbstractDriver> factoryMakeDriver(const OverallCfg &overallCfg)
 {
     // Read the required stepper motor config and driver config files
-    std::vector<StepperMotor>   motors;
+    std::vector<StepperMotor> motors;
     std::vector<PowerStepCfg> cfgs;
 
     for (const auto &cfgFile : overallCfg.cfgFiles_)
@@ -31,6 +31,11 @@ std::unique_ptr<AbstractDriver> factoryMakeDriver(const OverallCfg &overallCfg)
         default:
             assert(!"Invalid controller type in driverfactory.cpp factoryMakeDriver");
         }
+
+
+        std::cout << "Motor " << motors.size() << std::endl;
+        std::cout << motors.back() << std::endl;
+        std::cout << cfgs.back() << std::endl << std::endl << std::endl;
     }
 
     // Instantiate the correct driver
@@ -55,6 +60,7 @@ std::unique_ptr<AbstractDriver> factoryMakeDriver(const OverallCfg &overallCfg)
     default:
         assert(!"Invalid controller type in driverfactory.cpp factoryMakeDriver");
     }
+
 
     return std::move(driver);
 }

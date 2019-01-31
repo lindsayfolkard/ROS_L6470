@@ -15,7 +15,6 @@
 // BaseDriver
 // Description : A general implementation of the AbstractDriver
 //               Encompasses all common commands.
-
 class BaseDriver : public AbstractDriver
 {
 
@@ -137,13 +136,26 @@ public:
 
     // Stepper motors being controlled by this driver
     const std::vector<StepperMotor> motors_;
+    std::unique_ptr<CommsDriver>    commsDriver_;
 
 protected:
 
     void checkMotorIsValid(int motor);
     const MotorDriverType           motorDriverType_;
     CommsDebugLevel                 commsDebugLevel_;
-    std::unique_ptr<CommsDriver>    commsDriver_;
+
+};
+
+class WrongMotorException : public std::exception
+{
+    public:
+
+    WrongMotorException (const std::string &reason) : reason_(reason){}
+
+    virtual const char * what() const throw() { return reason_.c_str();}
+
+    private:
+        const std::string reason_;
 };
 
 /// #TODO - make pin mapping dynamic as we cannot know in advance how someone would use it in reality.

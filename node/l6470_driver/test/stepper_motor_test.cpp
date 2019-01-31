@@ -10,36 +10,40 @@
 
 using namespace std;
 
+std::string getUsage(const std::string &funcName);
+
 int main (int argc, char ** argv)
 {
     (void) argc;
     (void) argv;
 
-    // Create the stepper motor
+    if (argc < 2)
+    {
+        std::cout << "Insufficient args. Require motor speed " << std::endl;
+        //std::cout << "Usage " << getUsage(std::string(argv[0])) << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    // Create the stepper motors
     Stepper_42BYGHW811 nema17Stepper;
     Stepper_57BYGH51   smallNema23Stepper;
     Stepper_57H703     bigNema23Stepper;
-    std::vector<StepperMotor> motors = {bigNema23Stepper};//,smallNema23Stepper,bigNema23Stepper};
+    Stepper_Medium     mediumStepper;
+    std::vector<StepperMotor> motors = {mediumStepper};//,smallNema23Stepper,bigNema23Stepper};
 
     // Let's try to make a PowerStepConfig from motors
     CurrentModeCfg currentModeCfg;
-    CommonConfig   commonConfig;
-    commonConfig.overCurrentThreshold = OCD_TH_4500m;
-    PowerStepCfg powerStepConfig17(commonConfig,currentModeCfg,BackEmfConfigFromStepper(nema17Stepper));
-    std::cout << "Set config to : " << powerStepConfig17 << std::endl;
+    CommonConfig commonConfig;
+    commonConfig.overCurrentThreshold = OCD_TH_6000m;
+    commonConfig.stallThreshold = OCD_TH_6000m;
+    commonConfig.overCurrentDetection = CONFIG_OC_SD_DISABLE;
+    commonConfig.stepMode = STEP_SEL_1_128;
 
-    CommonConfig   commonConfig23;
-    commonConfig23.overCurrentThreshold = OCD_TH_6000m;
-    commonConfig23.stallThreshold = OCD_TH_6000m;
-    commonConfig23.stepMode = STEP_SEL_1;
-    PowerStepCfg smallPowerStepConfig23(commonConfig23,currentModeCfg,BackEmfConfigFromStepper(smallNema23Stepper));
-    std::cout << "Set config to : " << smallPowerStepConfig23 << std::endl;
+    PowerStepCfg mediumPowerStepConfig23(commonConfig,currentModeCfg,BackEmfConfigFromStepper(mediumStepper));
+    mediumPowerStepConfig23.commonCfg_.controlMode = CurrentControlMode;
+    std::cout << "Set config to : " << mediumPowerStepConfig23 << std::endl;
 
-    PowerStepCfg bigPowerStepConfig23(commonConfig23,currentModeCfg,BackEmfConfigFromStepper(bigNema23Stepper));
-    bigPowerStepConfig23.commonCfg_.controlMode = CurrentControlMode;
-    std::cout << "Set config to : " << bigPowerStepConfig23 << std::endl;
-
-    std::vector<PowerStepCfg> cfgs = {bigPowerStepConfig23};//,smallPowerStepConfig23,bigPowerStepConfig23};
+    std::vector<PowerStepCfg> cfgs = {mediumPowerStepConfig23};//,smallPowerStepConfig23,bigPowerStepConfig23};
 
     // Instantiate the AutoDriver
     cout << "Try to instantiate the driver" << endl;
@@ -48,18 +52,23 @@ int main (int argc, char ** argv)
     sleep(4);
     cout << "Instantiated the driver!" << endl;
 
+    // Let's read the current Mode config
+    const CurrentModeCfg readConfig(*driver.commsDriver_,0);
+
+    std::cout << "read config is : " << readConfig << std::endl;
+
     // Lets create a profile config
-//    ProfileCfg profileConfig;
-//    profileConfig.acceleration = 100;
-//    profileConfig.deceleration = 140;
-//    profileConfig.maxSpeed = 1000;
-//    profileConfig.minSpeed = 200;
+    ProfileCfg profileConfig;
+    profileConfig.acceleration = 900;
+    profileConfig.deceleration = 900;
+    profileConfig.maxSpeed = 1000;
+    profileConfig.minSpeed = 0;
 
-//    std::cout << "Default profile is : " << driver.getProfileCfg(0) << std::endl;
+    std::cout << "Default profile is : " << driver.getProfileCfg(0) << std::endl;
 
-//    std::cout << "Set a new profile config " << profileConfig << std::endl;
+    std::cout << "Set a new profile config " << profileConfig << std::endl;
 
-//    driver.setProfileCfg(profileConfig,0);
+    driver.setProfileCfg(profileConfig,0);
 
     // Let's try to get the commonconfig
     //CommsDriver commsDriver(1);
@@ -79,67 +88,74 @@ int main (int argc, char ** argv)
     //std::cout << " Config read back is : " << std::endl << updatedConfig << std::endl;
 
     // Lets try and get the status
-    usleep(200);
+    usleep(1e4);
     cout << "Status is " << driver.getStatus(0) << endl;
-    usleep(200);
+    usleep(1e4);
     cout << "Status after clearing is : " << driver.clearStatus()[0] << endl;
-    usleep(200);
+    usleep(1e4);
 
     // Get the position
-    usleep(200);
+    usleep(1e4);
     cout << "Initial pos = " << driver.getPos(0) << endl;
 
     // Get the Speed
-    usleep(200);
+    usleep(1e4);
     cout << "Initial speed = " << driver.getSpeed(0) << endl;
 
     // Lets zero the position
     const int startingPosition = 100;
     cout << "Set position to " << startingPosition << std::endl;
-    usleep(1000);
+    usleep(1e4);
     driver.setPos(startingPosition,0);
     cout << "New position is " << driver.getPos(0) << std::endl << std::endl;
-    sleep(3);
+    usleep(1e4);
 
    // Let's set a positive position
    cout << "Set position to -100" << std::endl;
    driver.setPos(-100,0);
    cout << "New position is " << driver.getPos(0) << std::endl << std::endl;
-   sleep(3);
+   usleep(1e4);
 
     // Get the position
     // Let's try to move
     //    GoToCommand goToCommand(10000);
     //    cout << "Pos, converted is " << (int)goToCommand.pos;
     //    driver.goTo(goToCommand,0);
-    RunCommand runCommand(Reverse,300);
-    driver.run(runCommand,0);
-    cout << "Run Command is : " << runCommand << std::endl;
+    int motor = 0;
 
-    int count=0;
-    //const int speedIncrement=50;
-    //const int maxSpeed=900;
-    //const int speedInterval=5;
-    //int speed=200;
-    //while (speed < maxSpeed)
-    while(true)
+    const int speed = stoi(argv[1]);
+
+
+    RunCommand runCommand(Forward,speed);
+    driver.run(runCommand,motor);
+    try
     {
+        cout << "Run Command is : " << runCommand << std::endl;
 
-        int i=2;
-        //for (int i =0 ; i < cfgs.size() ; ++i)
+        int count=0;
+        //const int speedIncrement=50;
+        //const int maxSpeed=900;
+        //const int speedInterval=5;
+        //int speed=200;
+        //while (speed < maxSpeed)
+        while(true)
         {
-            cout << "========================================" << endl;
-            cout << "============ MOTOR " << i << "============" << endl;
-            cout << "Motor position is : " << driver.getPos(i) << endl;
-            cout << "Motor speed is : " << driver.getSpeed(i) << endl;
-            cout << "Motor status is : " << driver.getStatus()[i] << endl;
-            //cout << "Status is :"  << driver.getStatus(0) << endl;
-            //cout << "Status from clearStatus is " << endl << driver.clearStatus()[0] << endl;
-            cout << "========================================" << endl << endl;
-        }
-        sleep(1);
+            int i=motor;
+            //for (int i =0 ; i < cfgs.size() ; ++i)
+            {
+                cout << "========================================" << endl;
+                cout << "============ MOTOR " << i << "============" << endl;
+                cout << "Motor position is : " << driver.getPos(i) << endl;
+                cout << "Motor speed is : " << driver.getSpeed(i) << endl;
+                cout << "Motor status is : " << driver.getStatus()[i] << endl;
+                //cout << "Status is :"  << driver.getStatus(0) << endl;
+                //cout << "Status from clearStatus is " << endl << driver.clearStatus()[0] << endl;
+                cout << "========================================" << endl << endl;
+            }
+            sleep(1);
 
-	++count;
+        ++count;
+        }
 
         //        if (count > speedInterval)
         //        {
@@ -150,6 +166,12 @@ int main (int argc, char ** argv)
         //            driver.run(runMap);
         //            cout << "Run Command is : " << runCommand << std::endl;
         //        }
+    }
+    catch (std::exception &e)
+    {
+        cout << "Caught exception : " << e.what();
+        driver.stopAllSoft();
+        return EXIT_FAILURE;
     }
 
     // Let's try to go to a position

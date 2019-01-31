@@ -971,6 +971,79 @@ namespace
 
 }
 
+bool
+operator== (const CurrentModeCfg &cfg1, const CurrentModeCfg &cfg2)
+{
+    return
+    cfg1.tValHold                           == cfg2.tValHold &&
+    cfg1.tValRun                            == cfg2.tValRun &&
+    cfg1.tValAcc                            == cfg2.tValAcc &&
+    cfg1.tValDec                            == cfg2.tValDec &&
+    cfg1.tFast                              == cfg2.tFast &&
+    cfg1.tOnMin                             == cfg2.tOnMin &&
+    cfg1.tOffMin                            == cfg2.tOffMin &&
+    cfg1.predictiveCurrentControlEnabled    == cfg2.predictiveCurrentControlEnabled &&
+    cfg1.targetSwitchingPeriod              == cfg2.targetSwitchingPeriod &&
+    cfg1.enableTorqueRegulation             == cfg2.enableTorqueRegulation &&
+    cfg1.externalClockEnabled               == cfg2.externalClockEnabled;
+}
+
+std::string toString(const CurrentModeCfg &currentModeCfg)
+{
+    std::stringstream ss;
+
+    ss  << "tValHold : " << (int) currentModeCfg.tValHold << std::endl
+        << "tValRun  : " << (int) currentModeCfg.tValRun << std::endl
+        << "tValAcc  : " << (int) currentModeCfg.tValAcc << std::endl
+        << "tValDec  : " << (int) currentModeCfg.tValDec << std::endl
+        << "tFast    : " << (int) currentModeCfg.tFast << std::endl
+        << "tOnMin   : " << (int) currentModeCfg.tOnMin << std::endl
+        << "tOffMin  : " << (int) currentModeCfg.tOffMin << std::endl
+        << "predCurrCtlEn : " << (currentModeCfg.predictiveCurrentControlEnabled ? "Yes" : "No") << std::endl
+        << "tgtSwPeriod   : " << currentModeCfg.targetSwitchingPeriod << std::endl
+        << "enTorReg      : " << (currentModeCfg.enableTorqueRegulation ? "Yes" : "No") << std::endl
+        << "extClkEn      : " << (currentModeCfg.externalClockEnabled ? "Yes" : "No") << std::endl;
+
+    return ss.str();
+}
+
+CurrentModeCfg::CurrentModeCfg(CommsDriver &commsDriver, int motor)
+{
+    tValHold = commsDriver.getParam(TVAL_HOLD, toBitLength(TVAL_HOLD), motor);
+    tValRun  = commsDriver.getParam(TVAL_RUN,  toBitLength(TVAL_RUN), motor);
+    tValAcc  = commsDriver.getParam(TVAL_ACC,  toBitLength(TVAL_ACC), motor);
+    tValDec  = commsDriver.getParam(TVAL_DEC,  toBitLength(TVAL_DEC), motor);
+    tFast    = commsDriver.getParam(TFAST,     toBitLength(TFAST), motor);
+    tOnMin   = commsDriver.getParam(TON_MIN,   toBitLength(TON_MIN), motor);
+    tOffMin  = commsDriver.getParam(TOFF_MIN,  toBitLength(TOFF_MIN), motor);
+
+    // Handle the changed config register
+    const uint16_t configVal = commsDriver.getParam(CONFIG, toBitLength(CONFIG), motor);
+
+    predictiveCurrentControlEnabled = (configVal & PRED_CURR_CONTROL_MASK);
+    enableTorqueRegulation = (configVal & EN_TORQUE_REG_MASK);
+    externalClockEnabled   = (configVal & EXT_CLOCK_SEL_MASK);
+    targetSwitchingPeriod  = static_cast<TargetSwitchingPeriod> ((configVal & TARGET_SWITCH_PERIOD_MASK ) >> TargetSwitchingPeriodBitShift);
+}
+
+void
+CurrentModeCfg::setDefaults()
+{
+    tValHold = 41;
+    tValRun  = 41;
+    tValAcc  = 41;
+    tValDec  = 41;
+    tFast    = 25;
+    tOnMin   = 41;
+    tOffMin  = 41;
+    predictiveCurrentControlEnabled = false;
+    targetSwitchingPeriod = SwitchingPeriod62_5KHz;
+    //tgtSwPeriod   = 11;
+    enableTorqueRegulation = false;
+    externalClockEnabled   = false;
+}
+
+
 // NB: current mode config will only be set if the cm_en bit is set to current_mode
 void
 CurrentModeCfg::set(CommsDriver &commsDriver, int motor)
@@ -991,7 +1064,7 @@ CurrentModeCfg::set(CommsDriver &commsDriver, int motor)
 
     //Now, OR in the values
     configVal |= ((PRED_CURR_CONTROL_MASK & predictiveCurrentControlEnabled) | (EN_TORQUE_REG_MASK & enableTorqueRegulation) | (EXT_CLOCK_SEL_MASK & externalClockEnabled));
-    configVal |= (EN_TORQUE_REG_MASK & ((uint16_t) targetSwitchingPeriod << TargetSwitchingPeriodBitShift));
+    configVal |= (TARGET_SWITCH_PERIOD_MASK & ((uint16_t) targetSwitchingPeriod << TargetSwitchingPeriodBitShift));
     commsDriver.setParam(CONFIG, toBitLength(CONFIG), configVal, motor);
 }
 
@@ -1027,21 +1100,21 @@ CurrentModeCfg::readFromPTree(pt::ptree &root)
 {
     try
     {
-        tValHold = root.get<int>("holdingKVal");
-        tValRun  = root.get<int>("constantSpeedKVal");
-        tValDec  = root.get<int>("accelStartingKVal");
-        tFast    = root.get<int>("decelStartingKVal");
-        tOnMin   = root.get<uint32_t>("intersectSpeed");
-        tOffMin  = root.get<uint32_t>("startSlope");
-        predictiveCurrentControlEnabled = root.get<uint32_t>("accelFinalSlope");
-        fromString(root.get<std::string>("decelFinalSlope"),targetSwitchingPeriod);
-        enableTorqueRegulation          = root.get<bool>("enableLowSpeedOptimisation");
-        externalClockEnabled            = root.get<bool>("enableLowSpeedOptimisation");
+        tValHold = root.get<int>("tValHold");
+        tValRun  = root.get<int>("tValRun");
+        tValDec  = root.get<int>("tValDec");
+        tFast    = root.get<int>("tFast");
+        tOnMin   = root.get<uint32_t>("tOnMin");
+        tOffMin  = root.get<uint32_t>("tOffMin");
+        predictiveCurrentControlEnabled = root.get<bool>("predCurrControl");
+        fromString(root.get<std::string>("targetSwitchPeriod"),targetSwitchingPeriod);
+        enableTorqueRegulation          = root.get<bool>("torqueRegulationEn");
+        externalClockEnabled            = root.get<bool>("extClockEn");
 
     }
     catch (std::exception &e)
     {
-        std::cout << "Exception thrown while trying to read VoltageModeCfg from ptree : " << e.what();
+        std::cout << "Exception thrown while trying to read CurrentModeCfg from ptree : " << e.what();
         throw;
     }
 }
@@ -1090,6 +1163,24 @@ CurrentModeCfg::writeToFile(const std::string &cfgFilePath)
 /////////// Parsing Related Functions /////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
+bool operator== (const CommonConfig &cfg1, const CommonConfig &cfg2)
+{
+    return
+    cfg1.fullStepThresholdSpeed == cfg2.fullStepThresholdSpeed &&
+    cfg1.overCurrentThreshold   == cfg2.overCurrentThreshold &&
+    cfg1.stallThreshold         == cfg2.stallThreshold &&
+    cfg1.stepMode               == cfg2.stepMode &&
+    cfg1.syncSelect             == cfg2.syncSelect &&
+    cfg1.controlMode            == cfg2.controlMode &&
+    cfg1.syncEnable             == cfg2.syncEnable &&
+    cfg1.oscillatorSelect       == cfg2.oscillatorSelect &&
+    cfg1.switchConfiguration    == cfg2.switchConfiguration &&
+    cfg1.overCurrentDetection   == cfg2.overCurrentDetection &&
+    cfg1.alarmState             == cfg2.alarmState &&
+    cfg1.gateConfig1            == cfg2.gateConfig1 &&
+    cfg1.gateConfig2            == cfg2.gateConfig2;
+}
+
 
 std::string toString(const CommonConfig &cfg)
 {
@@ -1110,6 +1201,25 @@ std::string toString(const CommonConfig &cfg)
     ss << "GateConfig2             : " << cfg.gateConfig2 << std::endl;
     
     return ss.str();
+}
+
+bool
+operator== (const VoltageModeCfg &cfg1 , const VoltageModeCfg &cfg2)
+{
+    return  (cfg1.holdingKVal                == cfg2.holdingKVal) &&
+            (cfg1.constantSpeedKVal          == cfg2.constantSpeedKVal) &&
+            (cfg1.accelStartingKVal          == cfg2.accelStartingKVal) &&
+            (cfg1.decelStartingKVal          == cfg2.decelStartingKVal) &&
+            (cfg1.intersectSpeed             == cfg2.intersectSpeed) &&
+            (cfg1.startSlope                 == cfg2.startSlope) &&
+            (cfg1.accelFinalSlope            == cfg2.accelFinalSlope) &&
+            (cfg1.decelFinalSlope            == cfg2.decelFinalSlope) &&
+            (cfg1.thermalDriftCompensation   == cfg2.thermalDriftCompensation) &&
+            (cfg1.slewRate                   == cfg2.slewRate) &&
+            (cfg1.voltageCompensation        == cfg2.voltageCompensation) &&
+            (cfg1.pwmFrequencyMultiplier     == cfg2.pwmFrequencyMultiplier) &&
+            (cfg1.pwmFrequencyDivider        == cfg2.pwmFrequencyDivider) &&
+            (cfg1.enableLowSpeedOptimisation == cfg2.enableLowSpeedOptimisation);
 }
 
 std::string toString(const VoltageModeCfg &backEmfConfig)

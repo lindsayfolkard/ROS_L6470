@@ -64,6 +64,7 @@ struct CfgFile
 
 struct OverallCfg
 {
+    OverallCfg(){}
     OverallCfg(const std::string &filePath);
     OverallCfg(const std::vector<std::string> &cfgFiles,
                MotorDriverType             controllerType,
@@ -99,6 +100,11 @@ class CurrentModeCfg : public AbstractConfig,
 
 public:
 
+    CurrentModeCfg(){setDefaults();}
+    CurrentModeCfg(CommsDriver &commsDriver, int motor);
+    CurrentModeCfg(const std::string &fileName){readFromFile(fileName);}
+
+    void setDefaults();
     virtual void set(CommsDriver &commsDriver, int motor) override;
     virtual void unitTest(CommsDriver &commsDriver, int motor) override;
 
@@ -122,6 +128,13 @@ public:
     bool                  enableTorqueRegulation;
     bool                  externalClockEnabled;
 };
+
+bool operator== (const CurrentModeCfg &cfg1, const CurrentModeCfg &cfg2);
+std::string toString(const CurrentModeCfg &currentModeCfg);
+inline std::ostream& operator<<(std::ostream& os,const CurrentModeCfg &x)
+{
+    return os << toString(x);
+}
 
 class VoltageModeCfg : public AbstractConfig,
                        public WriteableConfig
@@ -183,6 +196,8 @@ private:
     static SlewRate                 getSlewRate(CommsDriver &commsDriver, int motor );
 };
 
+bool operator== (const VoltageModeCfg &cfg1 , const VoltageModeCfg &cfg2);
+//bool operator!= (const VoltageModeCfg &cfg1 , const VoltageModeCfg &cfg2) { return !(cfg1 == cfg2);}
 std::string toString(const VoltageModeCfg &backEmfConfig);
 inline std::ostream& operator<<(std::ostream& os,const VoltageModeCfg &x)
 {
@@ -266,7 +281,7 @@ private:
 
 };
 
-//CommonConfig commonCfgFromString(const std::string &str);
+bool operator== (const CommonConfig &cfg1, const CommonConfig &cfg2);
 std::string toString(const CommonConfig &cfg);
 inline std::ostream& operator<<(std::ostream& os,const CommonConfig &x)
 {

@@ -48,8 +48,8 @@ struct StepperMotor
     void writeToFile(const std::string &file);
 
     // Motor Type information
-    StepperMotorSize  motorSize;
-    std::string motorModel;
+    StepperMotorSize motorSize;
+    std::string      motorModel;
 
     // Motor Information
     double stepAngle; // degrees
@@ -96,10 +96,10 @@ struct Stepper_57H703 : public StepperMotor
         "Nema23_57H703",
         1.8,
         3.0,
-        1.8, // 0.9
-        2.5, // 3.4
-        2.012,
-        0.1, // 0.073
+        1.1, // 0.9
+        2.2, // 3.4
+        1.4,
+        0.017, // 0.073
         12,
         2.5){}
 };
@@ -138,5 +138,31 @@ struct Stepper_57BYGH51 : public StepperMotor
         0.054,
         12,
         2.5){}
+};
+
+//https://www.ebay.com.au/itm/1-X-Nema-23-Double-Shaft-Stepper-Motor-DIY-CNC-Mill-Lathe-Router/123570529589?ssPageName=STRK%3AMEBIDX%3AIT&_trksid=p2057872.m2749.l2649
+//Step Angle: 1.8(deg) (200 steps/revoution)
+//Motor Size: 56 X 76(mm)
+//Rated Current: 3.0 (A)
+//Resistance: 1.1(Ohms)
+//Holding Torque: 1.4(Nm)
+//Inductance: 2.2 (mH)
+//Mass: 1050(g)
+//Permissible Radial Load: 54 (N)
+//Shaft Type: Double Shaft
+
+struct Stepper_Medium : public StepperMotor
+{
+    Stepper_Medium() : StepperMotor(
+        NEMA23,
+        "Nema23_Medium",
+        1.8,
+        3.0,
+        1.1,
+        2.2,
+        1.4,
+        0.032,
+        12,
+        3.0){}
 };
 

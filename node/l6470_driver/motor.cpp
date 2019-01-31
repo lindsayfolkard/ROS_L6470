@@ -83,7 +83,7 @@ StepperMotor::StepperMotor(const std::string &cfg)
     try
     {
         pt::read_json(cfg,root);
-        readFromPTree(root);
+        readFromPTree(root.get_child("StepperMotor"));
     }
     catch (std::exception &e)
     {

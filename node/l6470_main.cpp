@@ -22,9 +22,15 @@ int main(int argc, char * argv[])
   // With this version, all callbacks will be called from within this thread (the main one).
   rclcpp::executors::SingleThreadedExecutor exec;
 
+  // Let's parse the PowerStepConfig
+  const std::string configFilePath = "Node.cfg";
+  OverallCfg cfg(configFilePath);
+  //std::cout
+
   // Add some nodes to the executor which provide work for the executor during its "spin" function.
   // An example of available work is executing a subscription callback, or a timer callback.
-  auto node = std::make_shared<l6470::L6470Node>();
+  //auto node = std::make_shared<l6470::L6470Node>(cfg);
+  auto node = std::shared_ptr<l6470::L6470Node> (new l6470::L6470Node(cfg));
   exec.add_node(node);
 
   // spin will block until work comes in, execute work as it becomes available, and keep blocking.
@@ -33,7 +39,7 @@ int main(int argc, char * argv[])
   {
       std::cout << "Spin some.. please sir" << std::endl;
       //rclcpp::spin_some(node);
-     // loop_rate.sleep();
+      // loop_rate.sleep();
       exec.spin();
       std::cout << "Leave spin ... " << std::endl;
   }

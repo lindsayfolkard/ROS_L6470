@@ -186,6 +186,8 @@ struct AlarmState
     bool switchTurnOnEnabled;
     bool badCommandEnabled;
 };
+
+bool operator == (const AlarmState &a, const AlarmState &b);
 std::string toString(AlarmState alarmState);
 inline std::ostream& operator<<(std::ostream& os,AlarmState alarmState)
 {
@@ -514,6 +516,7 @@ struct GateConfig1
     bool        wd_en       = false;
 };
 
+bool operator== (const GateConfig1 &a , const GateConfig1 &b);
 std::string toString(GateConfig1 x);
 inline std::ostream& operator<<(std::ostream& os, const GateConfig1 &x)
 {
@@ -592,6 +595,8 @@ struct GateConfig2
     GateDeadTime gateDeadTime = GateDeadTime_2000ns;
     GateTBlank   gateTBlank   = GateTBlank_500ns;
 };
+
+bool operator== (const GateConfig2 &a , const GateConfig2 &b);
 
 std::string toString(GateConfig2 x);
 inline std::ostream& operator<<(std::ostream& os, GateConfig2 x)

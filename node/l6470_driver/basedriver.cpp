@@ -28,9 +28,7 @@ void
 BaseDriver::checkMotorIsValid(int motor)
 {
     if (motor < 0 || (unsigned int)motor > motors_.size() )
-    {
-        throw; // TODO - fix which exception that is thrown
-    }
+        throw WrongMotorException("Motor number " + std::to_string(motor) + " is invalid (expect num < " + std::to_string((int)motors_.size()) + ")");
 }
 
 /////////////////////////

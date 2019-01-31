@@ -38,7 +38,7 @@ class L6470Node : public rclcpp::Node
 
 public:
 
-  L6470Node();
+  L6470Node(const OverallCfg &cfg);
   ~L6470Node();
 
 protected:
