@@ -115,6 +115,8 @@ class AbstractDriver
     virtual void softHiZ(const std::vector <int> &motors) = 0;
     virtual void softHiZ(int motor) = 0;
 
+     virtual void softHiZAll() = 0 ;
+
     virtual void hardHiZ(const std::vector <int> &motors) = 0;
     virtual void hardHiZ(int motor) = 0;
 

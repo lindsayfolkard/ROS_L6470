@@ -580,6 +580,15 @@ BaseDriver::softHiZ(int motor)
 }
 
 void
+BaseDriver::softHiZAll()
+{
+    for (int motor=0 ; motor < motors_.size(); ++motor)
+    {
+        softHiZ(motor);
+    }
+}
+
+void
 BaseDriver::hardHiZ(const std::vector<int> &motors)
 {
     commsDriver_->sendCommands(motors,HARD_HIZ);

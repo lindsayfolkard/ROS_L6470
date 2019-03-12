@@ -123,6 +123,8 @@ public:
     virtual void softHiZ(const std::vector <int> &motors) override;
     virtual void softHiZ(int motor) override;
 
+    virtual void softHiZAll() override;
+
     virtual void hardHiZ(const std::vector <int> &motors) override;
     virtual void hardHiZ(int motor) override;
 

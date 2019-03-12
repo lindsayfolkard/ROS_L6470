@@ -8,23 +8,26 @@ int main(int argc, char ** argv)
     (void) argc;
     (void) argv;
 
-    //Stepper_42BYGHW811 nema17Stepper;
-    Stepper_57BYGH51   nema23SmallStepper;
+    //Stepper_42BYGHW811 stepper;
+    //Stepper_57BYGH51 stepper;
+    Stepper_Medium   stepper;
 
     // Let's make the powerstepcfg
     PowerStepCfg cfg;
-    cfg.commonCfg_.overCurrentThreshold = OCD_TH_1125m;
-    cfg.voltageModeCfg_ = BackEmfConfigFromStepper(nema23SmallStepper);
+    cfg.commonCfg_.overCurrentThreshold = OCD_TH_11250m;
+    cfg.commonCfg_.stepMode = STEP_SEL_1_8;
+    cfg.voltageModeCfg_ = BackEmfConfigFromStepper(stepper);
 
     // Let's write the file in a nice manner
     pt::ptree overall;
-    overall.add_child("StepperMotor",nema23SmallStepper.getPTree());
+    overall.add_child("StepperMotor",stepper.getPTree());
     overall.add_child("PowerStepCfg",cfg.getPTree());
 
     // Open the file and write to json
+    const std::string fileName = stepper.motorModel + ".cfg";
     {
         std::ofstream outFile;
-        outFile.open("Nema23.cfg");
+        outFile.open(fileName);
         //throw; // TODO - fix to real exception
         pt::write_json(outFile,overall);
     }
@@ -36,7 +39,7 @@ int main(int argc, char ** argv)
 
         try
         {
-            pt::read_json("Nema23.cfg",root);
+            pt::read_json(fileName,root);
             StepperMotor stepper;
             stepper.readFromPTree(root.get_child("StepperMotor"));
             PowerStepCfg readBackCfg;
@@ -60,6 +63,7 @@ int main(int argc, char ** argv)
     overallCfg.spiBus_ = 0;
     overallCfg.cfgFiles_.push_back("Motor1.cfg");
     overallCfg.cfgFiles_.push_back("Motor2.cfg");
+    overallCfg.cfgFiles_.push_back("Motor3.cfg");
 
     overallCfg.writeToFile("Node.cfg");
 

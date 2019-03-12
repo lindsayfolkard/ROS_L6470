@@ -53,11 +53,15 @@ struct RunCommand : public DataCommand
         DataCommand(
             RUN,
             _direction,
-            capMaxValue(spdCalc(_stepsPerSec),toBitLength(SPEED)),
+            capMaxValue(spdCalc(std::abs(_stepsPerSec)),toBitLength(SPEED)),
             toBitLength(SPEED)
         ),
         direction(_direction),
-        stepsPerSec(_stepsPerSec){}
+        stepsPerSec(std::abs(_stepsPerSec)){}
+    RunCommand(float _stepsPerSec):
+        RunCommand(_stepsPerSec > 0 ? Forward : Reverse,std::abs(_stepsPerSec)){
+        std::cout << "Debug - run speed command is " << (direction == Forward ? "Fwd" : "Rev") << " with speed " << stepsPerSec << std::endl;
+    }
 
     // Variables
     const MotorSpinDirection direction;

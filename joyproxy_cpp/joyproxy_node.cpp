@@ -20,7 +20,7 @@ JoyProxy::JoyProxy():
     std::cout << "Create JoyProxy c++ Node" << std::endl;
 
     // Create a publisher of l6470_msgs::msg::Pose msgs
-    speedPublisher_    = create_publisher<l6470_msgs::msg::ManualSpeed>("manual_speed");
+    speedPublisher_  = create_publisher<l6470_msgs::msg::ManualSpeed>("manual_speed");
 
     // Handle JoyStick Subscription
     auto f = std::bind(&JoyProxy::joyCallback,this,std::placeholders::_1);
@@ -28,28 +28,27 @@ JoyProxy::JoyProxy():
 
     std::cout << "Created JoyProxy c++ node" << std::endl;
 
-    // Hack ! - add normal string publisher code
-    msg_ = std::make_shared<std_msgs::msg::String>();
-        auto publish_message =
-          [this]() -> void
-          {
-            msg_->data = "Hello World: " + std::to_string(count_++);
-            RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", msg_->data.c_str());
+    //    // Hack ! - add normal string publisher code
+    //    msg_ = std::make_shared<std_msgs::msg::String>();
+    //        auto publish_message =
+    //          [this]() -> void
+    //          {
+    //            msg_->data = "Hello World: " + std::to_string(count_++);
+    //            RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", msg_->data.c_str());
 
-            // Put the message into a queue to be processed by the middleware.
-            // This call is non-blocking.
-            pub_->publish(msg_);
-          };
+    //            // Put the message into a queue to be processed by the middleware.
+    //            // This call is non-blocking.
+    //            pub_->publish(msg_);
+    //          };
 
-        // Create a publisher with a custom Quality of Service profile.
-        rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
-        custom_qos_profile.depth = 7;
-        const std::string topicName = "chatter";
-        pub_ = this->create_publisher<std_msgs::msg::String>(topicName, custom_qos_profile);
+    //        // Create a publisher with a custom Quality of Service profile.
+    //        rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
+    //        custom_qos_profile.depth = 7;
+    //        const std::string topicName = "chatter";
+    //        pub_ = this->create_publisher<std_msgs::msg::String>(topicName, custom_qos_profile);
 
-        // Use a timer to schedule periodic message publishing.
-    timer_ = this->create_wall_timer(1s, publish_message);
-
+    //        // Use a timer to schedule periodic message publishing.
+    //    timer_ = this->create_wall_timer(1s, publish_message);
 
     // END Hack!
 }
@@ -62,23 +61,33 @@ JoyProxy::~JoyProxy()
 void
 JoyProxy::joyCallback(const sensor_msgs::msg::Joy::UniquePtr joyMsgPtr)
 {  
-    if (!joyMsgPtr.get())
-        throw std::invalid_argument("Joy Msg is nullptr");
+    //    if (!joyMsgPtr.get())
+    //        throw std::invalid_argument("Joy Msg is nullptr");
+
+    std::stringstream ss;
+    ss << "Got Joy Msg. Axes = [";
+    for (auto &axes : joyMsgPtr->axes)
+    {
+        ss << axes << ",";
+    }
+    ss << "]" << std::endl;
+
+    std::cout << ss.str();
 
     // There is a potential for speed spamming. Let's only update the speed if it has been long enough
     const std::chrono::milliseconds timeThreshold(100);
 
-    //if (!speedData_)
-    //    RCLCPP_INFO(this->get_logger(), "Manual Control Enabled");
+    if (!speedData_)
+        RCLCPP_INFO(this->get_logger(), "Manual Control Enabled");
 
     if (speedData_ && ((std::chrono::steady_clock::now() - speedData_->time) < timeThreshold))
     {
-        //RCLCPP_INFO(this->get_logger(),"Debug - not enough time has passed to publish a new manual speed command");
+        RCLCPP_INFO(this->get_logger(),"Debug - not enough time has passed to publish a new manual speed command");
         return;
     }
     else
     {
-        //RCLCPP_INFO(this->get_logger(), "Publish!");
+        RCLCPP_INFO(this->get_logger(), "Publish!");
     }
 
     SpeedData speedData;

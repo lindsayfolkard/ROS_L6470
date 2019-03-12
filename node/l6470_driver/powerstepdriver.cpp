@@ -151,9 +151,11 @@ PowerStepDriver::PowerStepDriver(const std::vector<StepperMotor> &motors, int sp
     int motorId = 0;
     for (const auto &motor : motors)
     {
-        const int testPos = 2;
+        const int testPos = 200;
         setPos(0,motorId);
+        usleep(1e5);
         setPos(testPos,motorId);
+        usleep(1e5);
 
         const int pos = getPos(motorId);
 
@@ -161,7 +163,7 @@ PowerStepDriver::PowerStepDriver(const std::vector<StepperMotor> &motors, int sp
         {
             std::cout << "Motor " << motorId << " does not seem to be connected ? " << std::endl;
             std::cout << "Pos retrieved is : " << pos << std::endl;
-            //throw WrongMotorException("Motor " + std::to_string(motorId) + " is not connected (" + motor.motorModel + ")");
+            throw WrongMotorException("Motor " + std::to_string(motorId) + " is not connected (" + motor.motorModel + ")");
         }
         else
         {
@@ -182,7 +184,7 @@ PowerStepDriver::PowerStepDriver(const std::vector<StepperMotor> &motors, std::v
     for (PowerStepCfg &config : cfgs)
     {
         std::cout << "---------------------------------------------" << std::endl;
-        std::cout << "Motor 1 " << std::endl;
+        std::cout << "Motor " << motor << std::endl;
         std::cout << config << std::endl;
         std::cout << "---------------------------------------------" << std::endl;
 

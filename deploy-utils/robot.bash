@@ -22,7 +22,7 @@ fi
 
 # Source if we need to
 if ! [ -x "$(command -v ros2)" ]; then 
-  source /opt/ros/bouncy/setup.bash
+  source /opt/ros/crystal/setup.bash
 fi
 
 # Ascii Colour codes
@@ -125,7 +125,7 @@ for arg in $@; do
 
     if [ $arg == "remote-build" ]; then
         echo -e "${INFO} Start clean remote build of ros2 packages ...${NC}"
-        ssh foodrobot -t "echo 'source ros' && source /home/foodrobot/ros2_bouncy/install/setup.sh && echo 'finished sourcing' && cd $sourceDir && colcon build --symlink-install"
+        ssh foodrobot -t "echo 'source ros' && source /home/foodrobot/ros2_crystal/ros2-ws/setup.sh && echo 'finished sourcing' && cd $sourceDir && colcon build --symlink-install"
         echo -e "${INFO} Remote build complete ${NC}"
     fi
 
